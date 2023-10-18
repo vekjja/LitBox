@@ -36,8 +36,8 @@ IOPin btn2Pin(9, INPUT_PULLUP);
 // LED Matrix Config
 int ledRows = 8;
 int ledColumns = 32;
-uint8_t matrixType = NEO_MATRIX_BOTTOM + NEO_MATRIX_LEFT + NEO_MATRIX_COLUMNS +
-                     NEO_MATRIX_ZIGZAG;
+uint8_t matrixType =
+    NEO_MATRIX_TOP + NEO_MATRIX_LEFT + NEO_MATRIX_COLUMNS + NEO_MATRIX_ZIGZAG;
 Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(
     ledColumns, ledRows, ledData.pin(), matrixType, NEO_GRB + NEO_KHZ800);
 
@@ -68,7 +68,7 @@ volatile int sensitivity = minSensitivity;
 
 // Visualization Config
 volatile int visualization = 0;
-int maxVisualization = 2;
+int maxVisualization = 3;
 
 // Button Config
 ButtonManager btn1(btn1Pin.pin());
@@ -77,6 +77,7 @@ void setup() {
   matrix.begin();
   Serial.begin(115200);
   initButtonHandlers();
+  matrix.setTextWrap(false);
   matrix.setBrightness(brightness);
 }
 
@@ -115,10 +116,21 @@ void spectralAnalyzer() {
     case 1:
       drawCircles(spectralData);
       break;
+    case 2:
+      drawText();
+      break;
     default:
       drawBars(spectralData);
       break;
   }
+  matrix.show();
+}
+
+void drawText() {
+  matrix.fillScreen(0);
+  matrix.setCursor(0, 0);
+  matrix.setTextColor(colorPallets[currentPalette][0]);
+  matrix.print(F("INIKO"));
   matrix.show();
 }
 
@@ -140,13 +152,16 @@ void drawCircles(int *spectralData) {
 
 void drawBars(int *spectralData) {
   matrix.fillScreen(0);
+
   for (int x = 0; x < ledColumns; x++) {
-    for (int y = 0; y < spectralData[x]; y++) {
-      Serial.println(spectralData[x]);
-      uint32_t pixelColor = colorPallets[currentPalette][0];
-      pixelColor = (y > 2) ? colorPallets[currentPalette][1] : pixelColor;
-      pixelColor = (y > 5) ? colorPallets[currentPalette][2] : pixelColor;
-      pixelColor = (y > 6) ? colorPallets[currentPalette][3] : pixelColor;
+    for (int y = ledRows - 1; y >= ledRows - spectralData[x]; y--) {
+      uint32_t pixelColor = colorPallets[currentPalette][3];
+      pixelColor =
+          (y > ledRows - 6) ? colorPallets[currentPalette][2] : pixelColor;
+      pixelColor =
+          (y > ledRows - 7) ? colorPallets[currentPalette][1] : pixelColor;
+      pixelColor =
+          (y > ledRows - 3) ? colorPallets[currentPalette][0] : pixelColor;
       matrix.drawPixel(x + 1, y, pixelColor);
     }
   }
