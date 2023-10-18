@@ -35,9 +35,9 @@ IOPin btn2Pin(9, INPUT_PULLUP);
 
 // LED Matrix Config
 int ledRows = 8;
-int ledColumns = 8;
-uint8_t matrixType =
-    NEO_MATRIX_BOTTOM + NEO_MATRIX_RIGHT + NEO_MATRIX_ROWS + NEO_MATRIX_ZIGZAG;
+int ledColumns = 32;
+uint8_t matrixType = NEO_MATRIX_BOTTOM + NEO_MATRIX_LEFT + NEO_MATRIX_COLUMNS +
+                     NEO_MATRIX_ZIGZAG;
 Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(
     ledColumns, ledRows, ledData.pin(), matrixType, NEO_GRB + NEO_KHZ800);
 
@@ -60,7 +60,8 @@ arduinoFFT FFT = arduinoFFT();
 const int minSensitivity = 3;
 const int maxSensitivity = 100;
 const int sensitivityStep = 20;
-const uint16_t audioSamples = 64;
+const uint16_t audioSamples = 32;
+const int usableSamples = (audioSamples / 2);
 double vReal[audioSamples];
 double vImage[audioSamples];
 volatile int sensitivity = minSensitivity;
@@ -77,10 +78,12 @@ void setup() {
   Serial.begin(115200);
   initButtonHandlers();
   matrix.setBrightness(brightness);
-  // testMatrix();
 }
 
-void loop() { spectralAnalyzer(); }
+void loop() {
+  // testMatrix();
+  spectralAnalyzer();
+}
 
 void spectralAnalyzer() {
   for (int i = 0; i < audioSamples; i++) {
@@ -93,27 +96,18 @@ void spectralAnalyzer() {
   FFT.ComplexToMagnitude(vReal, vImage, audioSamples);
 
   int spectralData[ledColumns] = {};
-  int sum, sampleCount,
-      spectralIndex = 0, maxInput = 80,
-      usableSamples = (audioSamples / 2) - 12;  // high pass filter
+  int spectralIndex = 0, maxInput = 80;
 
-  for (int i = 1; i < usableSamples; i++) {
+  for (int i = 2; i < usableSamples; i++) {
     vReal[i] =
         constrain(vReal[i], 0, maxInput);  // set max value for input data
 
     vReal[i] = map(vReal[i], 0, maxInput, 0,
                    ledRows + 1);  // map data to fit our display
 
-    sum += vReal[i];
-    sampleCount++;
-    if (i % (usableSamples / ledColumns) ==
-        0) {  // average data for set of samples
-      int data = sum / sampleCount;
-      data = (spectralIndex == 0 && data == 3) ? 0 : data;
-      spectralData[spectralIndex++] = data;
-      sum = 0;
-      sampleCount = 0;
-    }
+    spectralData[spectralIndex] = vReal[i];
+    spectralData[spectralIndex + 1] = vReal[i];
+    spectralIndex += 2;
   }
 
   matrix.fillScreen(0);
@@ -130,15 +124,17 @@ void spectralAnalyzer() {
 
 void drawCircles(int *spectralData) {
   matrix.fillScreen(0);
-  int circleRadius = spectralData[2];
-  int circleColor = colorPallets[currentPalette][0];
-  circleColor =
-      (circleRadius > 2) ? colorPallets[currentPalette][1] : circleColor;
-  circleColor =
-      (circleRadius > 3) ? colorPallets[currentPalette][2] : circleColor;
-  circleColor =
-      (circleRadius > 5) ? colorPallets[currentPalette][3] : circleColor;
-  matrix.drawCircle(3, 4, circleRadius, circleColor);
+  for (int x = 0; x < ledColumns; x++) {
+    int circleRadius = spectralData[x];
+    int circleColor = colorPallets[currentPalette][0];
+    circleColor =
+        (circleRadius > 2) ? colorPallets[currentPalette][1] : circleColor;
+    circleColor =
+        (circleRadius > 3) ? colorPallets[currentPalette][2] : circleColor;
+    circleColor =
+        (circleRadius > 5) ? colorPallets[currentPalette][3] : circleColor;
+    matrix.drawCircle(x, 4, circleRadius, circleColor);
+  }
   matrix.show();
 }
 
@@ -151,7 +147,7 @@ void drawBars(int *spectralData) {
       pixelColor = (y > 2) ? colorPallets[currentPalette][1] : pixelColor;
       pixelColor = (y > 5) ? colorPallets[currentPalette][2] : pixelColor;
       pixelColor = (y > 6) ? colorPallets[currentPalette][3] : pixelColor;
-      matrix.drawPixel(x, y, pixelColor);
+      matrix.drawPixel(x + 1, y, pixelColor);
     }
   }
   matrix.show();
