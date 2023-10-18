@@ -111,13 +111,17 @@ void spectralAnalyzer() {
     spectralIndex += 2;
   }
 
+  // if (spectralData[usableSamples - 4] >= 7) {
+  //   drawFirework();
+  // }
+
   matrix.fillScreen(0);
   switch (visualization) {
     case 1:
       drawCircles(spectralData);
       break;
     case 2:
-      drawText();
+      scrollText();
       break;
     default:
       drawBars(spectralData);
@@ -126,12 +130,22 @@ void spectralAnalyzer() {
   matrix.show();
 }
 
-void drawText() {
-  matrix.fillScreen(0);
-  matrix.setCursor(0, 0);
-  matrix.setTextColor(colorPallets[currentPalette][0]);
-  matrix.print(F("INIKO"));
-  matrix.show();
+void drawFirework(int x, int y) {
+  matrix.fillScreen(CYAN);
+  for (int i = 0; i < 7; i++) {
+    matrix.drawCircle(x, y, i, BLUE);
+  }
+}
+
+void scrollText() {
+  int16_t x = 0;
+  for (x = ledColumns / 2; x >= -45; x--) {
+    matrix.fillScreen(0);
+    matrix.setCursor(x, 0);
+    matrix.print(F("Hi, Kayla"));
+    matrix.show();
+    delay(10);
+  }
 }
 
 void drawCircles(int *spectralData) {
@@ -152,7 +166,6 @@ void drawCircles(int *spectralData) {
 
 void drawBars(int *spectralData) {
   matrix.fillScreen(0);
-
   for (int x = 0; x < ledColumns; x++) {
     for (int y = ledRows - 1; y >= ledRows - spectralData[x]; y--) {
       uint32_t pixelColor = colorPallets[currentPalette][3];
@@ -163,6 +176,9 @@ void drawBars(int *spectralData) {
       pixelColor =
           (y > ledRows - 3) ? colorPallets[currentPalette][0] : pixelColor;
       matrix.drawPixel(x + 1, y, pixelColor);
+      if (spectralData[x] == ledRows - 1 && x == 13) {
+        drawFirework(x, spectralData[x]);
+      }
     }
   }
   matrix.show();
