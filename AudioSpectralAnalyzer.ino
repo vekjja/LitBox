@@ -133,7 +133,7 @@ void spectralAnalyzer() {
 void drawFirework(int x, int y) {
   matrix.fillScreen(CYAN);
   for (int i = 0; i < 7; i++) {
-    matrix.drawCircle(x, y, i, BLUE);
+    matrix.drawCircle(x, y, i, MAGENTA);
   }
 }
 
