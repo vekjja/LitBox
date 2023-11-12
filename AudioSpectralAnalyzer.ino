@@ -73,29 +73,8 @@ void spectralAnalyzer() {
   FFT.Compute(vReal, vImage, audioSamples, FFT_FORWARD);
   FFT.ComplexToMagnitude(vReal, vImage, audioSamples);
 
-  int spectralData[ledColumns] = {0};
-  int sum = 0;
-  int sampleCount = 0;
-  int spectralIndex = 0;
-  int maxInput = 81;
-  int avgRange = (usableSamples / ledColumns);
+  int* spectralData = averageSamples();
 
-  // skip the first few samples
-  for (int i = 6; i < usableSamples; i++) {
-    // map data to fit our display
-    vReal[i] = map(vReal[i], 0, maxInput, 0, ledRows);
-    sum += vReal[i];
-    sampleCount++;
-    // average data for set of samples
-    if (i % avgRange == 0) {
-      int data = sum / sampleCount;
-      spectralData[spectralIndex++] = data;
-      sum = 0;
-      sampleCount = 0;
-    }
-  }
-
-  matrix.fillScreen(0);
   switch (visualization) {
     case 1:
       drawCircles(spectralData);
@@ -104,7 +83,31 @@ void spectralAnalyzer() {
       drawBars(spectralData);
       break;
   }
-  matrix.show();
+}
+
+int* averageSamples() {
+  int* spectralData = new int[ledColumns]{0};
+
+  int sum = 0;
+  int sampleCount = 0;
+  int spectralIndex = 0;
+  int maxInput = 81;
+  int avgRange = (usableSamples / ledColumns);
+
+  // Process the FFT data
+  for (int i = 6; i < usableSamples; i++) {
+    vReal[i] = map(vReal[i], 0, maxInput, 0, ledRows);
+    sum += vReal[i];
+    sampleCount++;
+    if (i % avgRange == 0) {
+      int data = sum / sampleCount;
+      spectralData[spectralIndex++] = data;
+      sum = 0;
+      sampleCount = 0;
+    }
+  }
+
+  return spectralData;  // Returning the pointer to the array
 }
 
 // void drawFirework(int x, int y) {
@@ -125,7 +128,7 @@ void spectralAnalyzer() {
 //   }
 // }
 
-void drawCircles(int *spectralData) {
+void drawCircles(int* spectralData) {
   matrix.fillScreen(0);
   for (int x = 0; x < ledColumns; x++) {
     int circleRadius = spectralData[x];
@@ -141,7 +144,7 @@ void drawCircles(int *spectralData) {
   matrix.show();
 }
 
-void drawBars(int *spectralData) {
+void drawBars(int* spectralData) {
   matrix.fillScreen(0);
   for (int x = 0; x < ledColumns; x++) {
     for (int y = 0; y < spectralData[x]; y++) {
