@@ -144,7 +144,7 @@ void drawCircles(int *spectralData) {
 void drawBars(int *spectralData) {
   matrix.fillScreen(0);
   for (int x = 0; x < ledColumns; x++) {
-    for (int y = 0; y <= spectralData[x]; y++) {
+    for (int y = 0; y < spectralData[x]; y++) {
       uint32_t pixelColor = colorPallets[currentPalette][3];
       pixelColor =
           (y > ledRows - 6) ? colorPallets[currentPalette][2] : pixelColor;
@@ -152,7 +152,7 @@ void drawBars(int *spectralData) {
           (y > ledRows - 7) ? colorPallets[currentPalette][1] : pixelColor;
       pixelColor =
           (y > ledRows - 3) ? colorPallets[currentPalette][0] : pixelColor;
-      matrix.drawPixel(x + 1, y, pixelColor);
+      matrix.drawPixel(x, y, pixelColor);
       // if (spectralData[x] == ledRows - 1 && x == 13) {
       //   drawFirework(x, spectralData[x]);
       // }
