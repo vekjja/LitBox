@@ -25,9 +25,9 @@ const int minBrightness = 1;
 const int maxBrightness = 255;
 const int colorPalletCount = 7;
 int brightness = 6;
-int currentPalette = 0;
+int currentPalette = 1;
 uint32_t colorPallets[colorPalletCount][4] = {
-    {GREEN, YELLOW, ORANGE, RED},       {BLUE, CYAN, CYAN, VIOLET},
+    {GREEN, YELLOW, ORANGE, RED},       {BLUE, CYAN, VIOLET, WHITE},
     {MAGENTA, MAGENTA, VIOLET, VIOLET}, {CORAL, SALMON, SALMON, ROSE},
     {ROSE, ROSE, ROSE, ROSE},           {GREEN, GREEN, GREEN, GREEN},
     {WHITE, WHITE, WHITE, WHITE},
@@ -40,7 +40,7 @@ const int minSensitivity = 1;
 const int maxSensitivity = 100;
 const uint16_t audioSamples = 128;
 const int usableSamples = (audioSamples / 2);
-bool scaling = false;
+bool scaling = true;
 double vReal[audioSamples];
 double vImage[audioSamples];
 int sensitivity = 6;
