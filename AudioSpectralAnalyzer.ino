@@ -40,6 +40,7 @@ const int minSensitivity = 1;
 const int maxSensitivity = 100;
 const uint16_t audioSamples = 128;
 const int usableSamples = (audioSamples / 2);
+bool scaling = false;
 double vReal[audioSamples];
 double vImage[audioSamples];
 int sensitivity = 6;
@@ -92,6 +93,8 @@ void peakDetection(int* peakData) {
   int avgRange = usableSamples / ledColumns;
 
   // Start from 1 instead of 0 to skip the first bin
+  // The first bin (bin 0) usually contains the DC component of the signal,
+  // which is often not useful for audio visualization.
   for (int i = 1; i < ledColumns; i++) {
     double peak = 0;
     for (int j = i * avgRange; j < (i + 1) * avgRange && j < usableSamples;
@@ -102,6 +105,16 @@ void peakDetection(int* peakData) {
     }
     // Map the peak value to a row on the LED matrix
     peakData[i - 1] = map(peak, 0, maxInput, 0, ledRows);
+  }
+  if (scaling) logarithmicScaling(peakData);
+}
+
+void logarithmicScaling(int* spectralData) {
+  for (int i = 0; i < ledColumns; i++) {
+    if (spectralData[i] > 0) {
+      // Apply logarithmic scaling
+      spectralData[i] = log10(spectralData[i]) * (ledRows / log10(maxInput));
+    }
   }
 }
 
