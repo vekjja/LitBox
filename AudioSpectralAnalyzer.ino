@@ -47,7 +47,7 @@ volatile int sensitivity = minSensitivity;
 
 // Visualization Config
 volatile int visualization = 0;
-int maxVisualization = 3;
+int maxVisualization = 2;
 
 ESPWiFi wifi = ESPWiFi("SpectralAnalyzer", "12345678");
 
@@ -57,7 +57,7 @@ void setup() {
   matrix.setTextWrap(false);
   matrix.setBrightness(brightness);
   initializeWebServer();
-  testMatrix();
+  // testMatrix();
 }
 
 void loop() {
@@ -75,8 +75,13 @@ void spectralAnalyzer() {
   FFT.Compute(vReal, vImage, audioSamples, FFT_FORWARD);
   FFT.ComplexToMagnitude(vReal, vImage, audioSamples);
 
-  int spectralData[ledColumns] = {};
-  int spectralIndex = 0, maxInput = 80;
+  int spectralData[ledColumns] = {0};
+  int sum = 0;
+  int sampleCount = 0;
+  int spectralIndex = 0;
+  int maxInput = 81;
+  int usableSamples = (audioSamples / 2);
+  int avgRange = (usableSamples / ledColumns);
 
   for (int i = 2; i < usableSamples; i++) {
     vReal[i] =
@@ -90,17 +95,10 @@ void spectralAnalyzer() {
     spectralIndex += 2;
   }
 
-  // if (spectralData[usableSamples - 4] >= 7) {
-  //   drawFirework();
-  // }
-
   matrix.fillScreen(0);
   switch (visualization) {
     case 1:
       drawCircles(spectralData);
-      break;
-    case 2:
-      scrollText();
       break;
     default:
       drawBars(spectralData);
@@ -155,9 +153,9 @@ void drawBars(int *spectralData) {
       pixelColor =
           (y > ledRows - 3) ? colorPallets[currentPalette][0] : pixelColor;
       matrix.drawPixel(x + 1, y, pixelColor);
-      if (spectralData[x] == ledRows - 1 && x == 13) {
-        drawFirework(x, spectralData[x]);
-      }
+      // if (spectralData[x] == ledRows - 1 && x == 13) {
+      //   drawFirework(x, spectralData[x]);
+      // }
     }
   }
   matrix.show();
@@ -171,37 +169,6 @@ void setSensitivity(int newSensitivity) {
 void setVisualization(int newMode) {
   visualization = constrain(newMode, 0, maxVisualization);
 }
-
-// void initButtonHandlers() {
-//   attachInterrupt(
-//       digitalPinToInterrupt(btn1.pin()), []() { btn1.isr(); }, CHANGE);
-//   // btn1.setVerbose(true);
-//   btn1.setSingleClickCallback([]() {
-//     if (btn2Pin.readD() == LOW) {
-//       Serial.println("Changing color pallet");
-//       currentPalette = (currentPalette + 1) % colorPalletCount;
-//     } else {
-//       Serial.println("Changing brightness");
-//       brightness = (brightness + brightnessStep > maxBrightness)
-//                        ? minBrightness
-//                        : brightness + brightnessStep;
-//       matrix.setBrightness(brightness);
-//     }
-//   });
-//   btn1.setDoubleClickCallback([]() { Serial.println("Double Click"); });
-//   btn1.setLongClickCallback([]() {
-//     if (btn2Pin.readD() == LOW) {
-//       Serial.println("Changing sensitivity");
-//       sensitivity = (sensitivity + sensitivityStep > maxSensitivity)
-//                         ? minSensitivity
-//                         : sensitivity + sensitivityStep;
-//     } else {
-//       Serial.println("Changing Visualizer");
-//       visualization =
-//           (visualization + 1 > maxVisualization) ? 0 : visualization + 1;
-//     }
-//   });
-// }
 
 void testMatrix() {
   Serial.println("Begin Testing LED Matrix");
