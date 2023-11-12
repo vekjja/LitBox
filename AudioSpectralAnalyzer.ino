@@ -37,7 +37,7 @@ uint32_t colorPallets[colorPalletCount][4] = {
 arduinoFFT FFT = arduinoFFT();
 const int minSensitivity = 1;
 const int maxSensitivity = 100;
-const uint16_t audioSamples = 32;
+const uint16_t audioSamples = 128;
 const int usableSamples = (audioSamples / 2);
 double vReal[audioSamples];
 double vImage[audioSamples];
@@ -80,16 +80,19 @@ void spectralAnalyzer() {
   int maxInput = 81;
   int avgRange = (usableSamples / ledColumns);
 
-  for (int i = 2; i < usableSamples; i++) {
-    vReal[i] =
-        constrain(vReal[i], 0, maxInput);  // set max value for input data
-
-    vReal[i] = map(vReal[i], 0, maxInput, 0,
-                   ledRows + 1);  // map data to fit our display
-
-    spectralData[spectralIndex] = vReal[i];
-    spectralData[spectralIndex + 1] = vReal[i];
-    spectralIndex += 2;
+  // skip the first few samples
+  for (int i = 6; i < usableSamples; i++) {
+    // map data to fit our display
+    vReal[i] = map(vReal[i], 0, maxInput, 0, ledRows);
+    sum += vReal[i];
+    sampleCount++;
+    // average data for set of samples
+    if (i % avgRange == 0) {
+      int data = sum / sampleCount;
+      spectralData[spectralIndex++] = data;
+      sum = 0;
+      sampleCount = 0;
+    }
   }
 
   matrix.fillScreen(0);
@@ -104,23 +107,23 @@ void spectralAnalyzer() {
   matrix.show();
 }
 
-void drawFirework(int x, int y) {
-  matrix.fillScreen(CYAN);
-  for (int i = 0; i < 7; i++) {
-    matrix.drawCircle(x, y, i, MAGENTA);
-  }
-}
+// void drawFirework(int x, int y) {
+//   matrix.fillScreen(CYAN);
+//   for (int i = 0; i < 7; i++) {
+//     matrix.drawCircle(x, y, i, MAGENTA);
+//   }
+// }
 
-void scrollText() {
-  int16_t x = 0;
-  for (x = ledColumns / 2; x >= -45; x--) {
-    matrix.fillScreen(0);
-    matrix.setCursor(x, 0);
-    matrix.print(F("Hi, Kayla"));
-    matrix.show();
-    delay(10);
-  }
-}
+// void scrollText() {
+//   int16_t x = 0;
+//   for (x = ledColumns / 2; x >= -45; x--) {
+//     matrix.fillScreen(0);
+//     matrix.setCursor(x, 0);
+//     matrix.print(F("Hi, Kayla"));
+//     matrix.show();
+//     delay(10);
+//   }
+// }
 
 void drawCircles(int *spectralData) {
   matrix.fillScreen(0);
