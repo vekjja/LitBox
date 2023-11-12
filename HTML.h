@@ -241,6 +241,9 @@ const char indexHTML[] PROGMEM = R"rawliteral(
             <button id="visMode0" class="button">Lines</button>
             <button id="visMode1" class="button">Circles</button>
             <br>
+            <br>
+            <button id="toggleScalingButton" class="button">Toggle Scaling</button>
+            <br>
         </div>
     </div>
     <div class="wifi-container">
@@ -286,11 +289,38 @@ const char indexHTML[] PROGMEM = R"rawliteral(
                     console.error('Error setting visualization mode:', error);
                 });
         }
+        function updateScalingButtonText(isScalingOn) {
+            toggleScalingButton.textContent = isScalingOn ? "Toggle Scaling Off" : "Toggle Scaling On";
+        }
+        
+        toggleScalingButton.addEventListener('click', function () {
+            fetch('/toggle/scaling', { method: 'GET' })
+                .then(response => response.text())
+                .then(data => {
+                    var isScalingOn = data.includes("ON");
+                    updateScalingButtonText(isScalingOn);
+                    console.log(data);
+                })
+                .catch(error => {
+                    console.error('Error toggling scaling:', error);
+                });
+        });
+
+        // Initial check for the current state of scaling
+        fetch('/get/scaling', { method: 'GET' })
+            .then(response => response.text())
+            .then(data => {
+                var isScalingOn = data.includes("ON");
+                updateScalingButtonText(isScalingOn);
+        })
+        .catch(error => {
+            console.error('Error fetching scaling state:', error);
+        });
+        
         document.getElementById('wifiSetup').addEventListener('click', function () {
             window.location.href = '/setup';
         });
-
-        document.getElementById('wifiErase').addEventListener('click', function () {
+            document.getElementById('wifiErase').addEventListener('click', function () {
             window.location.href = '/erase';
         });
     </script>

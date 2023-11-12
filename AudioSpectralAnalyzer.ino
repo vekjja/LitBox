@@ -290,5 +290,18 @@ void initializeWebServer() {
     }
   });
 
+  wifi.webserver()->on("/toggle/scaling", HTTP_GET, []() {
+    scaling = !scaling;  // Toggle the scaling state
+    wifi.webserver()->send(
+        200, "text/plain",
+        String("Scaling is now ") + (scaling ? "ON" : "OFF"));
+  });
+
+  wifi.webserver()->on("/get/scaling", HTTP_GET, []() {
+    wifi.webserver()->send(
+        200, "text/plain",
+        String("Scaling is currently ") + (scaling ? "ON" : "OFF"));
+  });
+
   wifi.APToClientMode();
 }
