@@ -24,8 +24,8 @@ Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(
 const int minBrightness = 1;
 const int maxBrightness = 255;
 const int colorPalletCount = 7;
+int brightness = 6;
 int currentPalette = 0;
-int brightness = minBrightness;
 uint32_t colorPallets[colorPalletCount][4] = {
     {GREEN, YELLOW, ORANGE, RED},       {BLUE, CYAN, CYAN, VIOLET},
     {MAGENTA, MAGENTA, VIOLET, VIOLET}, {CORAL, SALMON, SALMON, ROSE},
@@ -35,6 +35,7 @@ uint32_t colorPallets[colorPalletCount][4] = {
 
 // Audio Config
 arduinoFFT FFT = arduinoFFT();
+const int maxInput = 81;
 const int minSensitivity = 1;
 const int maxSensitivity = 100;
 const uint16_t audioSamples = 128;
@@ -73,7 +74,9 @@ void spectralAnalyzer() {
   FFT.Compute(vReal, vImage, audioSamples, FFT_FORWARD);
   FFT.ComplexToMagnitude(vReal, vImage, audioSamples);
 
-  int* spectralData = averageSamples();
+  int spectralData[ledColumns] = {0};
+  // averageSamples(spectralData);
+  peakDetection(spectralData);
 
   switch (visualization) {
     case 1:
@@ -85,13 +88,27 @@ void spectralAnalyzer() {
   }
 }
 
-int* averageSamples() {
-  int* spectralData = new int[ledColumns]{0};
+void peakDetection(int* peakData) {
+  int avgRange = usableSamples / ledColumns;
 
+  // Start from 1 instead of 0 to skip the first bin
+  for (int i = 1; i < ledColumns; i++) {
+    double peak = 0;
+    for (int j = i * avgRange; j < (i + 1) * avgRange && j < usableSamples;
+         j++) {
+      if (vReal[j] > peak) {
+        peak = vReal[j];
+      }
+    }
+    // Map the peak value to a row on the LED matrix
+    peakData[i - 1] = map(peak, 0, maxInput, 0, ledRows);
+  }
+}
+
+void averageSamples(int* spectralData) {
   int sum = 0;
   int sampleCount = 0;
   int spectralIndex = 0;
-  int maxInput = 81;
   int avgRange = (usableSamples / ledColumns);
 
   // Process the FFT data
@@ -106,8 +123,6 @@ int* averageSamples() {
       sampleCount = 0;
     }
   }
-
-  return spectralData;  // Returning the pointer to the array
 }
 
 // void drawFirework(int x, int y) {
@@ -148,13 +163,10 @@ void drawBars(int* spectralData) {
   matrix.fillScreen(0);
   for (int x = 0; x < ledColumns; x++) {
     for (int y = 0; y < spectralData[x]; y++) {
-      uint32_t pixelColor = colorPallets[currentPalette][3];
-      pixelColor =
-          (y > ledRows - 6) ? colorPallets[currentPalette][2] : pixelColor;
-      pixelColor =
-          (y > ledRows - 7) ? colorPallets[currentPalette][1] : pixelColor;
-      pixelColor =
-          (y > ledRows - 3) ? colorPallets[currentPalette][0] : pixelColor;
+      uint32_t pixelColor = colorPallets[currentPalette][0];
+      pixelColor = (y > 1) ? colorPallets[currentPalette][1] : pixelColor;
+      pixelColor = (y > 3) ? colorPallets[currentPalette][2] : pixelColor;
+      pixelColor = (y > 6) ? colorPallets[currentPalette][3] : pixelColor;
       matrix.drawPixel(x, y, pixelColor);
       // if (spectralData[x] == ledRows - 1 && x == 13) {
       //   drawFirework(x, spectralData[x]);
