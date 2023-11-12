@@ -1,41 +1,19 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_NeoMatrix.h>
 #include <Adafruit_NeoPixel.h>
-#include <ButtonManager.h>
+#include <ESPWiFi.h>
 #include <IOPin.h>
 #include <arduinoFFT.h>
 
-// Color definitions
-#define BLACK 0x0000
-#define BLUE 0x001F
-#define RED 0xF800
-#define GREEN 0x07E0
-#define CYAN 0x07FF
-#define MAGENTA 0xF81F
-#define YELLOW 0xFFE0
-#define WHITE 0xFFFF
-#define ORANGE 0xFD20
-#define TEAL 0x0410
-#define VIOLET 0xEC1D
-#define OLIVE 0x5345
-#define GOLD 0xFEA0
-#define SILVER 0xC618
-#define DARK_GREEN 0x0320
-#define FOREST_GREEN 0x2444
-#define CORAL 0xFBEA
-#define SALMON 0xFC0E
-#define ROSE 0xF8A6
-#define PEACH 0xFEA6
+#include "colors.h"
 
 // IOPins
-IOPin ledData(6);
-IOPin audio(A3, INPUT);
-IOPin btn1Pin(3, INPUT_PULLUP);
-IOPin btn2Pin(9, INPUT_PULLUP);
+IOPin ledData(12);
+IOPin audio(A0, INPUT);
 
 // LED Matrix Config
 int ledRows = 8;
-int ledColumns = 8;
+int ledColumns = 32;
 uint8_t matrixType =
     NEO_MATRIX_BOTTOM + NEO_MATRIX_RIGHT + NEO_MATRIX_ROWS + NEO_MATRIX_ZIGZAG;
 Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(
@@ -69,13 +47,9 @@ volatile int sensitivity = minSensitivity;
 volatile int visualization = 0;
 int maxVisualization = 2;
 
-// Button Config
-ButtonManager btn1(btn1Pin.pin());
-
 void setup() {
   matrix.begin();
   Serial.begin(115200);
-  initButtonHandlers();
   matrix.setBrightness(brightness);
   // testMatrix();
 }
@@ -157,36 +131,36 @@ void drawBars(int *spectralData) {
   matrix.show();
 }
 
-void initButtonHandlers() {
-  attachInterrupt(
-      digitalPinToInterrupt(btn1.pin()), []() { btn1.isr(); }, CHANGE);
-  // btn1.setVerbose(true);
-  btn1.setSingleClickCallback([]() {
-    if (btn2Pin.readD() == LOW) {
-      Serial.println("Changing color pallet");
-      currentPalette = (currentPalette + 1) % colorPalletCount;
-    } else {
-      Serial.println("Changing brightness");
-      brightness = (brightness + brightnessStep > maxBrightness)
-                       ? minBrightness
-                       : brightness + brightnessStep;
-      matrix.setBrightness(brightness);
-    }
-  });
-  btn1.setDoubleClickCallback([]() { Serial.println("Double Click"); });
-  btn1.setLongClickCallback([]() {
-    if (btn2Pin.readD() == LOW) {
-      Serial.println("Changing sensitivity");
-      sensitivity = (sensitivity + sensitivityStep > maxSensitivity)
-                        ? minSensitivity
-                        : sensitivity + sensitivityStep;
-    } else {
-      Serial.println("Changing Visualizer");
-      visualization =
-          (visualization + 1 > maxVisualization) ? 0 : visualization + 1;
-    }
-  });
-}
+// void initButtonHandlers() {
+//   attachInterrupt(
+//       digitalPinToInterrupt(btn1.pin()), []() { btn1.isr(); }, CHANGE);
+//   // btn1.setVerbose(true);
+//   btn1.setSingleClickCallback([]() {
+//     if (btn2Pin.readD() == LOW) {
+//       Serial.println("Changing color pallet");
+//       currentPalette = (currentPalette + 1) % colorPalletCount;
+//     } else {
+//       Serial.println("Changing brightness");
+//       brightness = (brightness + brightnessStep > maxBrightness)
+//                        ? minBrightness
+//                        : brightness + brightnessStep;
+//       matrix.setBrightness(brightness);
+//     }
+//   });
+//   btn1.setDoubleClickCallback([]() { Serial.println("Double Click"); });
+//   btn1.setLongClickCallback([]() {
+//     if (btn2Pin.readD() == LOW) {
+//       Serial.println("Changing sensitivity");
+//       sensitivity = (sensitivity + sensitivityStep > maxSensitivity)
+//                         ? minSensitivity
+//                         : sensitivity + sensitivityStep;
+//     } else {
+//       Serial.println("Changing Visualizer");
+//       visualization =
+//           (visualization + 1 > maxVisualization) ? 0 : visualization + 1;
+//     }
+//   });
+// }
 
 void testMatrix() {
   Serial.println("Begin Testing LED Matrix");
