@@ -21,12 +21,11 @@ Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(
     ledColumns, ledRows, ledData.pin(), matrixType, NEO_GRB + NEO_KHZ800);
 
 // Brightness and Color Config
-const int minBrightness = 3;
-const int brightnessStep = 81;
+const int minBrightness = 1;
 const int maxBrightness = 255;
 const int colorPalletCount = 7;
-volatile int currentPalette = 0;
-volatile int brightness = minBrightness;
+int currentPalette = 0;
+int brightness = minBrightness;
 uint32_t colorPallets[colorPalletCount][4] = {
     {GREEN, YELLOW, ORANGE, RED},       {BLUE, CYAN, CYAN, VIOLET},
     {MAGENTA, MAGENTA, VIOLET, VIOLET}, {CORAL, SALMON, SALMON, ROSE},
@@ -36,17 +35,16 @@ uint32_t colorPallets[colorPalletCount][4] = {
 
 // Audio Config
 arduinoFFT FFT = arduinoFFT();
-const int minSensitivity = 3;
+const int minSensitivity = 1;
 const int maxSensitivity = 100;
-const int sensitivityStep = 20;
 const uint16_t audioSamples = 32;
 const int usableSamples = (audioSamples / 2);
 double vReal[audioSamples];
 double vImage[audioSamples];
-volatile int sensitivity = minSensitivity;
+int sensitivity = 6;
 
 // Visualization Config
-volatile int visualization = 0;
+int visualization = 0;
 int maxVisualization = 2;
 
 ESPWiFi wifi = ESPWiFi("SpectralAnalyzer", "12345678");
@@ -80,7 +78,6 @@ void spectralAnalyzer() {
   int sampleCount = 0;
   int spectralIndex = 0;
   int maxInput = 81;
-  int usableSamples = (audioSamples / 2);
   int avgRange = (usableSamples / ledColumns);
 
   for (int i = 2; i < usableSamples; i++) {
