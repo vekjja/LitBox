@@ -5,6 +5,7 @@
 #include <IOPin.h>
 #include <arduinoFFT.h>
 
+#include "HTML.h"
 #include "colors.h"
 
 // IOPins
@@ -48,15 +49,21 @@ volatile int sensitivity = minSensitivity;
 volatile int visualization = 0;
 int maxVisualization = 3;
 
+ESPWiFi wifi = ESPWiFi("SpectralAnalyzer", "12345678");
+
 void setup() {
   matrix.begin();
   Serial.begin(115200);
   matrix.setTextWrap(false);
   matrix.setBrightness(brightness);
+  initializeWebServer();
   testMatrix();
 }
 
-void loop() { spectralAnalyzer(); }
+void loop() {
+  wifi.handleClient();
+  spectralAnalyzer();
+}
 
 void spectralAnalyzer() {
   for (int i = 0; i < audioSamples; i++) {
@@ -156,6 +163,15 @@ void drawBars(int *spectralData) {
   matrix.show();
 }
 
+void setSensitivity(int newSensitivity) {
+  constrain(newSensitivity, minSensitivity, maxSensitivity);
+  sensitivity = newSensitivity;
+}
+
+void setVisualization(int newMode) {
+  visualization = constrain(newMode, 0, maxVisualization);
+}
+
 // void initButtonHandlers() {
 //   attachInterrupt(
 //       digitalPinToInterrupt(btn1.pin()), []() { btn1.isr(); }, CHANGE);
@@ -247,4 +263,37 @@ void testMatrix() {
       delay(9);
     }
   }
+}
+
+void initializeWebServer() {
+  wifi.setConnectSubroutine([]() { testMatrix(); });
+  wifi.enableMDNS("spectral-analyzer");
+
+  wifi.webserver()->on("/", HTTP_GET, []() {
+    wifi.webserver()->send(200, "text/html", indexHTML);
+  });
+
+  wifi.webserver()->on("/set/sensitivity", HTTP_GET, []() {
+    if (wifi.webserver()->hasArg("value")) {
+      int newSensitivity = wifi.webserver()->arg("value").toInt();
+      setSensitivity(newSensitivity);
+      wifi.webserver()->send(200, "text/plain",
+                             "Sensitivity set to: " + String(sensitivity));
+    } else {
+      wifi.webserver()->send(400, "text/plain", "Missing sensitivity value");
+    }
+  });
+
+  wifi.webserver()->on("/set/visualization", HTTP_GET, []() {
+    if (wifi.webserver()->hasArg("mode")) {
+      int newMode = wifi.webserver()->arg("mode").toInt();
+      setVisualization(newMode);
+      wifi.webserver()->send(200, "text/plain",
+                             "Visualization set to: " + String(visualization));
+    } else {
+      wifi.webserver()->send(400, "text/plain", "Missing visualization mode");
+    }
+  });
+
+  wifi.APToClientMode();
 }
