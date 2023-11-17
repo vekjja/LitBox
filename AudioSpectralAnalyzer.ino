@@ -5,7 +5,6 @@
 #include <IOPin.h>
 #include <arduinoFFT.h>
 
-#include "HTML.h"
 #include "colors.h"
 
 // IOPins
@@ -57,7 +56,7 @@ void setup() {
   matrix.setTextWrap(false);
   matrix.setBrightness(brightness);
   initializeWebServer();
-  // testMatrix();
+  testMatrix();
 }
 
 void loop() {
@@ -76,7 +75,6 @@ void spectralAnalyzer() {
   FFT.ComplexToMagnitude(vReal, vImage, audioSamples);
 
   int spectralData[ledColumns] = {0};
-  // averageSamples(spectralData);
   peakDetection(spectralData);
 
   switch (visualization) {
@@ -114,26 +112,6 @@ void logarithmicScaling(int* spectralData) {
     if (spectralData[i] > 0) {
       // Apply logarithmic scaling
       spectralData[i] = log10(spectralData[i]) * (ledRows / log10(maxInput));
-    }
-  }
-}
-
-void averageSamples(int* spectralData) {
-  int sum = 0;
-  int sampleCount = 0;
-  int spectralIndex = 0;
-  int avgRange = (usableSamples / ledColumns);
-
-  // Process the FFT data
-  for (int i = 6; i < usableSamples; i++) {
-    vReal[i] = map(vReal[i], 0, maxInput, 0, ledRows);
-    sum += vReal[i];
-    sampleCount++;
-    if (i % avgRange == 0) {
-      int data = sum / sampleCount;
-      spectralData[spectralIndex++] = data;
-      sum = 0;
-      sampleCount = 0;
     }
   }
 }
@@ -186,6 +164,12 @@ void drawBars(int* spectralData) {
       // }
     }
   }
+  matrix.show();
+}
+
+void setBrightness(int newBrightness) {
+  brightness = constrain(newBrightness, minBrightness, maxBrightness);
+  matrix.setBrightness(brightness);
   matrix.show();
 }
 
@@ -264,10 +248,6 @@ void initializeWebServer() {
   wifi.setConnectSubroutine([]() { testMatrix(); });
   wifi.enableMDNS("spectral-analyzer");
 
-  wifi.webserver()->on("/", HTTP_GET, []() {
-    wifi.webserver()->send(200, "text/html", indexHTML);
-  });
-
   wifi.webserver()->on("/set/sensitivity", HTTP_GET, []() {
     if (wifi.webserver()->hasArg("value")) {
       int newSensitivity = wifi.webserver()->arg("value").toInt();
@@ -276,6 +256,17 @@ void initializeWebServer() {
                              "Sensitivity set to: " + String(sensitivity));
     } else {
       wifi.webserver()->send(400, "text/plain", "Missing sensitivity value");
+    }
+  });
+
+  wifi.webserver()->on("/set/brightness", HTTP_GET, []() {
+    if (wifi.webserver()->hasArg("value")) {
+      int newBrightness = wifi.webserver()->arg("value").toInt();
+      setBrightness(newBrightness);
+      wifi.webserver()->send(200, "text/plain",
+                             "Brightness set to: " + String(brightness));
+    } else {
+      wifi.webserver()->send(400, "text/plain", "Missing brightness value");
     }
   });
 
@@ -303,5 +294,5 @@ void initializeWebServer() {
         String("Scaling is currently ") + (scaling ? "ON" : "OFF"));
   });
 
-  wifi.APToClientMode();
+  wifi.startAsAccessPoint();
 }
