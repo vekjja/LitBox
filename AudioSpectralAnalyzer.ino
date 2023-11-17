@@ -245,9 +245,6 @@ void testMatrix() {
 }
 
 void initializeWebServer() {
-  wifi.setConnectSubroutine([]() { testMatrix(); });
-  wifi.enableMDNS("spectral-analyzer");
-
   wifi.webserver()->on("/set/sensitivity", HTTP_GET, []() {
     if (wifi.webserver()->hasArg("value")) {
       int newSensitivity = wifi.webserver()->arg("value").toInt();
@@ -294,5 +291,7 @@ void initializeWebServer() {
         String("Scaling is currently ") + (scaling ? "ON" : "OFF"));
   });
 
-  wifi.startAsAccessPoint();
+  wifi.setConnectSubroutine([]() { testMatrix(); });
+  wifi.enableMDNS("spectral-analyzer");
+  wifi.Start();
 }
