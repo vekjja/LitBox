@@ -3,7 +3,7 @@ function showPopup(slider, popup, value) {
     var popupRect = popup.getBoundingClientRect();
     var thumbPosition = (slider.value / slider.max) * slider.offsetWidth;
     popup.style.left = (sliderRect.left + thumbPosition - popupRect.width / 2) + 'px';
-    popup.style.top = (sliderRect.top - popupRect.height - 10) + 'px';
+    popup.style.top = (sliderRect.top - popupRect.height - 30) + 'px';
     popup.textContent = value;
     popup.style.display = 'block';
 }
