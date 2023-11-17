@@ -92,16 +92,29 @@
         input[type=range]:focus {
             outline: none; /* Removes the outline on focus */
         }
+
+        /* Additional styles for the popup */
+        .slider-popup {
+            position: absolute;
+            background-color: #555;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: none;
+            font-size: 12px;
+        }
     </style>
     </head>
     <body>
         <div class="container">
             <div class="header">Spectral Analyzer Controls</div>
             <div class="button-container">
+                <div class="slider-popup" id="sensitivityPopup">5</div>
                 Sensitivity: <span id="sensitivityValue">5</span>
                 <input type="range" id="sensitivityRange" min="1" max="100"
                     value="5">
                 <br>
+                <div class="slider-popup" id="brightnessPopup">6</div>
                 Brightness: <span id="brightnessValue">6</span>
                 <input type="range" id="brightnessRange" min="1" max="255"
                     value="6">
@@ -116,10 +129,26 @@
         </div>
 
         <script>
+        function showPopup(slider, popup, value) {
+            var sliderRect = slider.getBoundingClientRect();
+            var popupRect = popup.getBoundingClientRect();
+            var thumbPosition = (slider.value / slider.max) * slider.offsetWidth;
+            popup.style.left = (sliderRect.left + thumbPosition - popupRect.width / 2) + 'px';
+            popup.style.top = (sliderRect.top - popupRect.height - 10) + 'px';
+            popup.textContent = value;
+            popup.style.display = 'block';
+        }
         var sensitivityRange = document.getElementById('sensitivityRange');
         var sensitivityValue = document.getElementById('sensitivityValue');
+        var sensitivityPopup = document.getElementById('sensitivityPopup');
+
+        sensitivityRange.addEventListener('input', function () {
+            showPopup(sensitivityRange, sensitivityPopup, sensitivityRange.value);
+            sensitivityValue.textContent = sensitivityRange.value;
+        });
 
         sensitivityRange.addEventListener('change', function () {
+            sensitivityPopup.style.display = 'none';
             sensitivityValue.textContent = sensitivityRange.value;
             fetch('/set/sensitivity?value=' + sensitivityRange.value, { method: 'GET' })
                 .then(response => response.text())
@@ -133,6 +162,12 @@
 
         var brightnessRange = document.getElementById('brightnessRange');
         var brightnessValue = document.getElementById('brightnessValue');
+        var brightnessPopup = document.getElementById('brightnessPopup');
+
+        brightnessRange.addEventListener('input', function () {
+            showPopup(brightnessRange, brightnessPopup, brightnessRange.value);
+            brightnessValue.textContent = brightnessRange.value;
+        });
         
         brightnessRange.addEventListener('change', function () {
             brightnessValue.textContent = brightnessRange.value;
