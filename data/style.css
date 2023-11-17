@@ -1,0 +1,112 @@
+body {
+    background-color: #111;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    color: #fff;
+}
+
+.container,
+.wifi-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    height: 100vh;
+}
+
+.header {
+    font-size: 36px;
+    margin-bottom: 20px;
+}
+
+.button-container,
+.wifi-container {
+    background-color: #111;
+    padding: 20px;
+    border-radius: 30px;
+    margin: 20px;
+    transition: box-shadow 0.3s ease;
+}
+
+.button,
+.wifi-button {
+    background-color: #444;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    font-size: 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    margin: 4px 2px;
+}
+
+.wifi-button {
+    padding: 10px 20px;
+    font-size: 14px;
+    border-radius: 8px;
+}
+
+.button:hover,
+.wifi-button:hover {
+    background-color: #555;
+}
+
+/* Slider styles */
+input[type=range] {
+    /* CSS variable for thumb content */
+    --thumb-content: '';
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    margin: 10px 0;
+    background: transparent;
+    cursor: pointer;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+    background: #c948f8;
+    height: 8px;
+    border-radius: 4px;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    background: #444;
+    border: none;
+    height: 30px;
+    width: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-top: -11px;
+    font-size: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
+input[type=range]:focus {
+    outline: none;
+}
+
+/* Popup styling */
+.slider-popup {
+    position: absolute;
+    background-color: #555;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 50%;
+    display: none;
+    font-size: 12px;
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    line-height: 40px;
+}

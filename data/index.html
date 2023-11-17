@@ -4,115 +4,16 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Spectral Analyzer Controls</title>
-        <style>
-        body {
-            background-color: #111;
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 0;
-            color: #fff;
-        }
-
-        .container, .wifi-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .container {
-            height: 100vh;
-        }
-
-        .header {
-            font-size: 36px;
-            margin-bottom: 20px;
-        }
-
-        .button-container, .wifi-container {
-            background-color: #111;
-            padding: 20px;
-            border-radius: 30px;
-            margin: 20px;
-            transition: box-shadow 0.3s ease;
-        }
-
-        .button, .wifi-button {
-            background-color: #444;
-            border: none;
-            color: white;
-            padding: 15px 32px;
-            font-size: 16px;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-            margin: 4px 2px;
-        }
-
-        .wifi-button {
-            padding: 10px 20px;
-            font-size: 14px;
-            border-radius: 8px;
-        }
-
-        .button:hover, .wifi-button:hover {
-            background-color: #555;
-        }
-
-        /* Slider styles */
-        input[type=range] {
-            -webkit-appearance: none; /* Removes default styling in WebKit browsers */
-            appearance: none;
-            width: 100%;
-            margin: 10px 0;
-            background: transparent;
-            cursor: pointer;
-        }
-
-        input[type=range]::-webkit-slider-runnable-track {
-            background: #c948f8;
-            height: 8px;
-            border-radius: 4px;
-        }
-
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            background: #ffffff;
-            border: 1px solid #000000;
-            height: 20px;
-            width: 20px;
-            border-radius: 50%;
-            cursor: pointer;
-            /* Adjust the margin to align thumb properly */
-            margin-top: -6px;
-        }
-
-        input[type=range]:focus {
-            outline: none; /* Removes the outline on focus */
-        }
-
-        /* Additional styles for the popup */
-        .slider-popup {
-            position: absolute;
-            background-color: #555;
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            display: none;
-            font-size: 12px;
-        }
-    </style>
+        <link rel="stylesheet" href="style.css">
     </head>
     <body>
         <div class="container">
             <div class="header">Spectral Analyzer Controls</div>
             <div class="button-container">
                 <div class="slider-popup" id="sensitivityPopup">5</div>
-                Sensitivity: <span id="sensitivityValue">5</span>
+                Sensitivity: <span id="sensitivityValue">6</span>
                 <input type="range" id="sensitivityRange" min="1" max="100"
-                    value="5">
+                    value="6">
                 <br>
                 <div class="slider-popup" id="brightnessPopup">6</div>
                 Brightness: <span id="brightnessValue">6</span>
@@ -128,84 +29,6 @@
             <button id="wifiErase" class="wifi-button">WiFi Erase</button>
         </div>
 
-        <script>
-        function showPopup(slider, popup, value) {
-            var sliderRect = slider.getBoundingClientRect();
-            var popupRect = popup.getBoundingClientRect();
-            var thumbPosition = (slider.value / slider.max) * slider.offsetWidth;
-            popup.style.left = (sliderRect.left + thumbPosition - popupRect.width / 2) + 'px';
-            popup.style.top = (sliderRect.top - popupRect.height - 10) + 'px';
-            popup.textContent = value;
-            popup.style.display = 'block';
-        }
-        var sensitivityRange = document.getElementById('sensitivityRange');
-        var sensitivityValue = document.getElementById('sensitivityValue');
-        var sensitivityPopup = document.getElementById('sensitivityPopup');
-
-        sensitivityRange.addEventListener('input', function () {
-            showPopup(sensitivityRange, sensitivityPopup, sensitivityRange.value);
-            sensitivityValue.textContent = sensitivityRange.value;
-        });
-
-        sensitivityRange.addEventListener('change', function () {
-            sensitivityPopup.style.display = 'none';
-            sensitivityValue.textContent = sensitivityRange.value;
-            fetch('/set/sensitivity?value=' + sensitivityRange.value, { method: 'GET' })
-                .then(response => response.text())
-                .then(data => {
-                    console.log(data);
-                })
-                .catch(error => {
-                    console.error('Error setting sensitivity:', error);
-                });
-        });
-
-        var brightnessRange = document.getElementById('brightnessRange');
-        var brightnessValue = document.getElementById('brightnessValue');
-        var brightnessPopup = document.getElementById('brightnessPopup');
-
-        brightnessRange.addEventListener('input', function () {
-            showPopup(brightnessRange, brightnessPopup, brightnessRange.value);
-            brightnessValue.textContent = brightnessRange.value;
-        });
-        
-        brightnessRange.addEventListener('change', function () {
-            brightnessValue.textContent = brightnessRange.value;
-            fetch('/set/brightness?value=' + brightnessRange.value, { method: 'GET' })
-                .then(response => response.text())
-                .then(data => {
-                    console.log(data);
-                })
-                .catch(error => {
-                    console.error('Error setting brightness:', error);
-                });
-        });
-
-        document.getElementById('visMode0').addEventListener('click', function () {
-          setVisualization(0);
-        });
-        document.getElementById('visMode1').addEventListener('click', function () {
-            setVisualization(1);
-        });
-    
-        function setVisualization(mode) {
-            fetch('/set/visualization?mode=' + mode, { method: 'GET' })
-                .then(response => response.text())
-                .then(data => {
-                    console.log(data);
-                })
-                .catch(error => {
-                    console.error('Error setting visualization mode:', error);
-                });
-        }
-        document.getElementById('wifiSetup').addEventListener('click', function () {
-            window.location.href = '/setup';
-        });
-
-        document.getElementById('wifiErase').addEventListener('click', function () {
-            window.location.href = '/erase';
-        });
-    </script>
+        <script src="script.js"></script>
     </body>
-
 </html>
