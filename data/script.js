@@ -1,3 +1,29 @@
+function fetchInitialSettings() {
+    fetch('/sensitivity', { method: 'GET' })
+        .then(response => response.text())
+        .then(data => {
+            sensitivityRange.value = data;
+            sensitivityValue.textContent = data;
+            showPopup(sensitivityRange, sensitivityPopup, data);
+        })
+        .catch(error => {
+            console.error('Error fetching initial sensitivity:', error);
+        });
+
+    fetch('/brightness', { method: 'GET' })
+        .then(response => response.text())
+        .then(data => {
+            brightnessRange.value = data;
+            brightnessValue.textContent = data;
+            showPopup(brightnessRange, brightnessPopup, data);
+        })
+        .catch(error => {
+            console.error('Error fetching initial brightness:', error);
+        });
+}
+
+window.onload = fetchInitialSettings;
+
 function showPopup(slider, popup, value) {
     var sliderRect = slider.getBoundingClientRect();
     var popupRect = popup.getBoundingClientRect();
@@ -19,8 +45,9 @@ sensitivityRange.addEventListener('input', function () {
 
 sensitivityRange.addEventListener('change', function () {
     sensitivityPopup.style.display = 'none';
-    sensitivityValue.textContent = sensitivityRange.value;
-    fetch('/set/sensitivity?value=' + sensitivityRange.value, { method: 'GET' })
+    var formData = new FormData();
+    formData.append('value', sensitivityRange.value);
+    fetch('/sensitivity', { method: 'POST', body: formData })
         .then(response => response.text())
         .then(data => {
             console.log(data);
@@ -41,8 +68,9 @@ brightnessRange.addEventListener('input', function () {
 
 brightnessRange.addEventListener('change', function () {
     brightnessPopup.style.display = 'none';
-    brightnessValue.textContent = brightnessRange.value;
-    fetch('/set/brightness?value=' + brightnessRange.value, { method: 'GET' })
+    var formData = new FormData();
+    formData.append('value', brightnessRange.value);
+    fetch('/brightness', { method: 'POST', body: formData })
         .then(response => response.text())
         .then(data => {
             console.log(data);
@@ -60,7 +88,7 @@ visualizationSelect.addEventListener('change', function () {
 });
 
 function setVisualization(mode) {
-    fetch('/set/visualization?mode=' + mode, { method: 'GET' })
+    fetch('/visualization?mode=' + mode, { method: 'GET' })
         .then(response => response.text())
         .then(data => {
             console.log(data);

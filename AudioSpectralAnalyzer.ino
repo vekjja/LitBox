@@ -248,29 +248,35 @@ void testMatrix() {
 }
 
 void initializeWebServer() {
-  wifi.webserver()->on("/set/sensitivity", HTTP_GET, []() {
+  // Sensitivity endpoint
+  wifi.webserver()->on("/sensitivity", HTTP_GET, []() {
+    wifi.webserver()->send(200, "text/plain", String(sensitivity));
+  });
+  wifi.webserver()->on("/sensitivity", HTTP_POST, []() {
     if (wifi.webserver()->hasArg("value")) {
       int newSensitivity = wifi.webserver()->arg("value").toInt();
       setSensitivity(newSensitivity);
-      wifi.webserver()->send(200, "text/plain",
-                             "Sensitivity set to: " + String(sensitivity));
+      wifi.webserver()->send(200, "text/plain", "Sensitivity updated");
     } else {
       wifi.webserver()->send(400, "text/plain", "Missing sensitivity value");
     }
   });
 
-  wifi.webserver()->on("/set/brightness", HTTP_GET, []() {
+  // Brightness endpoint
+  wifi.webserver()->on("/brightness", HTTP_GET, []() {
+    wifi.webserver()->send(200, "text/plain", String(brightness));
+  });
+  wifi.webserver()->on("/brightness", HTTP_POST, []() {
     if (wifi.webserver()->hasArg("value")) {
       int newBrightness = wifi.webserver()->arg("value").toInt();
       setBrightness(newBrightness);
-      wifi.webserver()->send(200, "text/plain",
-                             "Brightness set to: " + String(brightness));
+      wifi.webserver()->send(200, "text/plain", "Brightness updated");
     } else {
       wifi.webserver()->send(400, "text/plain", "Missing brightness value");
     }
   });
 
-  wifi.webserver()->on("/set/visualization", HTTP_GET, []() {
+  wifi.webserver()->on("/visualization", HTTP_GET, []() {
     if (wifi.webserver()->hasArg("mode")) {
       int newMode = wifi.webserver()->arg("mode").toInt();
       setVisualization(newMode);
@@ -279,19 +285,6 @@ void initializeWebServer() {
     } else {
       wifi.webserver()->send(400, "text/plain", "Missing visualization mode");
     }
-  });
-
-  wifi.webserver()->on("/toggle/scaling", HTTP_GET, []() {
-    scaling = !scaling;  // Toggle the scaling state
-    wifi.webserver()->send(
-        200, "text/plain",
-        String("Scaling is now ") + (scaling ? "ON" : "OFF"));
-  });
-
-  wifi.webserver()->on("/get/scaling", HTTP_GET, []() {
-    wifi.webserver()->send(
-        200, "text/plain",
-        String("Scaling is currently ") + (scaling ? "ON" : "OFF"));
   });
 
   // wifi.setConnectSubroutine([]() { testMatrix(); });
