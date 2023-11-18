@@ -14,14 +14,18 @@
                 Sensitivity: <span id="sensitivityValue">6</span>
                 <input type="range" id="sensitivityRange" min="1" max="100"
                     value="6">
-                <br>
+                <br><br><br>
                 <div class="slider-popup" id="brightnessPopup">6</div>
                 Brightness: <span id="brightnessValue">6</span>
                 <input type="range" id="brightnessRange" min="1" max="255"
                     value="6">
-                <br>
-                <button id="visMode0" class="button">Lines</button>
-                <button id="visMode1" class="button">Circles</button>
+            </div>
+            <div class="visualizations-container">
+                <label for="visualizationSelect">Visualization:</label>
+                <select id="visualizationSelect" class="dropdown">
+                    <option value="0">Lines</option>
+                    <option value="1">Circles</option>
+                </select>
             </div>
         </div>
         <div class="wifi-container">

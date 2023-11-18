@@ -54,9 +54,10 @@ void setup() {
   matrix.begin();
   Serial.begin(115200);
   matrix.setTextWrap(false);
+  ledData.setPinMode(OUTPUT);
   matrix.setBrightness(brightness);
-  initializeWebServer();
   testMatrix();
+  initializeWebServer();
 }
 
 void loop() {
@@ -145,7 +146,9 @@ void drawCircles(int* spectralData) {
         (circleRadius > 3) ? colorPallets[currentPalette][2] : circleColor;
     circleColor =
         (circleRadius > 5) ? colorPallets[currentPalette][3] : circleColor;
-    matrix.drawCircle(x, 4, circleRadius, circleColor);
+    if (circleRadius > 0) {
+      matrix.drawCircle(x, 4, circleRadius, circleColor);
+    }
   }
   matrix.show();
 }
@@ -291,7 +294,7 @@ void initializeWebServer() {
         String("Scaling is currently ") + (scaling ? "ON" : "OFF"));
   });
 
-  wifi.setConnectSubroutine([]() { testMatrix(); });
+  // wifi.setConnectSubroutine([]() { testMatrix(); });
   wifi.enableMDNS("spectral-analyzer");
   wifi.Start();
 }

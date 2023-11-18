@@ -52,11 +52,11 @@ brightnessRange.addEventListener('change', function () {
         });
 });
 
-document.getElementById('visMode0').addEventListener('click', function () {
-    setVisualization(0);
-});
-document.getElementById('visMode1').addEventListener('click', function () {
-    setVisualization(1);
+var visualizationSelect = document.getElementById('visualizationSelect');
+
+visualizationSelect.addEventListener('change', function () {
+    var selectedValue = visualizationSelect.value;
+    setVisualization(selectedValue);
 });
 
 function setVisualization(mode) {
