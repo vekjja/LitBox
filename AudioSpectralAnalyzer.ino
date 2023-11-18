@@ -193,6 +193,19 @@ void setVisualization(int newMode) {
   visualization = constrain(newMode, 0, maxVisualization);
 }
 
+void scrollText(String text) {
+  matrix.fillScreen(0);
+  int startX = matrix.width();
+  int len = text.length() * 6;  // 6 is an approx width of a character
+  for (int x = startX; x > -len; x--) {
+    matrix.fillScreen(0);
+    matrix.setCursor(x, 0);
+    matrix.print(text);
+    matrix.show();
+    delay(100);  // adjust for scrolling speed
+  }
+}
+
 void testMatrix() {
   Serial.println("Begin Testing LED Matrix");
   int testDelay = 1000;
@@ -275,6 +288,16 @@ void initializeWebServer() {
                              "Visualization set to: " + String(visualization));
     } else {
       wifi.webserver()->send(400, "text/plain", "Missing visualization mode");
+    }
+  });
+
+  wifi.webserver()->on("/scrollText", HTTP_POST, []() {
+    if (wifi.webserver()->hasArg("text")) {
+      String text = wifi.webserver()->arg("text");
+      scrollText(text);  // Implement this function to scroll text
+      wifi.webserver()->send(200, "text/plain", "Text updated");
+    } else {
+      wifi.webserver()->send(400, "text/plain", "Missing text");
     }
   });
 

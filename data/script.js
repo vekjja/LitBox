@@ -98,6 +98,21 @@ function setVisualization(mode) {
         });
 }
 
+document.getElementById('sendText').addEventListener('click', function () {
+    var text = document.getElementById('customText').value;
+    fetch('/scrollText', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'text=' + encodeURIComponent(text)
+    })
+    .then(response => response.text())
+    .then(data => console.log(data))
+    .catch(error => console.error('Error:', error));
+});
+
+
 document.getElementById('wifiSetup').addEventListener('click', function () {
     window.location.href = '/setup';
 });
@@ -105,3 +120,5 @@ document.getElementById('wifiSetup').addEventListener('click', function () {
 document.getElementById('wifiErase').addEventListener('click', function () {
     window.location.href = '/erase';
 });
+
+
