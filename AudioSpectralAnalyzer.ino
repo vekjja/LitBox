@@ -47,7 +47,15 @@ int sensitivity = 6;
 // Visualization Config
 int visualization = 0;
 int maxVisualization = 2;
+struct Pixel {
+  int x;
+  int y;
+  byte intensity;
+};
+const int numPixels = 5;
+Pixel pixels[numPixels];
 
+// Web Server Config
 ESPWiFi wifi = ESPWiFi("SpectralAnalyzer", "12345678");
 
 void setup() {
@@ -218,23 +226,6 @@ void testMatrix() {
   matrix.show();
   delay(testDelay);
 
-  Serial.println("Drawing middle rectangle animation");
-  matrix.fillScreen(0);
-  matrix.drawPixel(3, 4, pixelColor);
-  matrix.drawPixel(3, 3, pixelColor);
-  matrix.drawPixel(4, 4, pixelColor);
-  matrix.drawPixel(4, 3, pixelColor);
-  matrix.show();
-  delay(testDelay);
-
-  matrix.fillScreen(0);
-  matrix.drawPixel(3, 4, pixelColor);
-  matrix.drawPixel(2, 3, pixelColor);
-  matrix.drawPixel(5, 4, pixelColor);
-  matrix.drawPixel(4, 3, pixelColor);
-  matrix.show();
-  delay(testDelay);
-
   // loop through each pixel from bottom left to top right
   Serial.println("Looping through each pixel from bottom left to top right");
   for (int x = 0; x < ledColumns; x++) {
@@ -242,7 +233,7 @@ void testMatrix() {
       matrix.fillScreen(0);
       matrix.drawPixel(x, y, pixelColor);
       matrix.show();
-      delay(9);
+      delay(1);
     }
   }
 }
@@ -287,7 +278,7 @@ void initializeWebServer() {
     }
   });
 
-  // wifi.setConnectSubroutine([]() { testMatrix(); });
+  wifi.setConnectSubroutine([]() { testMatrix(); });
   wifi.enableMDNS("spectral-analyzer");
   wifi.Start();
 }

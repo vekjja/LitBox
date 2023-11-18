@@ -2,9 +2,10 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Spectral Analyzer Controls</title>
         <link rel="stylesheet" href="style.css">
+        <title>Spectral Analyzer Controls</title>
+        <link rel="icon" href="favicon.ico" type="image/x-icon">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
     <body>
         <div class="container">
@@ -19,10 +20,11 @@
                 <input type="range" id="brightnessRange" min="1" max="255">
             </div>
             <div class="visualizations-container">
-                <label for="visualizationSelect">Visualization:</label>
+                <div class="header2">Visualization</div>
                 <select id="visualizationSelect" class="dropdown">
                     <option value="0">Lines</option>
                     <option value="1">Circles</option>
+                    <option value="2">Fire</option>
                 </select>
             </div>
         </div>
