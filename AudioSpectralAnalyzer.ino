@@ -14,8 +14,8 @@ IOPin audio(A0, INPUT);
 // LED Matrix Config
 int ledRows = 8;
 int ledColumns = 32;
-uint8_t matrixType = NEO_MATRIX_BOTTOM + NEO_MATRIX_LEFT + NEO_MATRIX_COLUMNS +
-                     NEO_MATRIX_ZIGZAG;
+uint8_t matrixType =
+    NEO_MATRIX_TOP + NEO_MATRIX_LEFT + NEO_MATRIX_COLUMNS + NEO_MATRIX_ZIGZAG;
 Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(
     ledColumns, ledRows, ledData.pin(), matrixType, NEO_GRB + NEO_KHZ800);
 
@@ -132,17 +132,6 @@ void logarithmicScaling(int* spectralData) {
 //   }
 // }
 
-// void scrollText() {
-//   int16_t x = 0;
-//   for (x = ledColumns / 2; x >= -45; x--) {
-//     matrix.fillScreen(0);
-//     matrix.setCursor(x, 0);
-//     matrix.print(F("Hi, Kayla"));
-//     matrix.show();
-//     delay(10);
-//   }
-// }
-
 void drawCircles(int* spectralData) {
   matrix.fillScreen(0);
   for (int x = 0; x < ledColumns; x++) {
@@ -169,7 +158,7 @@ void drawBars(int* spectralData) {
       pixelColor = (y > 1) ? colorPallets[currentPalette][1] : pixelColor;
       pixelColor = (y > 3) ? colorPallets[currentPalette][2] : pixelColor;
       pixelColor = (y > 6) ? colorPallets[currentPalette][3] : pixelColor;
-      matrix.drawPixel(x, y, pixelColor);
+      matrix.drawPixel(x, ledRows - 1 - y, pixelColor);
       // if (spectralData[x] == ledRows - 1 && x == 13) {
       //   drawFirework(x, spectralData[x]);
       // }
