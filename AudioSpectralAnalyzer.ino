@@ -217,7 +217,7 @@ void updateFlock() {
   const float SEPARATION_THRESHOLD = 1;
   const int edgeBuffer = 1;  // Distance from edge to start avoiding
   const float randomVelocityChangeFactor = 1;  // Max random change in velocity
-  const int randomChangeChance = 9;  // Chance of random change (in percentage)
+  const int randomChangeChance = 3;  // Chance of random change (in percentage)
 
   for (int i = 0; i < NUM_BIRDS; i++) {
     float avgVx = 0;
