@@ -202,23 +202,22 @@ void hatchBirds() {
     birds[i].pixel.x = random(0, ledColumns);
     birds[i].pixel.y = random(0, ledRows);
     birds[i].pixel.intensity = random(100, 255);  // Random intensity
-    birds[i].vx = random(3, 9);                   // Random velocity X
-    birds[i].vy = random(3, 9);                   // Random velocity Y
+    birds[i].vx = random(0, 3);                   // Random velocity X
+    birds[i].vy = random(0, 3);                   // Random velocity Y
     birds[i].color = birdColor;  // Function to generate a random color
   }
 }
 
 void updateFlock() {
   const float ALIGNMENT_FACTOR = 0.1;
-  const float ALIGNMENT_THRESHOLD = 30;
+  const float ALIGNMENT_THRESHOLD = 90;
   const float COHESION_FACTOR = 45;
-  const float MAX_VELOCITY = 3;
-  const float MIN_VELOCITY = 1;
+  const float MAX_VELOCITY = 2;
+  const float MIN_VELOCITY = 0;
   const float SEPARATION_THRESHOLD = 1;
   const int edgeBuffer = 1;  // Distance from edge to start avoiding
-  const float randomVelocityChangeFactor =
-      0.5;                           // Max random change in velocity
-  const int randomChangeChance = 5;  // Chance of random change (in percentage)
+  const float randomVelocityChangeFactor = 1;  // Max random change in velocity
+  const int randomChangeChance = 15;  // Chance of random change (in percentage)
 
   for (int i = 0; i < NUM_BIRDS; i++) {
     float avgVx = 0;
@@ -259,6 +258,13 @@ void updateFlock() {
       birds[i].vy -= 1;  // Steer up
     }
 
+    // Edge Collision Avoidance for Left and Right Edges
+    if (birds[i].pixel.x <= edgeBuffer) {
+      birds[i].vx += 1;  // Steer right
+    } else if (birds[i].pixel.x >= ledColumns - edgeBuffer - 1) {
+      birds[i].vx -= 1;  // Steer left
+    }
+
     // Random Velocity Change
     if (random(100) < randomChangeChance) {
       birds[i].vx +=
@@ -277,16 +283,20 @@ void updateFlock() {
       birds[i].vy = (birds[i].vy / speed) * MIN_VELOCITY;
     }
 
-    // Update position and wrap around horizontally
-    birds[i].pixel.x =
-        (birds[i].pixel.x + birds[i].vx + ledColumns) % ledColumns;
-
     // Update position with vertical boundary check
     birds[i].pixel.y += birds[i].vy;
     if (birds[i].pixel.y < 0) {
       birds[i].pixel.y = 0;
     } else if (birds[i].pixel.y >= ledRows) {
       birds[i].pixel.y = ledRows - 1;
+    }
+
+    // Update position with horizontal boundary check
+    birds[i].pixel.x += birds[i].vx;
+    if (birds[i].pixel.x < 0) {
+      birds[i].pixel.x = 0;
+    } else if (birds[i].pixel.x >= ledColumns) {
+      birds[i].pixel.x = ledColumns - 1;
     }
   }
 }
