@@ -52,8 +52,24 @@ struct Pixel {
   int y;
   byte intensity;
 };
-const int numPixels = 5;
-Pixel pixels[numPixels];
+
+// Birds
+struct Bird {
+  Pixel pixel;
+  int vx, vy;      // Velocity
+  uint32_t color;  // Color
+};
+const int MAX_SPEED = 9;
+const int NUM_BIRDS = 9;
+const int MIN_INTENSITY = 99;
+const int MAX_INTENSITY = 252;
+const int COHESION_FACTOR = 45;
+const int ALIGNMENT_THRESHOLD = 6;
+const int SEPARATION_THRESHOLD = 3;
+const float MIN_VELOCITY = 1.8;
+const float ALIGNMENT_FACTOR = 0.1;
+uint32_t birdColor = 0;
+Bird birds[NUM_BIRDS];
 
 // text color and speed
 uint32_t textColor = WHITE;  // Default color
@@ -93,6 +109,9 @@ void spectralAnalyzer() {
   switch (visualization) {
     case 1:
       drawCircles(spectralData);
+      break;
+    case 2:
+      drawBirds();
       break;
     default:
       drawBars(spectralData);
@@ -169,6 +188,106 @@ void drawBars(int* spectralData) {
     }
   }
   matrix.show();
+}
+
+void drawBirds() {
+  if (birdColor == 0) {
+    hatchBirds();
+  }
+  updateFlock();
+  matrix.fillScreen(0);
+  for (int i = 0; i < NUM_BIRDS; i++) {
+    matrix.drawPixel(birds[i].pixel.x, birds[i].pixel.y, birds[i].color);
+  }
+  matrix.show();
+}
+
+void hatchBirds() {
+  for (int i = 0; i < NUM_BIRDS; i++) {
+    birdColor = colorPallets[currentPalette][random(0, 4)];
+    birds[i].pixel.x = random(0, ledColumns);
+    birds[i].pixel.y = random(0, ledRows);
+    birds[i].pixel.intensity = random(100, 255);  // Random intensity
+    birds[i].vx = random(3, 9);                   // Random velocity X
+    birds[i].vy = random(3, 9);                   // Random velocity Y
+    birds[i].color = birdColor;  // Function to generate a random color
+  }
+}
+
+void updateFlock() {
+  for (int i = 0; i < NUM_BIRDS; i++) {
+    int avgX = 0;
+    int avgY = 0;
+    int count = 0;
+
+    // Apply Separation and Alignment
+    for (int j = 0; j < NUM_BIRDS; j++) {
+      if (i != j) {
+        int distanceX = birds[i].pixel.x - birds[j].pixel.x;
+        int distanceY = birds[i].pixel.y - birds[j].pixel.y;
+        int distance = sqrt(distanceX * distanceX + distanceY * distanceY);
+
+        if (distance < SEPARATION_THRESHOLD) {
+          // Move away from neighbor
+          birds[i].vx += distanceX;
+          birds[i].vy += distanceY;
+        } else if (distance < ALIGNMENT_THRESHOLD) {
+          // Align with neighbor
+          birds[i].vx += (birds[j].vx - birds[i].vx) * ALIGNMENT_FACTOR;
+          birds[i].vy += (birds[j].vy - birds[i].vy) * ALIGNMENT_FACTOR;
+        }
+
+        // Calculate average position for Cohesion
+        avgX += birds[j].pixel.x;
+        avgY += birds[j].pixel.y;
+        count++;
+      }
+    }
+
+    // Apply Cohesion
+    if (count > 0) {
+      avgX /= count;
+      avgY /= count;
+      birds[i].vx += (avgX - birds[i].pixel.x) / COHESION_FACTOR;
+      birds[i].vy += (avgY - birds[i].pixel.y) / COHESION_FACTOR;
+    }
+
+    // Ensure minimum velocity
+    float speed = sqrt(birds[i].vx * birds[i].vx + birds[i].vy * birds[i].vy);
+    if (speed < MIN_VELOCITY) {
+      float angle = random(0, 360) * PI / 180.0;
+      birds[i].vx = MIN_VELOCITY * cos(angle);
+      birds[i].vy = MIN_VELOCITY * sin(angle);
+    }
+
+    // Update position
+    birds[i].pixel.x += birds[i].vx;
+    birds[i].pixel.y += birds[i].vy;
+
+    // Boundary conditions
+    if (birds[i].pixel.x <= 0 || birds[i].pixel.x >= ledColumns - 1) {
+      birds[i].vx = -birds[i].vx;  // Reverse X velocity
+      birds[i].pixel.x = constrain(birds[i].pixel.x, 0, ledColumns - 1);
+    }
+    if (birds[i].pixel.y <= 0 || birds[i].pixel.y >= ledRows - 1) {
+      birds[i].vy = -birds[i].vy;  // Reverse Y velocity
+      birds[i].pixel.y = constrain(birds[i].pixel.y, 0, ledRows - 1);
+    }
+
+    // Calculate new intensity based on velocity
+    speed = sqrt(birds[i].vx * birds[i].vx + birds[i].vy * birds[i].vy);
+    birds[i].pixel.intensity =
+        map(speed, 0, MAX_SPEED, MIN_INTENSITY, MAX_INTENSITY);
+    birds[i].pixel.intensity =
+        constrain(birds[i].pixel.intensity, MIN_INTENSITY, MAX_INTENSITY);
+  }
+
+  // Random velocity adjustments
+  if (random(100) < 10) {  // 10% chance to adjust velocity randomly
+    int birdIndex = random(NUM_BIRDS);
+    birds[birdIndex].vx += random(-1, 2);
+    birds[birdIndex].vy += random(-1, 2);
+  }
 }
 
 void setBrightness(int newBrightness) {
@@ -295,6 +414,9 @@ void initializeWebServer() {
   wifi.webserver()->on("/visualization", HTTP_GET, []() {
     if (wifi.webserver()->hasArg("mode")) {
       int newMode = wifi.webserver()->arg("mode").toInt();
+      if (newMode == 2) {
+        hatchBirds();
+      }
       setVisualization(newMode);
       wifi.webserver()->send(200, "text/plain",
                              "Visualization set to: " + String(visualization));

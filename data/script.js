@@ -136,21 +136,6 @@ document.getElementById('speedControl').addEventListener('change', function () {
     });
 });
 
-document.getElementById('toggleScroll').addEventListener('click', function () {
-    var formData = new FormData();
-    continuousScrolling = false;
-    formData.append('enabled', continuousScrolling ? 'false' : 'true');
-    fetch('/toggleContinuousScrolling', { method: 'POST', body: formData })
-        .then(response => response.text())
-        .then(data => {
-            console.log(data);
-            continuousScrolling = !continuousScrolling;
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-});
-
 document.getElementById('wifiSetup').addEventListener('click', function () {
     window.location.href = '/setup';
 });
