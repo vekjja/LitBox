@@ -19,6 +19,23 @@
                 Brightness
                 <input type="range" id="brightnessRange" min="1" max="255">
             </div>
+            <div class="custom-text-container">
+                <input type="text" id="customText"
+                    placeholder="Enter custom text" class="custom-text-field">
+                <button id="sendText" class="button">Scroll Text</button>
+                <!-- <button id="toggleScroll" class="button">Toggle Continuous
+                    Scrolling</button> -->
+                <!-- Color Picker -->
+                <div class="color-picker-container">
+                    <input type="color" id="textColor" title="Choose your color">
+                </div>
+                <!-- Speed Control -->
+                <div class="speed-control-container">
+                    Speed Control
+                    <input type="range" id="speedControl" min="1" max="100"
+                        value="50">
+                </div>
+            </div>
             <div class="visualizations-container">
                 <div class="header2">Visualization</div>
                 <select id="visualizationSelect" class="dropdown">
@@ -26,11 +43,6 @@
                     <option value="1">Circles</option>
                     <option value="2">Fire</option>
                 </select>
-            </div>
-            <div class="custom-text-container">
-                <input type="text" id="customText"
-                    placeholder="Enter custom text">
-                <button id="sendText" class="button">Scroll Text</button>
             </div>
 
         </div>

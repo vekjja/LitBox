@@ -55,6 +55,10 @@ struct Pixel {
 const int numPixels = 5;
 Pixel pixels[numPixels];
 
+// text color and speed
+uint32_t textColor = WHITE;  // Default color
+int textSpeed = 50;          // Default speed
+
 // Web Server Config
 ESPWiFi wifi = ESPWiFi("SpectralAnalyzer", "12345678");
 
@@ -183,16 +187,35 @@ void setVisualization(int newMode) {
 }
 
 void scrollText(String text) {
+  matrix.setTextColor(textColor);  // Set the text color
   matrix.fillScreen(0);
   int startX = matrix.width();
-  int len = text.length() * 6;  // 6 is an approx width of a character
+  int len = text.length() * 6;  // Approx width of a character
   for (int x = startX; x > -len; x--) {
     matrix.fillScreen(0);
     matrix.setCursor(x, 0);
     matrix.print(text);
     matrix.show();
-    delay(100);  // adjust for scrolling speed
+    delay(100 - textSpeed);  // Adjust speed based on textSpeed
   }
+}
+
+uint32_t hexToColor(String hexColor) {
+  // Remove the '#' character if present
+  if (hexColor.startsWith("#")) {
+    hexColor = hexColor.substring(1);
+  }
+
+  // Convert the hex string to a long integer
+  unsigned long number = strtoul(hexColor.c_str(), NULL, 16);
+
+  // Split into RGB components
+  int r = (number >> 16) & 0xFF;
+  int g = (number >> 8) & 0xFF;
+  int b = number & 0xFF;
+
+  // Reorder the components to match the GRB format for WS2812B LEDs
+  return ((g & 0xFF) << 16) | ((r & 0xFF) << 8) | (b & 0xFF);
 }
 
 void testMatrix() {
@@ -287,6 +310,25 @@ void initializeWebServer() {
       wifi.webserver()->send(200, "text/plain", "Text updated");
     } else {
       wifi.webserver()->send(400, "text/plain", "Missing text");
+    }
+  });
+
+  wifi.webserver()->on("/setTextColor", HTTP_POST, []() {
+    if (wifi.webserver()->hasArg("color")) {
+      String color = wifi.webserver()->arg("color");
+      textColor = hexToColor(color);
+      wifi.webserver()->send(200, "text/plain", "Color updated");
+    } else {
+      wifi.webserver()->send(400, "text/plain", "Missing color value");
+    }
+  });
+
+  wifi.webserver()->on("/setSpeed", HTTP_POST, []() {
+    if (wifi.webserver()->hasArg("speed")) {
+      textSpeed = wifi.webserver()->arg("speed").toInt();
+      wifi.webserver()->send(200, "text/plain", "Speed updated");
+    } else {
+      wifi.webserver()->send(400, "text/plain", "Missing speed value");
     }
   });
 

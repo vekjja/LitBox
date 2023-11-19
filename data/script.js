@@ -107,11 +107,49 @@ document.getElementById('sendText').addEventListener('click', function () {
         },
         body: 'text=' + encodeURIComponent(text)
     })
-    .then(response => response.text())
-    .then(data => console.log(data))
-    .catch(error => console.error('Error:', error));
+        .then(response => response.text())
+        .then(data => console.log(data))
+        .catch(error => console.error('Error:', error));
 });
 
+document.getElementById('textColor').addEventListener('change', function () {
+    var color = this.value;
+    fetch('/setTextColor', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'color=' + encodeURIComponent(color)
+    });
+    console.log(color);
+    console.log(encodeURIComponent(color));
+});
+
+document.getElementById('speedControl').addEventListener('change', function () {
+    var speed = this.value;
+    fetch('/setSpeed', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'speed=' + encodeURIComponent(speed)
+    });
+});
+
+document.getElementById('toggleScroll').addEventListener('click', function () {
+    var formData = new FormData();
+    continuousScrolling = false;
+    formData.append('enabled', continuousScrolling ? 'false' : 'true');
+    fetch('/toggleContinuousScrolling', { method: 'POST', body: formData })
+        .then(response => response.text())
+        .then(data => {
+            console.log(data);
+            continuousScrolling = !continuousScrolling;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+});
 
 document.getElementById('wifiSetup').addEventListener('click', function () {
     window.location.href = '/setup';
