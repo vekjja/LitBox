@@ -284,14 +284,6 @@ void updateFlock() {
       birds[i].vy = (birds[i].vy / speed) * MIN_VELOCITY;
     }
 
-    // Prevent birds from stopping mid-air
-    if (birds[i].pixel.y < ledRows - 1 && speed == 0) {
-      // Bird is mid-air and has stopped, give it a minimum velocity
-      float angle = random(0, 360) * PI / 180.0;
-      birds[i].vx = MIN_VELOCITY * cos(angle);
-      birds[i].vy = MIN_VELOCITY * sin(angle);
-    }
-
     // Update position with vertical boundary check
     birds[i].pixel.y += birds[i].vy;
     if (birds[i].pixel.y < 0) {
