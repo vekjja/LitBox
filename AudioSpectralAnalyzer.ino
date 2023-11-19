@@ -59,15 +59,17 @@ struct Bird {
   int vx, vy;      // Velocity
   uint32_t color;  // Color
 };
-const int MAX_SPEED = 9;
+
+const float MIN_VELOCITY = 1.8;
+const float MOVEMENT_FACTOR = 0.1;
+const float ALIGNMENT_FACTOR = 0.1;
+const int MAX_SPEED = 6;
 const int NUM_BIRDS = 9;
 const int MIN_INTENSITY = 99;
 const int MAX_INTENSITY = 252;
 const int COHESION_FACTOR = 45;
 const int ALIGNMENT_THRESHOLD = 6;
 const int SEPARATION_THRESHOLD = 3;
-const float MIN_VELOCITY = 1.8;
-const float ALIGNMENT_FACTOR = 0.1;
 uint32_t birdColor = 0;
 Bird birds[NUM_BIRDS];
 
@@ -260,26 +262,21 @@ void updateFlock() {
       birds[i].vy = MIN_VELOCITY * sin(angle);
     }
 
-    // Update position
-    birds[i].pixel.x += birds[i].vx;
-    birds[i].pixel.y += birds[i].vy;
+    // Incremental position update for smoother movement
+    birds[i].pixel.x += birds[i].vx * MOVEMENT_FACTOR;
+    birds[i].pixel.y += birds[i].vy * MOVEMENT_FACTOR;
+
+    // Keep birds within boundaries
+    birds[i].pixel.x = constrain(birds[i].pixel.x, 0, ledColumns - 1);
+    birds[i].pixel.y = constrain(birds[i].pixel.y, 0, ledRows - 1);
 
     // Boundary conditions
     if (birds[i].pixel.x <= 0 || birds[i].pixel.x >= ledColumns - 1) {
       birds[i].vx = -birds[i].vx;  // Reverse X velocity
-      birds[i].pixel.x = constrain(birds[i].pixel.x, 0, ledColumns - 1);
     }
     if (birds[i].pixel.y <= 0 || birds[i].pixel.y >= ledRows - 1) {
       birds[i].vy = -birds[i].vy;  // Reverse Y velocity
-      birds[i].pixel.y = constrain(birds[i].pixel.y, 0, ledRows - 1);
     }
-
-    // Calculate new intensity based on velocity
-    speed = sqrt(birds[i].vx * birds[i].vx + birds[i].vy * birds[i].vy);
-    birds[i].pixel.intensity =
-        map(speed, 0, MAX_SPEED, MIN_INTENSITY, MAX_INTENSITY);
-    birds[i].pixel.intensity =
-        constrain(birds[i].pixel.intensity, MIN_INTENSITY, MAX_INTENSITY);
   }
 
   // Random velocity adjustments
