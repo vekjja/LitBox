@@ -212,12 +212,12 @@ void updateFlock() {
   const float ALIGNMENT_FACTOR = 0.1;
   const float ALIGNMENT_THRESHOLD = 90;
   const float COHESION_FACTOR = 45;
-  const float MAX_VELOCITY = 2;
+  const float MAX_VELOCITY = 9;
   const float MIN_VELOCITY = 0;
   const float SEPARATION_THRESHOLD = 1;
   const int edgeBuffer = 1;  // Distance from edge to start avoiding
   const float randomVelocityChangeFactor = 1;  // Max random change in velocity
-  const int randomChangeChance = 15;  // Chance of random change (in percentage)
+  const int randomChangeChance = 9;  // Chance of random change (in percentage)
 
   for (int i = 0; i < NUM_BIRDS; i++) {
     float avgVx = 0;
