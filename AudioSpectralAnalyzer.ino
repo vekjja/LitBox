@@ -282,6 +282,11 @@ void updateFlock() {
     } else if (speed < MIN_VELOCITY) {
       birds[i].vx = (birds[i].vx / speed) * MIN_VELOCITY;
       birds[i].vy = (birds[i].vy / speed) * MIN_VELOCITY;
+    } else if (birds[i].pixel.y < ledRows - 1 && speed == MIN_VELOCITY) {
+      birds[i].vx +=
+          random(-randomVelocityChangeFactor, randomVelocityChangeFactor);
+      birds[i].vy +=
+          random(-randomVelocityChangeFactor, randomVelocityChangeFactor);
     }
 
     // Update position with vertical boundary check
