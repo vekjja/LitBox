@@ -61,12 +61,6 @@ struct Bird {
 };
 
 const int NUM_BIRDS = 6;
-const float ALIGNMENT_FACTOR = 0.1;
-const float ALIGNMENT_THRESHOLD = 6;
-const float COHESION_FACTOR = 90;
-const float MAX_VELOCITY = 2;
-const float MIN_VELOCITY = 1;
-const float SEPARATION_THRESHOLD = 1;
 uint32_t birdColor = 0;
 Bird birds[NUM_BIRDS];
 
@@ -215,6 +209,17 @@ void hatchBirds() {
 }
 
 void updateFlock() {
+  const float ALIGNMENT_FACTOR = 0.1;
+  const float ALIGNMENT_THRESHOLD = 30;
+  const float COHESION_FACTOR = 45;
+  const float MAX_VELOCITY = 3;
+  const float MIN_VELOCITY = 1;
+  const float SEPARATION_THRESHOLD = 1;
+  const int edgeBuffer = 1;  // Distance from edge to start avoiding
+  const float randomVelocityChangeFactor =
+      0.5;                           // Max random change in velocity
+  const int randomChangeChance = 5;  // Chance of random change (in percentage)
+
   for (int i = 0; i < NUM_BIRDS; i++) {
     float avgVx = 0;
     float avgVy = 0;
@@ -247,12 +252,19 @@ void updateFlock() {
       birds[i].vy += avgVy * ALIGNMENT_FACTOR;
     }
 
-    const int edgeBuffer = 1;  // Distance from edge to start avoiding
     // Edge Collision Avoidance for Top and Bottom Edges
     if (birds[i].pixel.y <= edgeBuffer) {
       birds[i].vy += 1;  // Steer down
     } else if (birds[i].pixel.y >= ledRows - edgeBuffer - 1) {
       birds[i].vy -= 1;  // Steer up
+    }
+
+    // Random Velocity Change
+    if (random(100) < randomChangeChance) {
+      birds[i].vx +=
+          random(-randomVelocityChangeFactor, randomVelocityChangeFactor);
+      birds[i].vy +=
+          random(-randomVelocityChangeFactor, randomVelocityChangeFactor);
     }
 
     // Limiting velocity
