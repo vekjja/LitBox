@@ -60,14 +60,13 @@ struct Bird {
   uint32_t color;  // Color
 };
 
-const float MIN_VELOCITY = 1.2;
-const float MAX_SPEED = 9;
-const float MOVEMENT_FACTOR = 0.01;
-const float ALIGNMENT_FACTOR = 0.05;
 const int NUM_BIRDS = 6;
-const int COHESION_FACTOR = 90;
-const int ALIGNMENT_THRESHOLD = 6;
-const int SEPARATION_THRESHOLD = 6;
+const float ALIGNMENT_FACTOR = 0.1;
+const float ALIGNMENT_THRESHOLD = 6;
+const float COHESION_FACTOR = 90;
+const float MAX_VELOCITY = 2;
+const float MIN_VELOCITY = 1;
+const float SEPARATION_THRESHOLD = 1;
 uint32_t birdColor = 0;
 Bird birds[NUM_BIRDS];
 
@@ -217,75 +216,66 @@ void hatchBirds() {
 
 void updateFlock() {
   for (int i = 0; i < NUM_BIRDS; i++) {
-    int avgX = 0;
-    int avgY = 0;
+    float avgVx = 0;
+    float avgVy = 0;
+    float avgX = 0;
+    float avgY = 0;
     int count = 0;
 
-    // Apply Separation, Alignment, and Cohesion
     for (int j = 0; j < NUM_BIRDS; j++) {
       if (i != j) {
         int distanceX = birds[i].pixel.x - birds[j].pixel.x;
         int distanceY = birds[i].pixel.y - birds[j].pixel.y;
-        int distance = sqrt(distanceX * distanceX + distanceY * distanceY);
+        int distanceSquared = distanceX * distanceX + distanceY * distanceY;
 
-        if (distance < SEPARATION_THRESHOLD) {
-          birds[i].vx += distanceX;
-          birds[i].vy += distanceY;
-        } else if (distance < ALIGNMENT_THRESHOLD) {
-          birds[i].vx += (birds[j].vx - birds[i].vx) * ALIGNMENT_FACTOR;
-          birds[i].vy += (birds[j].vy - birds[i].vy) * ALIGNMENT_FACTOR;
+        if (distanceSquared < SEPARATION_THRESHOLD * SEPARATION_THRESHOLD) {
+          avgVx -= distanceX;
+          avgVy -= distanceY;
+        } else if (distanceSquared <
+                   ALIGNMENT_THRESHOLD * ALIGNMENT_THRESHOLD) {
+          avgVx += birds[j].vx;
+          avgVy += birds[j].vy;
+          count++;
         }
-
-        avgX += birds[j].pixel.x;
-        avgY += birds[j].pixel.y;
-        count++;
       }
     }
 
-    // Apply Cohesion
     if (count > 0) {
-      avgX /= count;
-      avgY /= count;
-      birds[i].vx += (avgX - birds[i].pixel.x) / COHESION_FACTOR;
-      birds[i].vy += (avgY - birds[i].pixel.y) / COHESION_FACTOR;
+      avgVx /= count;
+      avgVy /= count;
+      birds[i].vx += avgVx * ALIGNMENT_FACTOR;
+      birds[i].vy += avgVy * ALIGNMENT_FACTOR;
     }
 
-    // Velocity limiting
-    // float speed = sqrt(birds[i].vx * birds[i].vx + birds[i].vy *
-    // birds[i].vy); if (speed > MAX_SPEED) {
-    //   birds[i].vx = (birds[i].vx / speed) * MAX_SPEED;
-    //   birds[i].vy = (birds[i].vy / speed) * MAX_SPEED;
-    // }
+    const int edgeBuffer = 1;  // Distance from edge to start avoiding
+    // Edge Collision Avoidance for Top and Bottom Edges
+    if (birds[i].pixel.y <= edgeBuffer) {
+      birds[i].vy += 1;  // Steer down
+    } else if (birds[i].pixel.y >= ledRows - edgeBuffer - 1) {
+      birds[i].vy -= 1;  // Steer up
+    }
 
-    // Ensure minimum velocity
+    // Limiting velocity
     float speed = sqrt(birds[i].vx * birds[i].vx + birds[i].vy * birds[i].vy);
-    if (speed < MIN_VELOCITY) {
-      float angle = random(0, 360) * PI / 180.0;
-      birds[i].vx = MIN_VELOCITY * cos(angle);
-      birds[i].vy = MIN_VELOCITY * sin(angle);
+    if (speed > MAX_VELOCITY) {
+      birds[i].vx = (birds[i].vx / speed) * MAX_VELOCITY;
+      birds[i].vy = (birds[i].vy / speed) * MAX_VELOCITY;
+    } else if (speed < MIN_VELOCITY) {
+      birds[i].vx = (birds[i].vx / speed) * MIN_VELOCITY;
+      birds[i].vy = (birds[i].vy / speed) * MIN_VELOCITY;
     }
 
-    // Incremental position update for smoother movement
-    birds[i].pixel.x += birds[i].vx * MOVEMENT_FACTOR;
-    birds[i].pixel.y += birds[i].vy * MOVEMENT_FACTOR;
+    // Update position and wrap around horizontally
+    birds[i].pixel.x =
+        (birds[i].pixel.x + birds[i].vx + ledColumns) % ledColumns;
 
-    // Wrap around edges
-    if (birds[i].pixel.x < 0)
-      birds[i].pixel.x += ledColumns;
-    else if (birds[i].pixel.x >= ledColumns)
-      birds[i].pixel.x -= ledColumns;
-
-    if (birds[i].pixel.y < 0)
-      birds[i].pixel.y += ledRows;
-    else if (birds[i].pixel.y >= ledRows)
-      birds[i].pixel.y -= ledRows;
-  }
-
-  // Random velocity adjustments
-  if (random(100) < 10) {  // 10% chance to adjust velocity randomly
-    int birdIndex = random(NUM_BIRDS);
-    birds[birdIndex].vx += random(-1, 2);
-    birds[birdIndex].vy += random(-1, 2);
+    // Update position with vertical boundary check
+    birds[i].pixel.y += birds[i].vy;
+    if (birds[i].pixel.y < 0) {
+      birds[i].pixel.y = 0;
+    } else if (birds[i].pixel.y >= ledRows) {
+      birds[i].pixel.y = ledRows - 1;
+    }
   }
 }
 
