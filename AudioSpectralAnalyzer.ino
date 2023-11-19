@@ -60,16 +60,14 @@ struct Bird {
   uint32_t color;  // Color
 };
 
-const float MIN_VELOCITY = 1.8;
-const float MOVEMENT_FACTOR = 0.1;
-const float ALIGNMENT_FACTOR = 0.1;
-const int MAX_SPEED = 6;
+const float MIN_VELOCITY = 1.2;
+const float MAX_SPEED = 9;
+const float MOVEMENT_FACTOR = 0.01;
+const float ALIGNMENT_FACTOR = 0.05;
 const int NUM_BIRDS = 9;
-const int MIN_INTENSITY = 99;
-const int MAX_INTENSITY = 252;
-const int COHESION_FACTOR = 45;
+const int COHESION_FACTOR = 90;
 const int ALIGNMENT_THRESHOLD = 6;
-const int SEPARATION_THRESHOLD = 3;
+const int SEPARATION_THRESHOLD = 6;
 uint32_t birdColor = 0;
 Bird birds[NUM_BIRDS];
 
@@ -222,7 +220,7 @@ void updateFlock() {
     int avgY = 0;
     int count = 0;
 
-    // Apply Separation and Alignment
+    // Apply Separation, Alignment, and Cohesion
     for (int j = 0; j < NUM_BIRDS; j++) {
       if (i != j) {
         int distanceX = birds[i].pixel.x - birds[j].pixel.x;
@@ -230,16 +228,13 @@ void updateFlock() {
         int distance = sqrt(distanceX * distanceX + distanceY * distanceY);
 
         if (distance < SEPARATION_THRESHOLD) {
-          // Move away from neighbor
           birds[i].vx += distanceX;
           birds[i].vy += distanceY;
         } else if (distance < ALIGNMENT_THRESHOLD) {
-          // Align with neighbor
           birds[i].vx += (birds[j].vx - birds[i].vx) * ALIGNMENT_FACTOR;
           birds[i].vy += (birds[j].vy - birds[i].vy) * ALIGNMENT_FACTOR;
         }
 
-        // Calculate average position for Cohesion
         avgX += birds[j].pixel.x;
         avgY += birds[j].pixel.y;
         count++;
@@ -254,6 +249,13 @@ void updateFlock() {
       birds[i].vy += (avgY - birds[i].pixel.y) / COHESION_FACTOR;
     }
 
+    // Velocity limiting
+    // float speed = sqrt(birds[i].vx * birds[i].vx + birds[i].vy *
+    // birds[i].vy); if (speed > MAX_SPEED) {
+    //   birds[i].vx = (birds[i].vx / speed) * MAX_SPEED;
+    //   birds[i].vy = (birds[i].vy / speed) * MAX_SPEED;
+    // }
+
     // Ensure minimum velocity
     float speed = sqrt(birds[i].vx * birds[i].vx + birds[i].vy * birds[i].vy);
     if (speed < MIN_VELOCITY) {
@@ -266,17 +268,16 @@ void updateFlock() {
     birds[i].pixel.x += birds[i].vx * MOVEMENT_FACTOR;
     birds[i].pixel.y += birds[i].vy * MOVEMENT_FACTOR;
 
-    // Keep birds within boundaries
-    birds[i].pixel.x = constrain(birds[i].pixel.x, 0, ledColumns - 1);
-    birds[i].pixel.y = constrain(birds[i].pixel.y, 0, ledRows - 1);
+    // Wrap around edges
+    if (birds[i].pixel.x < 0)
+      birds[i].pixel.x += ledColumns;
+    else if (birds[i].pixel.x >= ledColumns)
+      birds[i].pixel.x -= ledColumns;
 
-    // Boundary conditions
-    if (birds[i].pixel.x <= 0 || birds[i].pixel.x >= ledColumns - 1) {
-      birds[i].vx = -birds[i].vx;  // Reverse X velocity
-    }
-    if (birds[i].pixel.y <= 0 || birds[i].pixel.y >= ledRows - 1) {
-      birds[i].vy = -birds[i].vy;  // Reverse Y velocity
-    }
+    if (birds[i].pixel.y < 0)
+      birds[i].pixel.y += ledRows;
+    else if (birds[i].pixel.y >= ledRows)
+      birds[i].pixel.y -= ledRows;
   }
 
   // Random velocity adjustments
@@ -339,33 +340,33 @@ void testMatrix() {
   int testDelay = 1000;
   int pixelColor = WHITE;
 
-  // bottom left
-  Serial.println("Bottom Left");
-  matrix.fillScreen(0);
-  matrix.drawPixel(0, 0, pixelColor);
-  matrix.show();
-  delay(testDelay);
+  // // bottom left
+  // Serial.println("Bottom Left");
+  // matrix.fillScreen(0);
+  // matrix.drawPixel(0, 0, pixelColor);
+  // matrix.show();
+  // delay(testDelay);
 
-  // bottom right
-  Serial.println("Bottom Right");
-  matrix.fillScreen(0);
-  matrix.drawPixel(ledColumns - 1, 0, pixelColor);
-  matrix.show();
-  delay(testDelay);
+  // // bottom right
+  // Serial.println("Bottom Right");
+  // matrix.fillScreen(0);
+  // matrix.drawPixel(ledColumns - 1, 0, pixelColor);
+  // matrix.show();
+  // delay(testDelay);
 
-  // top right
-  Serial.println("Top Right");
-  matrix.fillScreen(0);
-  matrix.drawPixel(ledColumns - 1, ledRows - 1, pixelColor);
-  matrix.show();
-  delay(testDelay);
+  // // top right
+  // Serial.println("Top Right");
+  // matrix.fillScreen(0);
+  // matrix.drawPixel(ledColumns - 1, ledRows - 1, pixelColor);
+  // matrix.show();
+  // delay(testDelay);
 
-  // top left
-  Serial.println("Top Left");
-  matrix.fillScreen(0);
-  matrix.drawPixel(0, ledRows - 1, pixelColor);
-  matrix.show();
-  delay(testDelay);
+  // // top left
+  // Serial.println("Top Left");
+  // matrix.fillScreen(0);
+  // matrix.drawPixel(0, ledRows - 1, pixelColor);
+  // matrix.show();
+  // delay(testDelay);
 
   // loop through each pixel from bottom left to top right
   Serial.println("Looping through each pixel from bottom left to top right");
