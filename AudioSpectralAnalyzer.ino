@@ -212,8 +212,8 @@ void updateFlock() {
   const float ALIGNMENT_FACTOR = 0.1;
   const float ALIGNMENT_THRESHOLD = 90;
   const float COHESION_FACTOR = 45;
-  const float MAX_VELOCITY = 6;
-  const float MIN_VELOCITY = 0;
+  float MAX_VELOCITY = 6;
+  float MIN_VELOCITY = 0;
   const float SEPARATION_THRESHOLD = 1;
   const int edgeBuffer = 1;  // Distance from edge to start avoiding
   const float randomVelocityChangeFactor = 1;  // Max random change in velocity
@@ -254,8 +254,9 @@ void updateFlock() {
     // Edge Collision Avoidance for Top and Bottom Edges
     if (birds[i].pixel.y <= edgeBuffer) {
       birds[i].vy += 1;  // Steer down
-    } else if (birds[i].pixel.y >= ledRows - edgeBuffer - 1) {
-      birds[i].vy -= 1;  // Steer up
+    } else if (birds[i].pixel.y >= ledRows - edgeBuffer) {
+      // birds[i].vy -= 1;  // Steer up
+      birds[i].vy = 0;  // land on the ground
     }
 
     // Edge Collision Avoidance for Left and Right Edges
@@ -281,6 +282,14 @@ void updateFlock() {
     } else if (speed < MIN_VELOCITY) {
       birds[i].vx = (birds[i].vx / speed) * MIN_VELOCITY;
       birds[i].vy = (birds[i].vy / speed) * MIN_VELOCITY;
+    }
+
+    // Prevent birds from stopping mid-air
+    if (birds[i].pixel.y < ledRows - 1 && speed == 0) {
+      // Bird is mid-air and has stopped, give it a minimum velocity
+      float angle = random(0, 360) * PI / 180.0;
+      birds[i].vx = MIN_VELOCITY * cos(angle);
+      birds[i].vy = MIN_VELOCITY * sin(angle);
     }
 
     // Update position with vertical boundary check
