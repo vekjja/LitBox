@@ -64,7 +64,7 @@ const float MIN_VELOCITY = 1.2;
 const float MAX_SPEED = 9;
 const float MOVEMENT_FACTOR = 0.01;
 const float ALIGNMENT_FACTOR = 0.05;
-const int NUM_BIRDS = 9;
+const int NUM_BIRDS = 6;
 const int COHESION_FACTOR = 90;
 const int ALIGNMENT_THRESHOLD = 6;
 const int SEPARATION_THRESHOLD = 6;
@@ -111,7 +111,8 @@ void spectralAnalyzer() {
       drawCircles(spectralData);
       break;
     case 2:
-      drawBirds();
+      // drawBirds();
+      runAtFrameRate(drawBirds, 60);
       break;
     default:
       drawBars(spectralData);
@@ -377,6 +378,20 @@ void testMatrix() {
       matrix.show();
       delay(1);
     }
+  }
+}
+
+void runAtFrameRate(void (*functionToRun)(), unsigned int fps) {
+  static unsigned long lastFrameTime = 0;
+  static unsigned int frameDuration = 0;
+  if (fps != 0) {
+    frameDuration = 1000 / fps;
+  }
+
+  unsigned long currentTime = millis();
+  if (currentTime - lastFrameTime >= frameDuration) {
+    lastFrameTime = currentTime;
+    functionToRun();  // Call the passed function
   }
 }
 
