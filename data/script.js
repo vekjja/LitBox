@@ -4,7 +4,6 @@ function fetchInitialSettings() {
         .then(data => {
             var sensitivityValue = parseInt(data, 10);
             sensitivitySlider.value = sensitivityValue; // Update the slider's value
-            // showPopup(sensitivitySlider, sensitivityPopup, sensitivityValue); // Update popup with new value and position
         })
         .catch(error => {
             console.error('Error fetching initial sensitivity:', error);
@@ -15,7 +14,6 @@ function fetchInitialSettings() {
         .then(data => {
             var brightnessValue = parseInt(data, 10);
             brightnessSlider.value = brightnessValue; // Update the slider's value
-            // showPopup(brightnessSlider, brightnessPopup, brightnessValue); // Update popup with new value and position
         })
         .catch(error => {
             console.error('Error fetching initial brightness:', error);
