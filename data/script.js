@@ -2,9 +2,9 @@ function fetchInitialSettings() {
     fetch('/sensitivity', { method: 'GET' })
         .then(response => response.text())
         .then(data => {
-            sensitivityRange.value = data;
-            sensitivityValue.textContent = data;
-            showPopup(sensitivityRange, sensitivityPopup, data);
+            var sensitivityValue = parseInt(data, 10);
+            sensitivitySlider.value = sensitivityValue; // Update the slider's value
+            // showPopup(sensitivitySlider, sensitivityPopup, sensitivityValue); // Update popup with new value and position
         })
         .catch(error => {
             console.error('Error fetching initial sensitivity:', error);
@@ -13,12 +13,50 @@ function fetchInitialSettings() {
     fetch('/brightness', { method: 'GET' })
         .then(response => response.text())
         .then(data => {
-            brightnessRange.value = data;
-            brightnessValue.textContent = data;
-            showPopup(brightnessRange, brightnessPopup, data);
+            var brightnessValue = parseInt(data, 10);
+            brightnessSlider.value = brightnessValue; // Update the slider's value
+            // showPopup(brightnessSlider, brightnessPopup, brightnessValue); // Update popup with new value and position
         })
         .catch(error => {
             console.error('Error fetching initial brightness:', error);
+        });
+
+    fetchBirdSettings();
+}
+
+function fetchBirdSettings() {
+    fetch('/birds', { method: 'GET' })
+        .then(response => response.text())
+        .then(data => {
+            var settings = data.split('\n');
+            settings.forEach(setting => {
+                var parts = setting.split('=');
+                var key = parts[0];
+                var value = parts[1];
+                switch (key) {
+                    case 'max_velocity':
+                        document.getElementById('maxVelocity').value = value;
+                        break;
+                    case 'min_velocity':
+                        document.getElementById('minVelocity').value = value;
+                        break;
+                    case 'num_birds':
+                        document.getElementById('numBirds').value = value;
+                        break;
+                    case 'alignment':
+                        document.getElementById('alignment').value = value;
+                        break;
+                    case 'cohesion':
+                        document.getElementById('cohesion').value = value;
+                        break;
+                    case 'separation':
+                        document.getElementById('separation').value = value;
+                        break;
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching bird settings:', error);
         });
 }
 
@@ -34,19 +72,19 @@ function showPopup(slider, popup, value) {
     popup.style.display = 'block';
 }
 
-var sensitivityRange = document.getElementById('sensitivityRange');
-var sensitivityValue = document.getElementById('sensitivityValue');
+
+var sensitivitySlider = document.getElementById('sensitivityValue');
 var sensitivityPopup = document.getElementById('sensitivityPopup');
 
-sensitivityRange.addEventListener('input', function () {
-    showPopup(sensitivityRange, sensitivityPopup, sensitivityRange.value);
-    sensitivityValue.textContent = sensitivityRange.value;
+sensitivitySlider.addEventListener('input', function () {
+    showPopup(sensitivitySlider, sensitivityPopup, sensitivitySlider.value);
+    sensitivityValue.textContent = sensitivitySlider.value;
 });
 
-sensitivityRange.addEventListener('change', function () {
+sensitivitySlider.addEventListener('change', function () {
     sensitivityPopup.style.display = 'none';
     var formData = new FormData();
-    formData.append('value', sensitivityRange.value);
+    formData.append('value', sensitivitySlider.value);
     fetch('/sensitivity', { method: 'POST', body: formData })
         .then(response => response.text())
         .then(data => {
@@ -57,19 +95,18 @@ sensitivityRange.addEventListener('change', function () {
         });
 });
 
-var brightnessRange = document.getElementById('brightnessRange');
-var brightnessValue = document.getElementById('brightnessValue');
+var brightnessSlider = document.getElementById('brightnessValue');
 var brightnessPopup = document.getElementById('brightnessPopup');
 
-brightnessRange.addEventListener('input', function () {
-    showPopup(brightnessRange, brightnessPopup, brightnessRange.value);
-    brightnessValue.textContent = brightnessRange.value;
+brightnessSlider.addEventListener('input', function () {
+    showPopup(brightnessSlider, brightnessPopup, brightnessSlider.value);
+    brightnessValue.textContent = brightnessSlider.value;
 });
 
-brightnessRange.addEventListener('change', function () {
+brightnessSlider.addEventListener('change', function () {
     brightnessPopup.style.display = 'none';
     var formData = new FormData();
-    formData.append('value', brightnessRange.value);
+    formData.append('value', brightnessSlider.value);
     fetch('/brightness', { method: 'POST', body: formData })
         .then(response => response.text())
         .then(data => {
@@ -81,10 +118,18 @@ brightnessRange.addEventListener('change', function () {
 });
 
 var visualizationSelect = document.getElementById('visualizationSelect');
+var birdSettingsDiv = document.getElementById('bird-settings');
 
 visualizationSelect.addEventListener('change', function () {
     var selectedValue = visualizationSelect.value;
     setVisualization(selectedValue);
+
+    // Show bird settings only if "Birds" is selected
+    if (selectedValue === '2') { // Assuming '2' is the value for Birds visualization
+        birdSettingsDiv.style.display = 'block';
+    } else {
+        birdSettingsDiv.style.display = 'none';
+    }
 });
 
 function setVisualization(mode) {
@@ -134,6 +179,31 @@ document.getElementById('speedControl').addEventListener('change', function () {
         },
         body: 'speed=' + encodeURIComponent(speed)
     });
+});
+
+document.getElementById('updateBirds').addEventListener('click', function () {
+    var maxVelocity = document.getElementById('maxVelocity').value;
+    var minVelocity = document.getElementById('minVelocity').value;
+    var numBirds = document.getElementById('numBirds').value;
+    var alignment = document.getElementById('alignment').value;
+    var cohesion = document.getElementById('cohesion').value;
+    var separation = document.getElementById('separation').value;
+
+    fetch('/birds', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'max_velocity=' + maxVelocity
+            + '&min_velocity=' + minVelocity
+            + '&num_birds=' + numBirds
+            + '&alignment=' + alignment
+            + '&cohesion=' + cohesion
+            + '&separation=' + separation
+    })
+        .then(response => response.text())
+        .then(data => console.log(data))
+        .catch(error => console.error('Error:', error));
 });
 
 document.getElementById('wifiSetup').addEventListener('click', function () {

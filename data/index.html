@@ -11,13 +11,15 @@
         <div class="container">
             <div class="header">Spectral Analyzer Controls</div>
             <div class="button-container">
-                <div class="slider-popup" id="sensitivityPopup">5</div>
+                <div class="slider-popup" id="sensitivityPopup">6</div>
                 Sensitivity
-                <input type="range" id="sensitivityRange" min="1" max="100">
+                <input id="sensitivityValue" type="range" id="sensitivityRange"
+                    min="1" max="100">
                 <br><br><br>
                 <div class="slider-popup" id="brightnessPopup">6</div>
                 Brightness
-                <input type="range" id="brightnessRange" min="1" max="255">
+                <input id="brightnessValue" type="range" id="brightnessRange"
+                    min="1" max="255">
             </div>
             <div class="custom-text-container">
                 <input type="text" id="customText"
@@ -41,6 +43,40 @@
                     <option value="2">Birds</option>
                     <option value="1">Circles</option>
                 </select>
+                <div class="bird-settings" id="bird-settings"
+                    style="display: none;">
+                    <div class="setting">
+                        <label for="numBirds">Number of Birds</label>
+                        <input type="number" id="numBirds"
+                            placeholder="Number of Birds">
+                    </div>
+                    <div class="setting">
+                        <label for="maxVelocity">Max Velocity</label>
+                        <input type="number" id="maxVelocity"
+                            placeholder="Max Velocity">
+                    </div>
+                    <div class="setting">
+                        <label for="minVelocity">Min Velocity</label>
+                        <input type="number" id="minVelocity"
+                            placeholder="Min Velocity">
+                    </div>
+                    <div class="setting">
+                        <label for="alignment">Alignment</label>
+                        <input type="number" id="alignment"
+                            placeholder="Alignment">
+                    </div>
+                    <div class="setting">
+                        <label for="cohesion">Cohesion</label>
+                        <input type="number" id="cohesion"
+                            placeholder="Cohesion">
+                    </div>
+                    <div class="setting">
+                        <label for="separation">Separation</label>
+                        <input type="number" id="separation"
+                            placeholder="Separation">
+                    </div>
+                    <button id="updateBirds" class="button">Update Birds</button>
+                </div>
             </div>
 
         </div>
