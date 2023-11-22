@@ -5,6 +5,7 @@
 #include <IOPin.h>
 #include <arduinoFFT.h>
 
+#include "Birds.h"
 #include "colors.h"
 
 // IOPins
@@ -47,22 +48,6 @@ int sensitivity = 6;
 // Visualization Config
 int visualization = 0;
 int maxVisualization = 2;
-struct Pixel {
-  int x;
-  int y;
-  byte intensity;
-};
-
-// Birds
-struct Bird {
-  Pixel pixel;
-  int vx, vy;      // Velocity
-  uint32_t color;  // Color
-};
-
-const int NUM_BIRDS = 6;
-uint32_t birdColor = 0;
-Bird birds[NUM_BIRDS];
 
 // text color and speed
 uint32_t textColor = WHITE;  // Default color
@@ -77,6 +62,7 @@ void setup() {
   matrix.setTextWrap(false);
   ledData.setPinMode(OUTPUT);
   matrix.setBrightness(brightness);
+  // testMatrix(matrix, ledColumns, ledRows);
   testMatrix();
   initializeWebServer();
 }
@@ -142,13 +128,6 @@ void logarithmicScaling(int* spectralData) {
   }
 }
 
-// void drawFirework(int x, int y) {
-//   matrix.fillScreen(CYAN);
-//   for (int i = 0; i < 7; i++) {
-//     matrix.drawCircle(x, y, i, MAGENTA);
-//   }
-// }
-
 void drawCircles(int* spectralData) {
   matrix.fillScreen(0);
   for (int x = 0; x < ledColumns; x++) {
@@ -185,126 +164,15 @@ void drawBars(int* spectralData) {
 }
 
 void drawBirds() {
-  if (birdColor == 0) {
-    hatchBirds();
+  if (birds == nullptr) {
+    generateBirds(ledColumns, ledRows, colorPallets[currentPalette]);
   }
-  updateFlock();
+  updateFlock(ledColumns, ledRows);
   matrix.fillScreen(0);
-  for (int i = 0; i < NUM_BIRDS; i++) {
+  for (int i = 0; i < birdCount; i++) {
     matrix.drawPixel(birds[i].pixel.x, birds[i].pixel.y, birds[i].color);
   }
   matrix.show();
-}
-
-void hatchBirds() {
-  for (int i = 0; i < NUM_BIRDS; i++) {
-    birdColor = colorPallets[currentPalette][random(0, 4)];
-    birds[i].pixel.x = random(0, ledColumns);
-    birds[i].pixel.y = random(0, ledRows);
-    birds[i].pixel.intensity = random(100, 255);  // Random intensity
-    birds[i].vx = random(0, 3);                   // Random velocity X
-    birds[i].vy = random(0, 3);                   // Random velocity Y
-    birds[i].color = birdColor;  // Function to generate a random color
-  }
-}
-
-void updateFlock() {
-  const float ALIGNMENT_FACTOR = 0.1;
-  const float ALIGNMENT_THRESHOLD = 90;
-  const float COHESION_FACTOR = 45;
-  float MAX_VELOCITY = 6;
-  float MIN_VELOCITY = 0;
-  const float SEPARATION_THRESHOLD = 1;
-  const int edgeBuffer = 1;  // Distance from edge to start avoiding
-  const float randomVelocityChangeFactor = 1;  // Max random change in velocity
-  const int randomChangeChance = 3;  // Chance of random change (in percentage)
-
-  for (int i = 0; i < NUM_BIRDS; i++) {
-    float avgVx = 0;
-    float avgVy = 0;
-    float avgX = 0;
-    float avgY = 0;
-    int count = 0;
-
-    for (int j = 0; j < NUM_BIRDS; j++) {
-      if (i != j) {
-        int distanceX = birds[i].pixel.x - birds[j].pixel.x;
-        int distanceY = birds[i].pixel.y - birds[j].pixel.y;
-        int distanceSquared = distanceX * distanceX + distanceY * distanceY;
-
-        if (distanceSquared < SEPARATION_THRESHOLD * SEPARATION_THRESHOLD) {
-          avgVx -= distanceX;
-          avgVy -= distanceY;
-        } else if (distanceSquared <
-                   ALIGNMENT_THRESHOLD * ALIGNMENT_THRESHOLD) {
-          avgVx += birds[j].vx;
-          avgVy += birds[j].vy;
-          count++;
-        }
-      }
-    }
-
-    if (count > 0) {
-      avgVx /= count;
-      avgVy /= count;
-      birds[i].vx += avgVx * ALIGNMENT_FACTOR;
-      birds[i].vy += avgVy * ALIGNMENT_FACTOR;
-    }
-
-    // Edge Collision Avoidance for Top and Bottom Edges
-    if (birds[i].pixel.y <= edgeBuffer) {
-      birds[i].vy += 1;  // Steer down
-    } else if (birds[i].pixel.y >= ledRows - edgeBuffer) {
-      // birds[i].vy -= 1;  // Steer up
-      birds[i].vy = 0;  // land on the ground
-    }
-
-    // Edge Collision Avoidance for Left and Right Edges
-    if (birds[i].pixel.x <= edgeBuffer) {
-      birds[i].vx += 1;  // Steer right
-    } else if (birds[i].pixel.x >= ledColumns - edgeBuffer - 1) {
-      birds[i].vx -= 1;  // Steer left
-    }
-
-    // Random Velocity Change
-    if (random(100) < randomChangeChance) {
-      birds[i].vx +=
-          random(-randomVelocityChangeFactor, randomVelocityChangeFactor);
-      birds[i].vy +=
-          random(-randomVelocityChangeFactor, randomVelocityChangeFactor);
-    }
-
-    // Limiting velocity
-    float speed = sqrt(birds[i].vx * birds[i].vx + birds[i].vy * birds[i].vy);
-    if (speed > MAX_VELOCITY) {
-      birds[i].vx = (birds[i].vx / speed) * MAX_VELOCITY;
-      birds[i].vy = (birds[i].vy / speed) * MAX_VELOCITY;
-    } else if (speed < MIN_VELOCITY) {
-      birds[i].vx = (birds[i].vx / speed) * MIN_VELOCITY;
-      birds[i].vy = (birds[i].vy / speed) * MIN_VELOCITY;
-    } else if (birds[i].pixel.y < ledRows - 1 && speed == MIN_VELOCITY) {
-      birds[i].vx +=
-          random(-randomVelocityChangeFactor, randomVelocityChangeFactor);
-      birds[i].vy +=
-          random(-randomVelocityChangeFactor, randomVelocityChangeFactor);
-    }
-
-    // Update position with vertical boundary check
-    birds[i].pixel.y += birds[i].vy;
-    if (birds[i].pixel.y < 0) {
-      birds[i].pixel.y = 0;
-    } else if (birds[i].pixel.y >= ledRows) {
-      birds[i].pixel.y = ledRows - 1;
-    }
-
-    // Update position with horizontal boundary check
-    birds[i].pixel.x += birds[i].vx;
-    if (birds[i].pixel.x < 0) {
-      birds[i].pixel.x = 0;
-    } else if (birds[i].pixel.x >= ledColumns) {
-      birds[i].pixel.x = ledColumns - 1;
-    }
-  }
 }
 
 void setBrightness(int newBrightness) {
@@ -336,57 +204,9 @@ void scrollText(String text) {
   }
 }
 
-uint32_t hexToColor(String hexColor) {
-  // Remove the '#' character if present
-  if (hexColor.startsWith("#")) {
-    hexColor = hexColor.substring(1);
-  }
-
-  // Convert the hex string to a long integer
-  unsigned long number = strtoul(hexColor.c_str(), NULL, 16);
-
-  // Split into RGB components
-  int r = (number >> 16) & 0xFF;
-  int g = (number >> 8) & 0xFF;
-  int b = number & 0xFF;
-
-  // Reorder the components to match the GRB format for WS2812B LEDs
-  return ((g & 0xFF) << 16) | ((r & 0xFF) << 8) | (b & 0xFF);
-}
-
 void testMatrix() {
   Serial.println("Begin Testing LED Matrix");
-  int testDelay = 1000;
   int pixelColor = WHITE;
-
-  // // bottom left
-  // Serial.println("Bottom Left");
-  // matrix.fillScreen(0);
-  // matrix.drawPixel(0, 0, pixelColor);
-  // matrix.show();
-  // delay(testDelay);
-
-  // // bottom right
-  // Serial.println("Bottom Right");
-  // matrix.fillScreen(0);
-  // matrix.drawPixel(ledColumns - 1, 0, pixelColor);
-  // matrix.show();
-  // delay(testDelay);
-
-  // // top right
-  // Serial.println("Top Right");
-  // matrix.fillScreen(0);
-  // matrix.drawPixel(ledColumns - 1, ledRows - 1, pixelColor);
-  // matrix.show();
-  // delay(testDelay);
-
-  // // top left
-  // Serial.println("Top Left");
-  // matrix.fillScreen(0);
-  // matrix.drawPixel(0, ledRows - 1, pixelColor);
-  // matrix.show();
-  // delay(testDelay);
-
   // loop through each pixel from bottom left to top right
   Serial.println("Looping through each pixel from bottom left to top right");
   for (int x = 0; x < ledColumns; x++) {
@@ -399,92 +219,111 @@ void testMatrix() {
   }
 }
 
-void runAtFrameRate(void (*functionToRun)(), unsigned int fps) {
-  static unsigned long lastFrameTime = 0;
-  static unsigned int frameDuration = 0;
-  if (fps != 0) {
-    frameDuration = 1000 / fps;
-  }
-
-  unsigned long currentTime = millis();
-  if (currentTime - lastFrameTime >= frameDuration) {
-    lastFrameTime = currentTime;
-    functionToRun();  // Call the passed function
-  }
-}
-
 void initializeWebServer() {
   // Sensitivity endpoint
-  wifi.webserver()->on("/sensitivity", HTTP_GET, []() {
-    wifi.webserver()->send(200, "text/plain", String(sensitivity));
+  wifi.webServer.on("/sensitivity", HTTP_GET, []() {
+    wifi.webServer.send(200, "text/plain", String(sensitivity));
   });
-  wifi.webserver()->on("/sensitivity", HTTP_POST, []() {
-    if (wifi.webserver()->hasArg("value")) {
-      int newSensitivity = wifi.webserver()->arg("value").toInt();
+  wifi.webServer.on("/sensitivity", HTTP_POST, []() {
+    if (wifi.webServer.hasArg("value")) {
+      int newSensitivity = wifi.webServer.arg("value").toInt();
       setSensitivity(newSensitivity);
-      wifi.webserver()->send(200, "text/plain", "Sensitivity updated");
+      wifi.webServer.send(200, "text/plain", "Sensitivity updated");
     } else {
-      wifi.webserver()->send(400, "text/plain", "Missing sensitivity value");
+      wifi.webServer.send(400, "text/plain", "Missing sensitivity value");
     }
   });
 
   // Brightness endpoint
-  wifi.webserver()->on("/brightness", HTTP_GET, []() {
-    wifi.webserver()->send(200, "text/plain", String(brightness));
+  wifi.webServer.on("/brightness", HTTP_GET, []() {
+    wifi.webServer.send(200, "text/plain", String(brightness));
   });
-  wifi.webserver()->on("/brightness", HTTP_POST, []() {
-    if (wifi.webserver()->hasArg("value")) {
-      int newBrightness = wifi.webserver()->arg("value").toInt();
+  wifi.webServer.on("/brightness", HTTP_POST, []() {
+    if (wifi.webServer.hasArg("value")) {
+      int newBrightness = wifi.webServer.arg("value").toInt();
       setBrightness(newBrightness);
-      wifi.webserver()->send(200, "text/plain", "Brightness updated");
+      wifi.webServer.send(200, "text/plain", "Brightness updated");
     } else {
-      wifi.webserver()->send(400, "text/plain", "Missing brightness value");
+      wifi.webServer.send(400, "text/plain", "Missing brightness value");
     }
   });
 
-  wifi.webserver()->on("/visualization", HTTP_GET, []() {
-    if (wifi.webserver()->hasArg("mode")) {
-      int newMode = wifi.webserver()->arg("mode").toInt();
-      if (newMode == 2) {
-        hatchBirds();
-      }
+  wifi.webServer.on("/visualization", HTTP_GET, []() {
+    if (wifi.webServer.hasArg("mode")) {
+      int newMode = wifi.webServer.arg("mode").toInt();
       setVisualization(newMode);
-      wifi.webserver()->send(200, "text/plain",
-                             "Visualization set to: " + String(visualization));
+      wifi.webServer.send(200, "text/plain",
+                          "Visualization set to: " + String(visualization));
     } else {
-      wifi.webserver()->send(400, "text/plain", "Missing visualization mode");
+      wifi.webServer.send(400, "text/plain", "Missing visualization mode");
     }
   });
 
-  wifi.webserver()->on("/scrollText", HTTP_POST, []() {
-    if (wifi.webserver()->hasArg("text")) {
-      String text = wifi.webserver()->arg("text");
+  wifi.webServer.on("/scrollText", HTTP_POST, []() {
+    if (wifi.webServer.hasArg("text")) {
+      String text = wifi.webServer.arg("text");
       scrollText(text);  // Implement this function to scroll text
-      wifi.webserver()->send(200, "text/plain", "Text updated");
+      wifi.webServer.send(200, "text/plain", "Text updated");
     } else {
-      wifi.webserver()->send(400, "text/plain", "Missing text");
+      wifi.webServer.send(400, "text/plain", "Missing text");
     }
   });
 
-  wifi.webserver()->on("/setTextColor", HTTP_POST, []() {
-    if (wifi.webserver()->hasArg("color")) {
-      String color = wifi.webserver()->arg("color");
+  wifi.webServer.on("/setTextColor", HTTP_POST, []() {
+    if (wifi.webServer.hasArg("color")) {
+      String color = wifi.webServer.arg("color");
       textColor = hexToColor(color);
-      wifi.webserver()->send(200, "text/plain", "Color updated");
+      wifi.webServer.send(200, "text/plain", "Color updated");
     } else {
-      wifi.webserver()->send(400, "text/plain", "Missing color value");
+      wifi.webServer.send(400, "text/plain", "Missing color value");
     }
   });
 
-  wifi.webserver()->on("/setSpeed", HTTP_POST, []() {
-    if (wifi.webserver()->hasArg("speed")) {
-      textSpeed = wifi.webserver()->arg("speed").toInt();
-      wifi.webserver()->send(200, "text/plain", "Speed updated");
+  wifi.webServer.on("/setSpeed", HTTP_POST, []() {
+    if (wifi.webServer.hasArg("speed")) {
+      textSpeed = wifi.webServer.arg("speed").toInt();
+      wifi.webServer.send(200, "text/plain", "Speed updated");
     } else {
-      wifi.webserver()->send(400, "text/plain", "Missing speed value");
+      wifi.webServer.send(400, "text/plain", "Missing speed value");
     }
   });
 
+  wifi.webServer.on("/birds", HTTP_GET, []() {
+    String response = "";
+    response += "max_velocity=" + String(birdMaxVelocity) + "\n";
+    response += "min_velocity=" + String(birdMinVelocity) + "\n";
+    response += "num_birds=" + String(birdCount) + "\n";
+    response += "alignment=" + String(birdAlignment) + "\n";
+    response += "cohesion=" + String(birdCohesion) + "\n";
+    response += "separation=" + String(birdSeparation) + "\n";
+    wifi.webServer.send(200, "text/plain", response);
+  });
+
+  wifi.webServer.on("/birds", HTTP_POST, []() {
+    if (wifi.webServer.hasArg("max_velocity")) {
+      birdMaxVelocity = wifi.webServer.arg("max_velocity").toFloat();
+    }
+    if (wifi.webServer.hasArg("min_velocity")) {
+      birdMinVelocity = wifi.webServer.arg("min_velocity").toFloat();
+    }
+    if (wifi.webServer.hasArg("num_birds")) {
+      birdCount = wifi.webServer.arg("num_birds").toInt();
+    }
+    if (wifi.webServer.hasArg("alignment")) {
+      birdAlignment = wifi.webServer.arg("alignment").toFloat();
+    }
+    if (wifi.webServer.hasArg("cohesion")) {
+      birdCohesion = wifi.webServer.arg("cohesion").toFloat();
+    }
+    if (wifi.webServer.hasArg("separation")) {
+      birdSeparation = wifi.webServer.arg("separation").toFloat();
+    }
+    generateBirds(ledColumns, ledRows, colorPallets[currentPalette]);
+    wifi.webServer.send(200, "text/plain", "Bird settings updated");
+  });
+
+  // wifi.setConnectSubroutine([]() { testMatrix(matrix, ledColumns, ledRows);
+  // });
   wifi.setConnectSubroutine([]() { testMatrix(); });
   wifi.enableMDNS("spectral-analyzer");
   wifi.Start();
