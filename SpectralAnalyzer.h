@@ -11,6 +11,7 @@ const int minSensitivity = 1;
 const int maxSensitivity = 100;
 const uint16_t audioSamples = 128;
 const int usableSamples = (audioSamples / 2);
+int* spectralData = nullptr;
 bool scaling = true;
 double vReal[audioSamples];
 double vImage[audioSamples];
@@ -45,7 +46,7 @@ void peakDetection(int* peakData, int maxWidth, int maxHeight) {
   if (scaling) logarithmicScaling(peakData, maxWidth, maxHeight);
 }
 
-int* spectralAnalyzer(int maxWidth, int maxHeight) {
+void spectralAnalyzer(int maxWidth, int maxHeight) {
   for (int i = 0; i < audioSamples; i++) {
     vReal[i] = audio.readA() / sensitivity;
     vImage[i] = 0;
@@ -55,8 +56,9 @@ int* spectralAnalyzer(int maxWidth, int maxHeight) {
   FFT.Compute(vReal, vImage, audioSamples, FFT_FORWARD);
   FFT.ComplexToMagnitude(vReal, vImage, audioSamples);
 
-  int spectralData[maxWidth] = {0};
+  if (spectralData == nullptr) {
+    spectralData = new int[maxWidth];
+  }
   peakDetection(spectralData, maxWidth, maxHeight);
-  return spectralData;
 }
 #endif

@@ -19,3 +19,12 @@
 #define SALMON 0xFC0E
 #define ROSE 0xF8A6
 #define PEACH 0xFEA6
+
+int currentPalette = 1;
+const int colorPalletCount = 7;
+uint32_t colorPallets[colorPalletCount][4] = {
+    {GREEN, YELLOW, ORANGE, RED},       {BLUE, CYAN, VIOLET, WHITE},
+    {MAGENTA, MAGENTA, VIOLET, VIOLET}, {CORAL, SALMON, SALMON, ROSE},
+    {ROSE, ROSE, ROSE, ROSE},           {GREEN, GREEN, GREEN, GREEN},
+    {WHITE, WHITE, WHITE, WHITE},
+};

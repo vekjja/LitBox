@@ -6,11 +6,11 @@
 #include <arduinoFFT.h>
 
 #include "Birds.h"
-#include "colors.h"
+#include "Colors.h"
+#include "SpectralAnalyzer.h"
 
 // IOPins
 IOPin ledData(12);
-IOPin audio(A0, INPUT);
 
 // LED Matrix Config
 int ledRows = 8;
@@ -23,27 +23,7 @@ Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(
 // Brightness and Color Config
 const int minBrightness = 1;
 const int maxBrightness = 255;
-const int colorPalletCount = 7;
 int brightness = 6;
-int currentPalette = 1;
-uint32_t colorPallets[colorPalletCount][4] = {
-    {GREEN, YELLOW, ORANGE, RED},       {BLUE, CYAN, VIOLET, WHITE},
-    {MAGENTA, MAGENTA, VIOLET, VIOLET}, {CORAL, SALMON, SALMON, ROSE},
-    {ROSE, ROSE, ROSE, ROSE},           {GREEN, GREEN, GREEN, GREEN},
-    {WHITE, WHITE, WHITE, WHITE},
-};
-
-// Audio Config
-arduinoFFT FFT = arduinoFFT();
-const int maxInput = 81;
-const int minSensitivity = 1;
-const int maxSensitivity = 100;
-const uint16_t audioSamples = 128;
-const int usableSamples = (audioSamples / 2);
-bool scaling = true;
-double vReal[audioSamples];
-double vImage[audioSamples];
-int sensitivity = 6;
 
 // Visualization Config
 int visualization = 0;
@@ -69,62 +49,18 @@ void setup() {
 
 void loop() {
   wifi.handleClient();
-  spectralAnalyzer();
-}
-
-void spectralAnalyzer() {
-  for (int i = 0; i < audioSamples; i++) {
-    vReal[i] = audio.readA() / sensitivity;
-    vImage[i] = 0;
-  }
-
-  FFT.Windowing(vReal, audioSamples, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
-  FFT.Compute(vReal, vImage, audioSamples, FFT_FORWARD);
-  FFT.ComplexToMagnitude(vReal, vImage, audioSamples);
-
-  int spectralData[ledColumns] = {0};
-  peakDetection(spectralData);
-
+  spectralAnalyzer(ledColumns, ledRows);
+  // spectralAnalyzer();
   switch (visualization) {
     case 1:
       drawCircles(spectralData);
       break;
     case 2:
-      // drawBirds();
       runAtFrameRate(drawBirds, 60);
       break;
     default:
       drawBars(spectralData);
       break;
-  }
-}
-
-void peakDetection(int* peakData) {
-  int avgRange = usableSamples / ledColumns;
-
-  // Start from 1 instead of 0 to skip the first bin
-  // The first bin (bin 0) usually contains the DC component of the signal,
-  // which is often not useful for audio visualization.
-  for (int i = 1; i < ledColumns; i++) {
-    double peak = 0;
-    for (int j = i * avgRange; j < (i + 1) * avgRange && j < usableSamples;
-         j++) {
-      if (vReal[j] > peak) {
-        peak = vReal[j];
-      }
-    }
-    // Map the peak value to a row on the LED matrix
-    peakData[i - 1] = map(peak, 0, maxInput, 0, ledRows);
-  }
-  if (scaling) logarithmicScaling(peakData);
-}
-
-void logarithmicScaling(int* spectralData) {
-  for (int i = 0; i < ledColumns; i++) {
-    if (spectralData[i] > 0) {
-      // Apply logarithmic scaling
-      spectralData[i] = log10(spectralData[i]) * (ledRows / log10(maxInput));
-    }
   }
 }
 
