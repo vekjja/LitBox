@@ -162,7 +162,7 @@ input[type=range] {
 }
 
 input[type=range]::-webkit-slider-runnable-track {
-    background: #48c9f8;
+    background: #38ffb9;
     height: 8px;
     border-radius: 4px;
 }
@@ -188,7 +188,7 @@ input[type=range]:focus {
 }
 
 /* Popup styling */
-.slider-popup {
+/* .slider-popup {
     position: absolute;
     background-color: #555;
     color: white;
@@ -200,4 +200,4 @@ input[type=range]:focus {
     height: 40px;
     text-align: center;
     line-height: 40px;
-}
+} */

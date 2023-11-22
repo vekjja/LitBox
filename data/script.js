@@ -60,27 +60,13 @@ function fetchBirdSettings() {
 
 window.onload = fetchInitialSettings;
 
-function showPopup(slider, popup, value) {
-    var sliderRect = slider.getBoundingClientRect();
-    var popupRect = popup.getBoundingClientRect();
-    var thumbPosition = (slider.value / slider.max) * slider.offsetWidth;
-    popup.style.left = (sliderRect.left + thumbPosition - popupRect.width / 2) + 'px';
-    popup.style.top = (sliderRect.top - popupRect.height - 30) + 'px';
-    popup.textContent = value;
-    popup.style.display = 'block';
-}
-
-
 var sensitivitySlider = document.getElementById('sensitivityValue');
-var sensitivityPopup = document.getElementById('sensitivityPopup');
 
 sensitivitySlider.addEventListener('input', function () {
-    showPopup(sensitivitySlider, sensitivityPopup, sensitivitySlider.value);
     sensitivityValue.textContent = sensitivitySlider.value;
 });
 
 sensitivitySlider.addEventListener('change', function () {
-    sensitivityPopup.style.display = 'none';
     var formData = new FormData();
     formData.append('value', sensitivitySlider.value);
     fetch('/sensitivity', { method: 'POST', body: formData })
@@ -94,15 +80,13 @@ sensitivitySlider.addEventListener('change', function () {
 });
 
 var brightnessSlider = document.getElementById('brightnessValue');
-var brightnessPopup = document.getElementById('brightnessPopup');
 
 brightnessSlider.addEventListener('input', function () {
-    showPopup(brightnessSlider, brightnessPopup, brightnessSlider.value);
     brightnessValue.textContent = brightnessSlider.value;
 });
 
 brightnessSlider.addEventListener('change', function () {
-    brightnessPopup.style.display = 'none';
+    // brightnessPopup.style.display = 'none';
     var formData = new FormData();
     formData.append('value', brightnessSlider.value);
     fetch('/brightness', { method: 'POST', body: formData })
