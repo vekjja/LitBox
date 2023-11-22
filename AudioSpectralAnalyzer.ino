@@ -96,7 +96,7 @@ void drawBars(int* spectralData) {
 
 void drawBirds() {
   if (birds == nullptr) {
-    generateBirds(ledColumns, ledRows, colorPallets[currentPalette]);
+    generateBirds(ledColumns, ledRows);
   }
   updateFlock(ledColumns, ledRows);
   matrix.fillScreen(0);
@@ -232,7 +232,7 @@ void initializeWebServer() {
     if (wifi.webServer.hasArg("separation")) {
       birdSeparation = wifi.webServer.arg("separation").toFloat();
     }
-    generateBirds(ledColumns, ledRows, colorPallets[currentPalette]);
+    generateBirds(ledColumns, ledRows);
     wifi.webServer.send(200, "text/plain", "Bird settings updated");
   });
 
