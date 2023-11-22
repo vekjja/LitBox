@@ -1,3 +1,5 @@
+#ifndef COLORS_H
+#define COLORS_H
 // Color definitions
 #define BLACK 0x0000
 #define BLUE 0x001F
@@ -21,10 +23,12 @@
 #define PEACH 0xFEA6
 
 int currentPalette = 1;
+const int palletSize = 4;
 const int colorPalletCount = 7;
-uint32_t colorPallets[colorPalletCount][4] = {
+uint32_t colorPallets[colorPalletCount][palletSize] = {
     {GREEN, YELLOW, ORANGE, RED},       {BLUE, CYAN, VIOLET, WHITE},
     {MAGENTA, MAGENTA, VIOLET, VIOLET}, {CORAL, SALMON, SALMON, ROSE},
     {ROSE, ROSE, ROSE, ROSE},           {GREEN, GREEN, GREEN, GREEN},
     {WHITE, WHITE, WHITE, WHITE},
 };
+#endif

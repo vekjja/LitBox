@@ -42,15 +42,13 @@ void setup() {
   matrix.setTextWrap(false);
   ledData.setPinMode(OUTPUT);
   matrix.setBrightness(brightness);
-  // testMatrix(matrix, ledColumns, ledRows);
-  testMatrix();
+  testMatrix(&matrix, ledColumns, ledRows);
   initializeWebServer();
 }
 
 void loop() {
   wifi.handleClient();
   spectralAnalyzer(ledColumns, ledRows);
-  // spectralAnalyzer();
   switch (visualization) {
     case 1:
       drawCircles(spectralData);
@@ -91,9 +89,6 @@ void drawBars(int* spectralData) {
       pixelColor = (y > 3) ? colorPallets[currentPalette][2] : pixelColor;
       pixelColor = (y > 6) ? colorPallets[currentPalette][3] : pixelColor;
       matrix.drawPixel(x, ledRows - 1 - y, pixelColor);
-      // if (spectralData[x] == ledRows - 1 && x == 13) {
-      //   drawFirework(x, spectralData[x]);
-      // }
     }
   }
   matrix.show();
@@ -140,23 +135,7 @@ void scrollText(String text) {
   }
 }
 
-void testMatrix() {
-  Serial.println("Begin Testing LED Matrix");
-  int pixelColor = WHITE;
-  // loop through each pixel from bottom left to top right
-  Serial.println("Looping through each pixel from bottom left to top right");
-  for (int x = 0; x < ledColumns; x++) {
-    for (int y = 0; y < ledRows; y++) {
-      matrix.fillScreen(0);
-      matrix.drawPixel(x, y, pixelColor);
-      matrix.show();
-      delay(1);
-    }
-  }
-}
-
 void initializeWebServer() {
-  // Sensitivity endpoint
   wifi.webServer.on("/sensitivity", HTTP_GET, []() {
     wifi.webServer.send(200, "text/plain", String(sensitivity));
   });
@@ -170,7 +149,6 @@ void initializeWebServer() {
     }
   });
 
-  // Brightness endpoint
   wifi.webServer.on("/brightness", HTTP_GET, []() {
     wifi.webServer.send(200, "text/plain", String(brightness));
   });
@@ -258,9 +236,8 @@ void initializeWebServer() {
     wifi.webServer.send(200, "text/plain", "Bird settings updated");
   });
 
-  // wifi.setConnectSubroutine([]() { testMatrix(matrix, ledColumns, ledRows);
-  // });
-  wifi.setConnectSubroutine([]() { testMatrix(); });
+  wifi.setConnectSubroutine([]() { testMatrix(&matrix, ledColumns, ledRows); });
+  // wifi.setConnectSubroutine([]() { testMatrix(); });
   wifi.enableMDNS("spectral-analyzer");
   wifi.Start();
 }
