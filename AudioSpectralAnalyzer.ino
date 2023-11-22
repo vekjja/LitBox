@@ -31,7 +31,7 @@ int maxVisualization = 2;
 
 // text color and speed
 uint32_t textColor = WHITE;  // Default color
-int textSpeed = 50;          // Default speed
+int textSpeed = 60;          // Default speed
 
 // Web Server Config
 ESPWiFi wifi = ESPWiFi("SpectralAnalyzer", "12345678");
