@@ -14,12 +14,12 @@
 IOPin ledData(12);
 
 // LED Matrix Config
-int ledRows = 8;
-int ledColumns = 32;
+int LEDWidth = 32;
+int LEDHeight = 8;
 uint8_t matrixType =
     NEO_MATRIX_TOP + NEO_MATRIX_LEFT + NEO_MATRIX_COLUMNS + NEO_MATRIX_ZIGZAG;
 Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(
-    ledColumns, ledRows, ledData.pin(), matrixType, NEO_GRB + NEO_KHZ800);
+    LEDWidth, LEDHeight, ledData.pin(), matrixType, NEO_GRB + NEO_KHZ800);
 
 // Brightness and Color Config
 const int minBrightness = 1;
@@ -43,13 +43,13 @@ void setup() {
   matrix.setTextWrap(false);
   ledData.setPinMode(OUTPUT);
   matrix.setBrightness(brightness);
-  testMatrix(&matrix, ledColumns, ledRows);
+  testMatrix(&matrix, LEDWidth, LEDHeight);
   initializeWebServer();
 }
 
 void loop() {
   wifi.handleClient();
-  spectralAnalyzer(ledColumns, ledRows);
+  spectralAnalyzer(LEDWidth, LEDHeight);
   switch (visualization) {
     case 1:
       drawCircles(spectralData);
@@ -68,13 +68,13 @@ void loop() {
 
 void drawGameOfLife() {
   if (gol_Cells == nullptr) {
-    startGameOfLife(ledColumns, ledRows);
+    startGameOfLife(LEDWidth, LEDHeight);
   }
   int cellColor = colorPallets[currentPalette][0];
   // updateGameOfLife(ledRows, ledColumns, 60);
   matrix.fillScreen(0);
-  for (int x = 0; x < ledColumns; x++) {
-    for (int y = 0; y < ledRows; y++) {
+  for (int x = 0; x < LEDWidth; x++) {
+    for (int y = 0; y < LEDHeight; y++) {
       if (gol_Cells[x][y] == 1) {
         matrix.drawPixel(x, y, cellColor);
       }
@@ -85,7 +85,7 @@ void drawGameOfLife() {
 
 void drawCircles(int* spectralData) {
   matrix.fillScreen(0);
-  for (int x = 0; x < ledColumns; x++) {
+  for (int x = 0; x < LEDWidth; x++) {
     int circleRadius = spectralData[x];
     int circleColor = colorPallets[currentPalette][0];
     circleColor =
@@ -103,13 +103,13 @@ void drawCircles(int* spectralData) {
 
 void drawBars(int* spectralData) {
   matrix.fillScreen(0);
-  for (int x = 0; x < ledColumns; x++) {
+  for (int x = 0; x < LEDWidth; x++) {
     for (int y = 0; y < spectralData[x]; y++) {
       uint32_t pixelColor = colorPallets[currentPalette][0];
       pixelColor = (y > 1) ? colorPallets[currentPalette][1] : pixelColor;
       pixelColor = (y > 3) ? colorPallets[currentPalette][2] : pixelColor;
       pixelColor = (y > 6) ? colorPallets[currentPalette][3] : pixelColor;
-      matrix.drawPixel(x, ledRows - 1 - y, pixelColor);
+      matrix.drawPixel(x, LEDHeight - 1 - y, pixelColor);
     }
   }
   matrix.show();
@@ -117,9 +117,9 @@ void drawBars(int* spectralData) {
 
 void drawBirds() {
   if (birds == nullptr) {
-    generateBirds(ledColumns, ledRows);
+    generateBirds(LEDWidth, LEDHeight);
   }
-  updateFlock(ledColumns, ledRows);
+  updateFlock(LEDWidth, LEDHeight);
   matrix.fillScreen(0);
   for (int i = 0; i < birdCount; i++) {
     matrix.drawPixel(birds[i].pixel.x, birds[i].pixel.y, birds[i].color);
@@ -253,11 +253,11 @@ void initializeWebServer() {
     if (wifi.webServer.hasArg("separation")) {
       birdSeparation = wifi.webServer.arg("separation").toFloat();
     }
-    generateBirds(ledColumns, ledRows);
+    generateBirds(LEDWidth, LEDHeight);
     wifi.webServer.send(200, "text/plain", "Bird settings updated");
   });
 
-  wifi.setConnectSubroutine([]() { testMatrix(&matrix, ledColumns, ledRows); });
+  wifi.setConnectSubroutine([]() { testMatrix(&matrix, LEDWidth, LEDHeight); });
   // wifi.setConnectSubroutine([]() { testMatrix(); });
   wifi.enableMDNS("spectral-analyzer");
   wifi.Start();

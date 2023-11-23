@@ -1,27 +1,16 @@
 #ifndef GAMEOFLIFE_H
 #define GAMEOFLIFE_H
 
-int gol_Generations = 0;
 int** gol_Cells = nullptr;
+int gol_Generations = 0;
 
-void randomizeCells(int rows, int columns) {
-  for (int x = 0; x < columns; x++) {
-    for (int y = 0; y < rows; y++) {
-      int rand = random(0, 3000);
-      if ((rand % 2) == 0) {
-        gol_Cells[x][y] = 1;
-      }
-    }
-  }
-}
-
-void initCells(int** arr, int rows, int columns) {
-  for (int x = 0; x < columns; x++) {
-    for (int y = 0; y < rows; y++) {
-      arr[x * columns + y] = 0;
-    }
-  }
-}
+// void initCells(int** arr, int rows, int columns) {
+//   for (int x = 0; x < columns; x++) {
+//     for (int y = 0; y < rows; y++) {
+//       arr[x][y] = 0;
+//     }
+//   }
+// }
 
 // int countNeighbors(int rows, int columns, int x, int y) {
 //   int neighbors = 0;
@@ -72,12 +61,22 @@ void initCells(int** arr, int rows, int columns) {
 //   delay(100);
 // }
 
-void startGameOfLife(int rows, int columns) {
-  gol_Cells = new int*[rows];
-  for (int i = 0; i < rows; ++i) gol_Cells[i] = new int[columns];
+void randomizeCells(int width, int height) {
+  for (int x = 0; x < width; x++) {
+    for (int y = 0; y < height; y++) {
+      int rand = random(0, 3000);
+      if ((rand % 2) == 0) {
+        gol_Cells[x][y] = 1;
+      }
+    }
+  }
+}
 
-  initCells(gol_Cells, rows, columns);
-  randomSeed(analogRead(0));
-  randomizeCells(rows, columns);
+void startGameOfLife(int width, int height) {
+  gol_Cells = new int* [width] { 0 };
+  for (int i = 0; i < width; ++i) gol_Cells[i] = new int[height]{0};
+
+  randomSeed(analogRead(12));
+  randomizeCells(width, height);
 }
 #endif
