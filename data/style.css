@@ -6,13 +6,10 @@ body {
     color: #fff;
 }
 
-.container {
+.container,
+.settings-container {
     height: 100vh;
     position: relative;
-}
-
-.container,
-.setting-container {
     background-color: #111;
     padding: 20px;
     border-radius: 30px;
@@ -24,93 +21,74 @@ body {
     padding: 20px;
 }
 
+.settings-container {
+    padding: 1px;
+    height: auto;
+    margin: 1%;
+    background-color: #444;
+}
+
 .settings-content {
     display: none;
+    border-radius: 12px;
+    padding: 15px 32px;
 }
 
 .setting {
     display: flex;
     flex-direction: column;
     margin-bottom: 10px;
+    align-content: center;
+    align-items: center;
+    text-align: center;
     /* Adjust as needed for spacing */
 }
 
 .setting label {
     margin-bottom: 5px;
-    /* Adds some space between the label and input */
 }
 
-.toggle-check {
+.setting input {
+    text-align: center;
+}
+
+.clickable,
+.settings-container {
+    background-color: #444;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    font-size: 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    margin: 4px 2px;
+}
+
+.clickable:hover {
+    background-color: #555;
+}
+
+.toggle {
     display: none;
 }
 
-.toggle-check:checked+.toggle-label+.settings-content {
-    display: block;
+.toggle-header {
+    font-size: 36px;
+    background-color: none;
 }
 
-.toggle-label {
-    top: 10px;
-    left: 10px;
-    cursor: pointer;
-    z-index: 10;
-    background-color: #111;
-    padding: 5px;
-    border-radius: 5px;
+.toggle:checked+.clickable+.settings-content {
+    display: block;
 }
 
 .custom-text-field {
     background-color: #868686;
-    border: none;
-    color: white;
-    padding: 15px 32px;
     height: 21px;
     font-size: 18px;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    text-decoration: none;
-    display: inline-block;
-    margin: 4px 2px;
     text-align: center;
-}
-
-.dropdown {
-    background-color: #444;
-    border: none;
-    color: white;
-    padding: 15px 32px;
-    font-size: 16px;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    text-decoration: none;
-    display: inline-block;
-    margin: 4px 2px;
-}
-
-.dropdown-label {
-    color: white;
-    font-size: 21px;
-    margin-bottom: 10px;
-    display: block;
-}
-
-.button {
-    background-color: #444;
-    border: none;
-    color: white;
-    padding: 15px 32px;
-    font-size: 16px;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    text-decoration: none;
-    display: inline-block;
-    margin: 4px 2px;
-}
-
-.button:hover {
-    background-color: #555;
 }
 
 /* Slider styles */

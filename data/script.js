@@ -61,7 +61,7 @@ window.onload = function () {
     fetchBirdSettings();
 }
 
-document.querySelectorAll('.toggle-check').forEach(function (check) {
+document.querySelectorAll('.toggle').forEach(function (check) {
     var contentId = check.id;
     // Load the saved state
     check.checked = localStorage.getItem(contentId) === 'true';
