@@ -14,10 +14,12 @@ struct Bird {
 int birdCount = 9;
 Bird* birds = nullptr;
 float birdAlignment = 9;
+float birdSeparation = 1;
 float birdCohesion = 999;
 float birdMaxVelocity = 3;
 float birdMinVelocity = 0;
-float birdSeparation = 1;
+bool birdVerticalBounds = true;
+bool birdHorizontalBounds = true;
 int birdEdgeBuffer = 1;  // Distance from edge to start avoiding
 float birdRandomVelocityChangeFactor = 1;  // Max random change in velocity
 int birdRandomChangeChance = 3;  // Chance of random change (in percentage)
@@ -97,20 +99,36 @@ void updateFlock(int maxX, int maxY) {
                             birdRandomVelocityChangeFactor);
     }
 
-    // Update position with vertical boundary check
+    // Update position with vertical boundary check or wrap
     birds[i].pixel.y += birds[i].vy;
-    if (birds[i].pixel.y < 0) {
-      birds[i].pixel.y = 0;
-    } else if (birds[i].pixel.y >= maxY) {
-      birds[i].pixel.y = maxY - 1;
+    if (birdVerticalBounds) {
+      if (birds[i].pixel.y < 0) {
+        birds[i].pixel.y = 0;
+      } else if (birds[i].pixel.y >= maxY) {
+        birds[i].pixel.y = maxY - 1;
+      }
+    } else {
+      if (birds[i].pixel.y < 0) {
+        birds[i].pixel.y = maxY - 1;
+      } else if (birds[i].pixel.y >= maxY) {
+        birds[i].pixel.y = 0;
+      }
     }
 
-    // Update position with horizontal boundary check
+    // Update position with horizontal boundary check or wrap
     birds[i].pixel.x += birds[i].vx;
-    if (birds[i].pixel.x < 0) {
-      birds[i].pixel.x = 0;
-    } else if (birds[i].pixel.x >= maxX) {
-      birds[i].pixel.x = maxX - 1;
+    if (birdHorizontalBounds) {
+      if (birds[i].pixel.x < 0) {
+        birds[i].pixel.x = 0;
+      } else if (birds[i].pixel.x >= maxX) {
+        birds[i].pixel.x = maxX - 1;
+      }
+    } else {
+      if (birds[i].pixel.x < 0) {
+        birds[i].pixel.x = maxX - 1;
+      } else if (birds[i].pixel.x >= maxX) {
+        birds[i].pixel.x = 0;
+      }
     }
   }
 }

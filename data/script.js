@@ -165,6 +165,7 @@ document.getElementById('updateBirds').addEventListener('click', function () {
     var alignment = document.getElementById('alignment').value;
     var cohesion = document.getElementById('cohesion').value;
     var separation = document.getElementById('separation').value;
+    var vertBounds = document.getElementById('birdVertBounds').checked;
 
     fetch('/birds', {
         method: 'POST',
@@ -175,6 +176,7 @@ document.getElementById('updateBirds').addEventListener('click', function () {
             + '&alignment=' + alignment
             + '&cohesion=' + cohesion
             + '&separation=' + separation
+            + '&vert_bounds=' + vertBounds
     })
         .then(response => response.text())
         .then(data => console.log(data))

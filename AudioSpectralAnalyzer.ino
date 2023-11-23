@@ -225,12 +225,12 @@ void initializeWebServer() {
 
   wifi.webServer.on("/birds", HTTP_GET, []() {
     String response = "";
-    response += "max_velocity=" + String(birdMaxVelocity) + "\n";
-    response += "min_velocity=" + String(birdMinVelocity) + "\n";
     response += "num_birds=" + String(birdCount) + "\n";
     response += "alignment=" + String(birdAlignment) + "\n";
     response += "cohesion=" + String(birdCohesion) + "\n";
     response += "separation=" + String(birdSeparation) + "\n";
+    response += "birdVerticalBounds=" + String(birdVerticalBounds) + "\n";
+    response += "birdHorizontalBounds=" + String(birdHorizontalBounds) + "\n";
     wifi.webServer.send(200, "text/plain", response);
   });
 
@@ -252,6 +252,12 @@ void initializeWebServer() {
     }
     if (wifi.webServer.hasArg("separation")) {
       birdSeparation = wifi.webServer.arg("separation").toFloat();
+    }
+    if (wifi.webServer.hasArg("vert_bounds")) {
+      birdVerticalBounds = wifi.webServer.arg("vert_bounds").toInt();
+    }
+    if (wifi.webServer.hasArg("birdHorizontalBounds")) {
+      birdHorizontalBounds = wifi.webServer.arg("birdHorizontalBounds").toInt();
     }
     generateBirds(LEDWidth, LEDHeight);
     wifi.webServer.send(200, "text/plain", "Bird settings updated");

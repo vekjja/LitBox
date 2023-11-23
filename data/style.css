@@ -49,9 +49,6 @@ body {
     height: 27px;
     font-size: 18px;
     text-align: center;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
 }
 
 .clickable:hover {
