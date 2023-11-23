@@ -7,6 +7,7 @@
 
 #include "Birds.h"
 #include "Colors.h"
+#include "GameofLife.h"
 #include "SpectralAnalyzer.h"
 
 // IOPins
@@ -27,7 +28,7 @@ int brightness = 6;
 
 // Visualization Config
 int visualization = 0;
-int maxVisualization = 2;
+int maxVisualization = 3;
 
 // text color and speed
 uint32_t textColor = WHITE;  // Default color
@@ -56,10 +57,30 @@ void loop() {
     case 2:
       runAtFrameRate(drawBirds, 60);
       break;
-    default:
+    case 3:
       drawBars(spectralData);
       break;
+    default:
+      runAtFrameRate(drawGameOfLife, 60);
+      break;
   }
+}
+
+void drawGameOfLife() {
+  if (gol_Cells == nullptr) {
+    startGameOfLife(ledColumns, ledRows);
+  }
+  int cellColor = colorPallets[currentPalette][0];
+  // updateGameOfLife(ledRows, ledColumns, 60);
+  matrix.fillScreen(0);
+  for (int x = 0; x < ledColumns; x++) {
+    for (int y = 0; y < ledRows; y++) {
+      if (gol_Cells[x][y] == 1) {
+        matrix.drawPixel(x, y, cellColor);
+      }
+    }
+  }
+  matrix.show();
 }
 
 void drawCircles(int* spectralData) {
