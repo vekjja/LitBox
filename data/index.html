@@ -43,8 +43,8 @@
                         <option value="99">Text</option>
                     </select>
                     <div class="toggle-content" id="bird-settings">
-                        <!-- <div class="settings-container"> -->
                         <div class="setting">
+                            <!-- Birds -->
                             <label>Number of Birds</label>
                             <input type="number" id="numBirds"
                                 placeholder="Number of Birds">
@@ -77,25 +77,22 @@
                         <button id="updateBirds"
                             class="clickable button">Update
                             Birds</button>
-                        <!-- </div> -->
                     </div>
-                    <div class="setting"> <!-- Text -->
-                        <div class="toggle-content" id="text-settings">
-                            <div class="setting">
-                                <input type="text" id="customText"
-                                    placeholder="Enter custom text">
-                                <button id="sendText" class="clickable button">Scroll</button>
-                            </div>
-                            <div class="setting">
-                                <input type="color" id="textColor"
-                                    title="Choose your color">
-                            </div>
-                            <div class="setting">
-                                Scroll Speed
-                                <input type="range" id="speedControl" min="1"
-                                    max="100"
-                                    value="50">
-                            </div>
+                    <div class="toggle-content" id="text-settings">
+                        <div class="setting"><!-- Text -->
+                            <input type="text" id="customText"
+                                placeholder="Enter custom text">
+                            <button id="sendText" class="clickable button">Scroll</button>
+                        </div>
+                        <div class="setting">
+                            <input type="color" id="textColor"
+                                title="Choose your color">
+                        </div>
+                        <div class="setting">
+                            Scroll Speed
+                            <input type="range" id="speedControl" min="1"
+                                max="100"
+                                value="50">
                         </div>
                     </div>
                 </div>

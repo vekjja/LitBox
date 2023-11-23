@@ -67,7 +67,6 @@ document.querySelectorAll('.toggle-button').forEach(function (toggle) {
     toggle.checked = localStorage.getItem(contentId) === 'true';
     // Save state on change
     toggle.addEventListener('click', function () {
-        console.log('Saving state of ' + contentId + ' to ' + toggle.checked);
         localStorage.setItem(contentId, toggle.checked);
     });
 });
