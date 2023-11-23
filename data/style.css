@@ -28,12 +28,6 @@ body {
     background-color: #444;
 }
 
-.settings-content {
-    display: none;
-    border-radius: 12px;
-    padding: 15px 32px;
-}
-
 .setting {
     display: flex;
     flex-direction: column;
@@ -46,22 +40,29 @@ body {
 
 .setting label {
     margin-bottom: 5px;
+    border-radius: 12px;
 }
 
 .setting input {
+    border-radius: 9px;
+    background-color: #868686;
+    height: 27px;
+    font-size: 18px;
     text-align: center;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
 }
 
 .clickable:hover {
     background-color: #555;
 }
 
-.clickable,
-.settings-container {
+.clickable {
     background-color: #444;
     border: none;
     color: white;
-    padding: 15px 32px;
+    padding: 12px 18px;
     font-size: 16px;
     border-radius: 12px;
     cursor: pointer;
@@ -70,27 +71,23 @@ body {
     display: inline-block;
     margin: 4px 2px;
     text-align: center;
-}
-
-.dropdown {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
 }
 
-.toggle {
+.toggle-button {
     display: none;
 }
 
-.toggle:checked+.clickable+.settings-content {
+.toggle-button:checked+.clickable+.toggle-content {
     display: block;
 }
 
-.custom-text-field {
-    background-color: #868686;
-    height: 21px;
-    font-size: 18px;
-    text-align: center;
+.toggle-content {
+    display: none;
+    border-radius: 12px;
+    padding: 15px 32px;
 }
 
 .header {

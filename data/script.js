@@ -61,13 +61,14 @@ window.onload = function () {
     fetchBirdSettings();
 }
 
-document.querySelectorAll('.toggle').forEach(function (check) {
-    var contentId = check.id;
+document.querySelectorAll('.toggle-button').forEach(function (toggle) {
+    var contentId = toggle.id;
     // Load the saved state
-    check.checked = localStorage.getItem(contentId) === 'true';
+    toggle.checked = localStorage.getItem(contentId) === 'true';
     // Save state on change
-    check.addEventListener('change', function () {
-        localStorage.setItem(contentId, check.checked);
+    toggle.addEventListener('click', function () {
+        console.log('Saving state of ' + contentId + ' to ' + toggle.checked);
+        localStorage.setItem(contentId, toggle.checked);
     });
 });
 
@@ -101,11 +102,6 @@ brightnessSlider.addEventListener('change', function () {
 
 var visualizationSelect = document.getElementById('visualizationSelect');
 visualizationSelect.addEventListener('change', function () {
-    // let selectedOptionText = this.options[this.selectedIndex].text;
-    // let characterCount = selectedOptionText.length;
-    // let characterWidth = 15; // Adjust based on your font size and type
-    // this.style.width = `${characterCount * characterWidth}px`;
-
     var selectedValue = visualizationSelect.value;
     document.getElementById('bird-settings').style.display = 'none';
     document.getElementById('text-settings').style.display = 'none';

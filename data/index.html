@@ -9,17 +9,14 @@
     </head>
     <body>
         <div class="container"> <!-- Spectral Analyzer -->
-            <input id="toggleControls" type="checkbox" class="toggle">
-            <label for="toggleControls" class="header">
-                Spectral Analyzer Controls</label>
+            <label class="header"> Spectral Analyzer Controls</label>
             <div class="content">
 
                 <div class="setting"> <!-- Sensitivity -->
                     <input id="toggleSensitivity" type="checkbox"
-                        class="toggle">
-                    <label for="toggleSensitivity"
-                        class="clickable toggle-label">Sensitivity</label>
-                    <div class="settings-content">
+                        class="toggle-button">
+                    <label for="toggleSensitivity" class="clickable">Sensitivity</label>
+                    <div class="toggle-content">
                         <input id="sensitivityValue" type="range"
                             id="sensitivityRange"
                             min="1" max="100">
@@ -28,9 +25,9 @@
 
                 <div class="setting"> <!-- Brightness -->
                     <input id="toggleBrightness" type="checkbox"
-                        class="toggle">
-                    <label for="toggleBrightness" class="clickable toggle-label">Brightness</label>
-                    <div class="settings-content">
+                        class="toggle-button">
+                    <label for="toggleBrightness" class="clickable">Brightness</label>
+                    <div class="toggle-content">
                         <input id="brightnessValue" type="range"
                             id="brightnessRange"
                             min="1" max="255">
@@ -38,61 +35,55 @@
                 </div>
 
                 <div class="setting"> <!-- Visualizations -->
-                    <!-- <input id="toggleVisualizations" type="checkbox"
-                        class="toggle">
-                    <label for="toggleVisualizations"
-                        class="clickable toggle-label">Visualizations</label>
-                    <div class="settings-content"> -->
                     <select id="visualizationSelect"
-                        class="clickable dropdown">
+                        class="clickable">
                         <option value="0">Bars</option>
                         <option value="2">Birds</option>
                         <option value="1">Circles</option>
                         <option value="99">Text</option>
                     </select>
-                    <div class="settings-content" id="bird-settings">
-                        <div class="settings-container">
-                            <div class="setting">
-                                <label for="numBirds">Number of Birds</label>
-                                <input type="number" id="numBirds"
-                                    placeholder="Number of Birds">
-                            </div>
-                            <div class="setting">
-                                <label for="maxVelocity">Max Velocity</label>
-                                <input type="number" id="maxVelocity"
-                                    placeholder="Max Velocity">
-                            </div>
-                            <div class="setting">
-                                <label for="minVelocity">Min Velocity</label>
-                                <input type="number" id="minVelocity"
-                                    placeholder="Min Velocity">
-                            </div>
-                            <div class="setting">
-                                <label for="alignment">Alignment</label>
-                                <input type="number" id="alignment"
-                                    placeholder="Alignment">
-                            </div>
-                            <div class="setting">
-                                <label for="cohesion">Cohesion</label>
-                                <input type="number" id="cohesion"
-                                    placeholder="Cohesion">
-                            </div>
-                            <div class="setting">
-                                <label for="separation">Separation</label>
-                                <input type="number" id="separation"
-                                    placeholder="Separation">
-                            </div>
-                            <button id="updateBirds"
-                                class="clickable button">Update
-                                Birds</button>
+                    <div class="toggle-content" id="bird-settings">
+                        <!-- <div class="settings-container"> -->
+                        <div class="setting">
+                            <label>Number of Birds</label>
+                            <input type="number" id="numBirds"
+                                placeholder="Number of Birds">
                         </div>
+                        <div class="setting">
+                            <label>Max Velocity</label>
+                            <input type="number" id="maxVelocity"
+                                placeholder="Max Velocity">
+                        </div>
+                        <div class="setting">
+                            <label>Min Velocity</label>
+                            <input type="number" id="minVelocity"
+                                placeholder="Min Velocity">
+                        </div>
+                        <div class="setting">
+                            <label>Alignment</label>
+                            <input type="number" id="alignment"
+                                placeholder="Alignment">
+                        </div>
+                        <div class="setting">
+                            <label>Cohesion</label>
+                            <input type="number" id="cohesion"
+                                placeholder="Cohesion">
+                        </div>
+                        <div class="setting">
+                            <label>Separation</label>
+                            <input type="number" id="separation"
+                                placeholder="Separation">
+                        </div>
+                        <button id="updateBirds"
+                            class="clickable button">Update
+                            Birds</button>
+                        <!-- </div> -->
                     </div>
                     <div class="setting"> <!-- Text -->
-                        <div class="settings-content" id="text-settings">
+                        <div class="toggle-content" id="text-settings">
                             <div class="setting">
                                 <input type="text" id="customText"
-                                    placeholder="Enter custom text"
-                                    class="clickable custom-text-field">
+                                    placeholder="Enter custom text">
                                 <button id="sendText" class="clickable button">Scroll</button>
                             </div>
                             <div class="setting">
@@ -110,11 +101,11 @@
                 </div>
 
                 <div class="setting"> <!-- WiFi -->
-                    <input type="checkbox" class="toggle"
+                    <input type="checkbox" class="toggle-button"
                         id="toggleWifiSettings">
                     <label for="toggleWifiSettings"
-                        class="clickable toggle-label">WiFi</label>
-                    <div class="settings-content">
+                        class="clickable">WiFi</label>
+                    <div class="toggle-content">
                         <button id="wifiSetup" class="clickable button">Setup</button>
                         <button id="wifiErase" class="clickable button">Erase</button>
                     </div>
