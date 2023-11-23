@@ -15,7 +15,7 @@ int birdCount = 9;
 Bird* birds = nullptr;
 float birdAlignment = 9;
 float birdCohesion = 999;
-float birdMaxVelocity = 9;
+float birdMaxVelocity = 3;
 float birdMinVelocity = 0;
 float birdSeparation = 1;
 int birdEdgeBuffer = 1;  // Distance from edge to start avoiding
@@ -84,15 +84,13 @@ void updateFlock(int maxX, int maxY) {
                             birdRandomVelocityChangeFactor);
     }
 
-    // Limiting velocity
-    float speed = sqrt(birds[i].vx * birds[i].vx + birds[i].vy * birds[i].vy);
-    if (speed > birdMaxVelocity) {
-      birds[i].vx = (birds[i].vx / speed) * birdMaxVelocity;
-      birds[i].vy = (birds[i].vy / speed) * birdMaxVelocity;
-    } else if (speed < birdMinVelocity) {
-      birds[i].vx = (birds[i].vx / speed) * birdMinVelocity;
-      birds[i].vy = (birds[i].vy / speed) * birdMinVelocity;
-    } else if (birds[i].pixel.y < maxY - 1 && speed == birdMinVelocity) {
+    // don't allow birds to go too fast or stop mid-air
+    float velocity =
+        sqrt(birds[i].vx * birds[i].vx + birds[i].vy * birds[i].vy);
+    if (velocity > birdMaxVelocity) {
+      birds[i].vx = (birds[i].vx / velocity) * birdMaxVelocity;
+      birds[i].vy = (birds[i].vy / velocity) * birdMaxVelocity;
+    } else if (birds[i].pixel.y < maxY - 1 && velocity == birdMinVelocity) {
       birds[i].vx += random(-birdRandomVelocityChangeFactor,
                             birdRandomVelocityChangeFactor);
       birds[i].vy += random(-birdRandomVelocityChangeFactor,

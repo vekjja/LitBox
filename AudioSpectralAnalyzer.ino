@@ -58,10 +58,10 @@ void loop() {
       runAtFrameRate(drawBirds, 60);
       break;
     case 3:
-      drawBars(spectralData);
+      runAtFrameRate(drawGameOfLife, 60);
       break;
     default:
-      runAtFrameRate(drawGameOfLife, 60);
+      drawBars(spectralData);
       break;
   }
 }
@@ -71,7 +71,7 @@ void drawGameOfLife() {
     startGameOfLife(LEDWidth, LEDHeight);
   }
   int cellColor = colorPallets[currentPalette][0];
-  updateGameOfLife(LEDWidth, LEDHeight, 99);
+  updateGameOfLife(LEDWidth, LEDHeight, 231);
   matrix.fillScreen(0);
   for (int x = 0; x < LEDWidth; x++) {
     for (int y = 0; y < LEDHeight; y++) {

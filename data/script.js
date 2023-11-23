@@ -30,12 +30,6 @@ function fetchBirdSettings() {
                 var key = parts[0];
                 var value = parts[1];
                 switch (key) {
-                    case 'max_velocity':
-                        document.getElementById('maxVelocity').value = value;
-                        break;
-                    case 'min_velocity':
-                        document.getElementById('minVelocity').value = value;
-                        break;
                     case 'num_birds':
                         document.getElementById('numBirds').value = value;
                         break;
@@ -167,8 +161,6 @@ document.getElementById('speedControl').addEventListener('change', function () {
 });
 
 document.getElementById('updateBirds').addEventListener('click', function () {
-    var maxVelocity = document.getElementById('maxVelocity').value;
-    var minVelocity = document.getElementById('minVelocity').value;
     var numBirds = document.getElementById('numBirds').value;
     var alignment = document.getElementById('alignment').value;
     var cohesion = document.getElementById('cohesion').value;
@@ -179,9 +171,7 @@ document.getElementById('updateBirds').addEventListener('click', function () {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: 'max_velocity=' + maxVelocity
-            + '&min_velocity=' + minVelocity
-            + '&num_birds=' + numBirds
+        body: 'num_birds=' + numBirds
             + '&alignment=' + alignment
             + '&cohesion=' + cohesion
             + '&separation=' + separation
