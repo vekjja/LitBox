@@ -176,7 +176,7 @@ void initializeWebServer() {
   wifi.webServer.on("/scrollText", HTTP_POST, []() {
     if (wifi.webServer.hasArg("text")) {
       String text = wifi.webServer.arg("text");
-      scrollText(text);  // Implement this function to scroll text
+      scrollText(text);
       wifi.webServer.send(200, "text/plain", "Text updated");
     } else {
       wifi.webServer.send(400, "text/plain", "Missing text");

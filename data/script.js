@@ -110,7 +110,7 @@ visualizationSelect.addEventListener('change', function () {
             document.getElementById('bird-settings').style.display = 'block';
             setVisualization(selectedValue);
             break;
-        case '99':
+        case 'TEXT':
             document.getElementById('text-settings').style.display = 'block';
             break;
         default:
@@ -152,8 +152,7 @@ document.getElementById('textColor').addEventListener('change', function () {
         },
         body: 'color=' + encodeURIComponent(color)
     });
-    console.log(color);
-    console.log(encodeURIComponent(color));
+    console.log('Text Color changed to ' + color);
 });
 
 document.getElementById('speedControl').addEventListener('change', function () {
