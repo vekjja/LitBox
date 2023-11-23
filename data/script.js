@@ -18,8 +18,6 @@ function fetchInitialSettings() {
         .catch(error => {
             console.error('Error fetching initial brightness:', error);
         });
-
-    fetchBirdSettings();
 }
 
 function fetchBirdSettings() {
@@ -58,7 +56,20 @@ function fetchBirdSettings() {
         });
 }
 
-window.onload = fetchInitialSettings;
+window.onload = function () {
+    fetchInitialSettings();
+    fetchBirdSettings();
+}
+
+document.querySelectorAll('.toggle-check').forEach(function (check) {
+    var contentId = check.id;
+    // Load the saved state
+    check.checked = localStorage.getItem(contentId) === 'true';
+    // Save state on change
+    check.addEventListener('change', function () {
+        localStorage.setItem(contentId, check.checked);
+    });
+});
 
 var sensitivitySlider = document.getElementById('sensitivityValue');
 

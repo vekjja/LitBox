@@ -6,16 +6,13 @@ body {
     color: #fff;
 }
 
-.container,
-.wifi-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+.container {
+    height: 100vh;
+    position: relative;
 }
 
 .container,
-.visualizations-container {
+.setting-container {
     background-color: #111;
     padding: 20px;
     border-radius: 30px;
@@ -27,17 +24,26 @@ body {
     padding: 20px;
 }
 
-.container,
-.custom-text-container {
+.settings-content {
+    display: none;
+}
+
+.toggle-check {
+    display: none;
+}
+
+.toggle-check:checked+.toggle-label+.settings-content {
+    display: block;
+}
+
+.toggle-label {
+    top: 10px;
+    left: 10px;
+    cursor: pointer;
+    z-index: 10;
     background-color: #111;
-    padding: 20px;
-    border-radius: 30px;
-    margin: 20px;
-    justify-content: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
+    padding: 5px;
+    border-radius: 5px;
 }
 
 .custom-text-field {
@@ -56,17 +62,6 @@ body {
     text-align: center;
 }
 
-.setting {
-    margin-bottom: 10px;
-    /* Add spacing between each setting */
-}
-
-.setting label {
-    display: block;
-    margin-bottom: 5px;
-    /* Optional: Adds some space between the label and input */
-}
-
 .bird-settings {
     background-color: #111;
     padding: 20px;
@@ -81,16 +76,16 @@ body {
 
 .dropdown {
     background-color: #444;
+    border: none;
     color: white;
-    padding: 10px;
+    padding: 15px 32px;
     font-size: 16px;
     border-radius: 12px;
-    border: none;
     cursor: pointer;
     transition: background-color 0.3s ease;
     text-decoration: none;
     display: inline-block;
-    margin: 4px 2px 10px 2px;
+    margin: 4px 2px;
 }
 
 .dropdown-label {
@@ -100,31 +95,7 @@ body {
     display: block;
 }
 
-.container {
-    height: 100vh;
-}
-
-.header {
-    font-size: 36px;
-    margin-bottom: 20px;
-}
-
-.header2 {
-    font-size: 27px;
-    margin-bottom: 9px;
-}
-
-.button-container,
-.wifi-container {
-    background-color: #111;
-    padding: 20px;
-    border-radius: 30px;
-    margin: 20px;
-    transition: box-shadow 0.3s ease;
-}
-
-.button,
-.wifi-button {
+.button {
     background-color: #444;
     border: none;
     color: white;
@@ -138,14 +109,7 @@ body {
     margin: 4px 2px;
 }
 
-.wifi-button {
-    padding: 10px 20px;
-    font-size: 14px;
-    border-radius: 8px;
-}
-
-.button:hover,
-.wifi-button:hover {
+.button:hover {
     background-color: #555;
 }
 
@@ -186,18 +150,3 @@ input[type=range]::-webkit-slider-thumb {
 input[type=range]:focus {
     outline: none;
 }
-
-/* Popup styling */
-/* .slider-popup {
-    position: absolute;
-    background-color: #555;
-    color: white;
-    padding: 4px 8px;
-    border-radius: 50%;
-    display: none;
-    font-size: 12px;
-    width: 40px;
-    height: 40px;
-    text-align: center;
-    line-height: 40px;
-} */

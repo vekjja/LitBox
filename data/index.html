@@ -8,81 +8,117 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
     <body>
-        <div class="container">
-            <div class="header">Spectral Analyzer Controls</div>
-            <div class="button-container">
-                Sensitivity
-                <input id="sensitivityValue" type="range" id="sensitivityRange"
-                    min="1" max="100">
-                <br><br><br>
-                Brightness
-                <input id="brightnessValue" type="range" id="brightnessRange"
-                    min="1" max="255">
-            </div>
-            <div class="custom-text-container">
-                <input type="text" id="customText"
-                    placeholder="Enter custom text" class="custom-text-field">
-                <button id="sendText" class="button">Scroll Text</button>
-                <!-- Color Picker -->
-                <div class="color-picker-container">
-                    <input type="color" id="textColor" title="Choose your color">
-                </div>
-                <!-- Speed Control -->
-                <div class="speed-control-container">
-                    Speed Control
-                    <input type="range" id="speedControl" min="1" max="100"
-                        value="50">
-                </div>
-            </div>
-            <div class="visualizations-container">
-                <div class="header2">Visualization</div>
-                <select id="visualizationSelect" class="dropdown">
-                    <option value="0">Bars</option>
-                    <option value="2">Birds</option>
-                    <option value="1">Circles</option>
-                </select>
-                <div class="bird-settings" id="bird-settings"
-                    style="display: none;">
-                    <div class="setting">
-                        <label for="numBirds">Number of Birds</label>
-                        <input type="number" id="numBirds"
-                            placeholder="Number of Birds">
-                    </div>
-                    <div class="setting">
-                        <label for="maxVelocity">Max Velocity</label>
-                        <input type="number" id="maxVelocity"
-                            placeholder="Max Velocity">
-                    </div>
-                    <div class="setting">
-                        <label for="minVelocity">Min Velocity</label>
-                        <input type="number" id="minVelocity"
-                            placeholder="Min Velocity">
-                    </div>
-                    <div class="setting">
-                        <label for="alignment">Alignment</label>
-                        <input type="number" id="alignment"
-                            placeholder="Alignment">
-                    </div>
-                    <div class="setting">
-                        <label for="cohesion">Cohesion</label>
-                        <input type="number" id="cohesion"
-                            placeholder="Cohesion">
-                    </div>
-                    <div class="setting">
-                        <label for="separation">Separation</label>
-                        <input type="number" id="separation"
-                            placeholder="Separation">
-                    </div>
-                    <button id="updateBirds" class="button">Update Birds</button>
-                </div>
-            </div>
+        <div class="container"> <!-- Spectral Analyzer -->
+            <input type="checkbox" class="toggle-check"
+                id="toggleControls">
+            <label for="toggleControls" class="toggle-label"
+                style="font-size: 36px;">Spectral Analyzer
+                Controls</label>
+            <div class="settings-content">
 
-        </div>
-        <div class="wifi-container">
-            <button id="wifiSetup" class="wifi-button">WiFi Setup</button>
-            <button id="wifiErase" class="wifi-button">WiFi Erase</button>
-        </div>
+                <div class="setting-container"> <!-- Sensitivity -->
+                    <input id="toggleSensitivity" type="checkbox"
+                        class="toggle-check">
+                    <label for="toggleSensitivity" class="toggle-label">Sensitivity</label>
+                    <div class="settings-content">
+                        <input id="sensitivityValue" type="range"
+                            id="sensitivityRange"
+                            min="1" max="100">
+                    </div>
+                </div>
 
-        <script src="script.js"></script>
-    </body>
-</html>
+                <div class="setting-container"> <!-- Brightness -->
+                    <input id="toggleBrightness" type="checkbox"
+                        class="toggle-check">
+                    <label for="toggleBrightness" class="toggle-label">Brightness</label>
+                    <div class="settings-content">
+                        <input id="brightnessValue" type="range"
+                            id="brightnessRange"
+                            min="1" max="255">
+                    </div>
+                </div>
+
+                <div class="setting-container"> <!-- Scroll Text -->
+                    <input id="toggleSrollText" type="checkbox"
+                        class="toggle-check">
+                    <label for="toggleSrollText" class="toggle-label">Scroll
+                        Text</label>
+                    <div class="settings-content">
+                        <div class="setting-container">
+                            <input type="text" id="customText"
+                                placeholder="Enter custom text"
+                                class="custom-text-field">
+                            <button id="sendText" class="button">Send</button>
+                            <!-- Color Picker -->
+                            <input type="color" id="textColor"
+                                title="Choose your color">
+                            <!-- Speed Control -->
+                            Speed Control
+                            <input type="range" id="speedControl" min="1"
+                                max="100"
+                                value="50">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="setting-container"> <!-- Visualizations -->
+                    <input id="toggleVisualizations" type="checkbox"
+                        class="toggle-check">
+                    <label for="toggleVisualizations" class="toggle-label">Visualizations</label>
+                    <div class="settings-content">
+                        <select id="visualizationSelect" class="dropdown">
+                            <option value="0">Bars</option>
+                            <option value="2">Birds</option>
+                            <option value="1">Circles</option>
+                        </select>
+                        <div class="bird-settings" id="bird-settings"
+                            style="display: none;">
+                            <div class="setting">
+                                <label for="numBirds">Number of Birds</label>
+                                <input type="number" id="numBirds"
+                                    placeholder="Number of Birds">
+                            </div>
+                            <div class="setting">
+                                <label for="maxVelocity">Max Velocity</label>
+                                <input type="number" id="maxVelocity"
+                                    placeholder="Max Velocity">
+                            </div>
+                            <div class="setting">
+                                <label for="minVelocity">Min Velocity</label>
+                                <input type="number" id="minVelocity"
+                                    placeholder="Min Velocity">
+                            </div>
+                            <div class="setting">
+                                <label for="alignment">Alignment</label>
+                                <input type="number" id="alignment"
+                                    placeholder="Alignment">
+                            </div>
+                            <div class="setting">
+                                <label for="cohesion">Cohesion</label>
+                                <input type="number" id="cohesion"
+                                    placeholder="Cohesion">
+                            </div>
+                            <div class="setting">
+                                <label for="separation">Separation</label>
+                                <input type="number" id="separation"
+                                    placeholder="Separation">
+                            </div>
+                            <button id="updateBirds" class="button">Update Birds</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="setting-container"> <!-- WiFi -->
+                    <input type="checkbox" class="toggle-check"
+                        id="toggleWifiSettings">
+                    <label for="toggleWifiSettings" class="toggle-label">WiFi</label>
+                    <div class="settings-content">
+                        <button id="wifiSetup" class="button">Setup</button>
+                        <button id="wifiErase" class="button">Erase</button>
+                    </div>
+                </div>
+
+            </div>
+            <script src="script.js"></script>
+        </body>
+    </html>
