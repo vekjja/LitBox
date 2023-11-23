@@ -101,6 +101,11 @@ brightnessSlider.addEventListener('change', function () {
 
 var visualizationSelect = document.getElementById('visualizationSelect');
 visualizationSelect.addEventListener('change', function () {
+    // let selectedOptionText = this.options[this.selectedIndex].text;
+    // let characterCount = selectedOptionText.length;
+    // let characterWidth = 15; // Adjust based on your font size and type
+    // this.style.width = `${characterCount * characterWidth}px`;
+
     var selectedValue = visualizationSelect.value;
     document.getElementById('bird-settings').style.display = 'none';
     document.getElementById('text-settings').style.display = 'none';

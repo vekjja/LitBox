@@ -52,6 +52,10 @@ body {
     text-align: center;
 }
 
+.clickable:hover {
+    background-color: #555;
+}
+
 .clickable,
 .settings-container {
     background-color: #444;
@@ -65,10 +69,13 @@ body {
     text-decoration: none;
     display: inline-block;
     margin: 4px 2px;
+    text-align: center;
 }
 
-.clickable:hover {
-    background-color: #555;
+.dropdown {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
 }
 
 .toggle {
