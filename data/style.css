@@ -75,11 +75,6 @@ body {
     display: none;
 }
 
-.toggle-header {
-    font-size: 36px;
-    background-color: none;
-}
-
 .toggle:checked+.clickable+.settings-content {
     display: block;
 }
@@ -89,6 +84,12 @@ body {
     height: 21px;
     font-size: 18px;
     text-align: center;
+}
+
+.header {
+    font-size: 36px;
+    background-color: none;
+    margin-bottom: 1%;
 }
 
 /* Slider styles */

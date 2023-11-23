@@ -72,9 +72,6 @@ document.querySelectorAll('.toggle').forEach(function (check) {
 });
 
 var sensitivitySlider = document.getElementById('sensitivityValue');
-sensitivitySlider.addEventListener('input', function () {
-    sensitivityValue.textContent = sensitivitySlider.value;
-});
 sensitivitySlider.addEventListener('change', function () {
     var formData = new FormData();
     formData.append('value', sensitivitySlider.value);
@@ -89,11 +86,7 @@ sensitivitySlider.addEventListener('change', function () {
 });
 
 var brightnessSlider = document.getElementById('brightnessValue');
-brightnessSlider.addEventListener('input', function () {
-    brightnessValue.textContent = brightnessSlider.value;
-});
 brightnessSlider.addEventListener('change', function () {
-    // brightnessPopup.style.display = 'none';
     var formData = new FormData();
     formData.append('value', brightnessSlider.value);
     fetch('/brightness', { method: 'POST', body: formData })
@@ -109,13 +102,19 @@ brightnessSlider.addEventListener('change', function () {
 var visualizationSelect = document.getElementById('visualizationSelect');
 visualizationSelect.addEventListener('change', function () {
     var selectedValue = visualizationSelect.value;
-    setVisualization(selectedValue);
-    // Show bird settings only if "Birds" is selected
-    var birdSettingsDiv = document.getElementById('bird-settings');
-    if (selectedValue === '2') { // Assuming '2' is the value for Birds visualization
-        birdSettingsDiv.style.display = 'block';
-    } else {
-        birdSettingsDiv.style.display = 'none';
+    document.getElementById('bird-settings').style.display = 'none';
+    document.getElementById('text-settings').style.display = 'none';
+
+    switch (selectedValue) {
+        case '2':
+            document.getElementById('bird-settings').style.display = 'block';
+            setVisualization(selectedValue);
+            break;
+        case '99':
+            document.getElementById('text-settings').style.display = 'block';
+            break;
+        default:
+            setVisualization(selectedValue);
     }
 });
 
