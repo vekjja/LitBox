@@ -71,7 +71,7 @@ void drawGameOfLife() {
     startGameOfLife(LEDWidth, LEDHeight);
   }
   int cellColor = colorPallets[currentPalette][0];
-  // updateGameOfLife(ledRows, ledColumns, 60);
+  updateGameOfLife(LEDWidth, LEDHeight, 99);
   matrix.fillScreen(0);
   for (int x = 0; x < LEDWidth; x++) {
     for (int y = 0; y < LEDHeight; y++) {
