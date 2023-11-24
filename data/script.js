@@ -30,17 +30,23 @@ function fetchBirdSettings() {
                 var key = parts[0];
                 var value = parts[1];
                 switch (key) {
-                    case 'num_birds':
-                        document.getElementById('numBirds').value = value;
+                    case 'birdCount':
+                        document.getElementById('birdCount').value = value;
                         break;
-                    case 'alignment':
-                        document.getElementById('alignment').value = value;
+                    case 'birdAlignment':
+                        document.getElementById('birdAlignment').value = value;
                         break;
-                    case 'cohesion':
-                        document.getElementById('cohesion').value = value;
+                    case 'birdCohesion':
+                        document.getElementById('birdCohesion').value = value;
                         break;
-                    case 'separation':
-                        document.getElementById('separation').value = value;
+                    case 'birdSeparation':
+                        document.getElementById('birdSeparation').value = value;
+                        break;
+                    case 'birdVerticalBounds':
+                        document.querySelector('#birdVerticalBounds').checked = (value === 'true');
+                        break;
+                    case 'birdHorizontalBounds':
+                        document.querySelector('#birdHorizontalBounds').checked = (value === 'true');
                         break;
                 }
             });
@@ -161,22 +167,24 @@ document.getElementById('speedControl').addEventListener('change', function () {
 });
 
 document.getElementById('updateBirds').addEventListener('click', function () {
-    var numBirds = document.getElementById('numBirds').value;
-    var alignment = document.getElementById('alignment').value;
-    var cohesion = document.getElementById('cohesion').value;
-    var separation = document.getElementById('separation').value;
-    var vertBounds = document.getElementById('birdVertBounds').checked;
+    var birdCount = document.getElementById('birdCount').value;
+    var birdAlignment = document.getElementById('birdAlignment').value;
+    var birdCohesion = document.getElementById('birdCohesion').value;
+    var birdSeparation = document.getElementById('birdSeparation').value;
+    var birdVerticalBounds = document.getElementById('birdVerticalBounds').checked;
+    var birdHorizontalBounds = document.getElementById('birdHorizontalBounds').checked;
 
     fetch('/birds', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: 'num_birds=' + numBirds
-            + '&alignment=' + alignment
-            + '&cohesion=' + cohesion
-            + '&separation=' + separation
-            + '&vert_bounds=' + vertBounds
+        body: 'birdCount=' + birdCount
+            + '&birdAlignment=' + birdAlignment
+            + '&birdCohesion=' + birdCohesion
+            + '&separation=' + birdSeparation
+            + '&birdVerticalBounds=' + birdVerticalBounds
+            + '&birdHorizontalBounds=' + birdHorizontalBounds
     })
         .then(response => response.text())
         .then(data => console.log(data))

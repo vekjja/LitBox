@@ -11,7 +11,7 @@ struct Bird {
 };
 
 // Birds Config
-int birdCount = 9;
+int birdCount = 18;
 Bird* birds = nullptr;
 float birdAlignment = 9;
 float birdSeparation = 1;
@@ -21,7 +21,7 @@ float birdMinVelocity = 0;
 bool birdVerticalBounds = true;
 bool birdHorizontalBounds = true;
 int birdEdgeBuffer = 1;  // Distance from edge to start avoiding
-float birdRandomVelocityChangeFactor = 1;  // Max random change in velocity
+float birdRandomVelocityChangeFactor = 3;  // Max random change in velocity
 int birdRandomChangeChance = 3;  // Chance of random change (in percentage)
 
 void updateFlock(int maxX, int maxY) {
@@ -64,18 +64,22 @@ void updateFlock(int maxX, int maxY) {
     }
 
     // Edge Collision Avoidance for Top and Bottom Edges
-    if (birds[i].pixel.y <= birdEdgeBuffer) {
-      birds[i].vy += 1;  // Steer down
-    } else if (birds[i].pixel.y >= maxY - birdEdgeBuffer) {
-      // birds[i].vy -= 1;  // Steer up
-      birds[i].vy = 0;  // land on the ground
+    if (birdVerticalBounds) {
+      if (birds[i].pixel.y <= birdEdgeBuffer) {
+        birds[i].vy += 1;  // Steer down
+      } else if (birds[i].pixel.y >= maxY - birdEdgeBuffer) {
+        // birds[i].vy -= 1;  // Steer up
+        birds[i].vy = 0;  // land on the ground
+      }
     }
 
     // Edge Collision Avoidance for Left and Right Edges
-    if (birds[i].pixel.x <= birdEdgeBuffer) {
-      birds[i].vx += 1;  // Steer right
-    } else if (birds[i].pixel.x >= maxX - birdEdgeBuffer - 1) {
-      birds[i].vx -= 1;  // Steer left
+    if (birdHorizontalBounds) {
+      if (birds[i].pixel.x <= birdEdgeBuffer) {
+        birds[i].vx += 1;  // Steer right
+      } else if (birds[i].pixel.x >= maxX - birdEdgeBuffer - 1) {
+        birds[i].vx -= 1;  // Steer left
+      }
     }
 
     // Random Velocity Change
@@ -86,13 +90,14 @@ void updateFlock(int maxX, int maxY) {
                             birdRandomVelocityChangeFactor);
     }
 
-    // don't allow birds to go too fast or stop mid-air
+    // Create the rules for the birds
     float velocity =
         sqrt(birds[i].vx * birds[i].vx + birds[i].vy * birds[i].vy);
-    if (velocity > birdMaxVelocity) {
+    if (velocity > birdMaxVelocity) {  // Limit velocity
       birds[i].vx = (birds[i].vx / velocity) * birdMaxVelocity;
       birds[i].vy = (birds[i].vy / velocity) * birdMaxVelocity;
     } else if (birds[i].pixel.y < maxY - 1 && velocity == birdMinVelocity) {
+      // keep flying if not on the ground
       birds[i].vx += random(-birdRandomVelocityChangeFactor,
                             birdRandomVelocityChangeFactor);
       birds[i].vy += random(-birdRandomVelocityChangeFactor,
@@ -102,29 +107,29 @@ void updateFlock(int maxX, int maxY) {
     // Update position with vertical boundary check or wrap
     birds[i].pixel.y += birds[i].vy;
     if (birdVerticalBounds) {
-      if (birds[i].pixel.y < 0) {
+      if (birds[i].pixel.y < 0) {  // Vertical boundary check
         birds[i].pixel.y = 0;
       } else if (birds[i].pixel.y >= maxY) {
         birds[i].pixel.y = maxY - 1;
       }
     } else {
-      if (birds[i].pixel.y < 0) {
+      if (birds[i].pixel.y < 0) {  // Vertical wrap
         birds[i].pixel.y = maxY - 1;
       } else if (birds[i].pixel.y >= maxY) {
         birds[i].pixel.y = 0;
       }
     }
 
-    // Update position with horizontal boundary check or wrap
+    // Update position
     birds[i].pixel.x += birds[i].vx;
     if (birdHorizontalBounds) {
-      if (birds[i].pixel.x < 0) {
+      if (birds[i].pixel.x < 0) {  // Horizontal boundary check
         birds[i].pixel.x = 0;
       } else if (birds[i].pixel.x >= maxX) {
         birds[i].pixel.x = maxX - 1;
       }
     } else {
-      if (birds[i].pixel.x < 0) {
+      if (birds[i].pixel.x < 0) {  // Horizontal wrap
         birds[i].pixel.x = maxX - 1;
       } else if (birds[i].pixel.x >= maxX) {
         birds[i].pixel.x = 0;

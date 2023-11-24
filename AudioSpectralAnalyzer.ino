@@ -11,7 +11,7 @@
 #include "SpectralAnalyzer.h"
 
 // IOPins
-IOPin ledData(12);
+IOPin ledData(12);  // Board Pin D6
 
 // LED Matrix Config
 int LEDWidth = 32;
@@ -27,6 +27,7 @@ const int maxBrightness = 255;
 int brightness = 6;
 
 // Visualization Config
+int frameRate = 60;
 int visualization = 0;
 int maxVisualization = 3;
 
@@ -55,10 +56,10 @@ void loop() {
       drawCircles(spectralData);
       break;
     case 2:
-      runAtFrameRate(drawBirds, 60);
+      runAtFrameRate(drawBirds, frameRate);
       break;
     case 3:
-      runAtFrameRate(drawGameOfLife, 60);
+      runAtFrameRate(drawGameOfLife, frameRate);
       break;
     default:
       drawBars(spectralData);
@@ -214,7 +215,7 @@ void initializeWebServer() {
     }
   });
 
-  wifi.webServer.on("/setSpeed", HTTP_POST, []() {
+  wifi.webServer.on("/setTextSpeed", HTTP_POST, []() {
     if (wifi.webServer.hasArg("speed")) {
       textSpeed = wifi.webServer.arg("speed").toInt();
       wifi.webServer.send(200, "text/plain", "Speed updated");
@@ -225,10 +226,10 @@ void initializeWebServer() {
 
   wifi.webServer.on("/birds", HTTP_GET, []() {
     String response = "";
-    response += "num_birds=" + String(birdCount) + "\n";
-    response += "alignment=" + String(birdAlignment) + "\n";
-    response += "cohesion=" + String(birdCohesion) + "\n";
-    response += "separation=" + String(birdSeparation) + "\n";
+    response += "birdCount=" + String(birdCount) + "\n";
+    response += "birdAlignment=" + String(birdAlignment) + "\n";
+    response += "birdCohesion=" + String(birdCohesion) + "\n";
+    response += "birdSeparation=" + String(birdSeparation) + "\n";
     response += "birdVerticalBounds=" + String(birdVerticalBounds) + "\n";
     response += "birdHorizontalBounds=" + String(birdHorizontalBounds) + "\n";
     wifi.webServer.send(200, "text/plain", response);
@@ -241,30 +242,31 @@ void initializeWebServer() {
     if (wifi.webServer.hasArg("min_velocity")) {
       birdMinVelocity = wifi.webServer.arg("min_velocity").toFloat();
     }
-    if (wifi.webServer.hasArg("num_birds")) {
-      birdCount = wifi.webServer.arg("num_birds").toInt();
+    if (wifi.webServer.hasArg("birdCount")) {
+      birdCount = wifi.webServer.arg("birdCount").toInt();
     }
-    if (wifi.webServer.hasArg("alignment")) {
-      birdAlignment = wifi.webServer.arg("alignment").toFloat();
+    if (wifi.webServer.hasArg("birdAlignment")) {
+      birdAlignment = wifi.webServer.arg("birdAlignment").toFloat();
     }
-    if (wifi.webServer.hasArg("cohesion")) {
-      birdCohesion = wifi.webServer.arg("cohesion").toFloat();
+    if (wifi.webServer.hasArg("birdCohesion")) {
+      birdCohesion = wifi.webServer.arg("birdCohesion").toFloat();
     }
-    if (wifi.webServer.hasArg("separation")) {
-      birdSeparation = wifi.webServer.arg("separation").toFloat();
+    if (wifi.webServer.hasArg("birdSeparation")) {
+      birdSeparation = wifi.webServer.arg("birdSeparation").toFloat();
     }
-    if (wifi.webServer.hasArg("vert_bounds")) {
-      birdVerticalBounds = wifi.webServer.arg("vert_bounds").toInt();
+    if (wifi.webServer.hasArg("birdVerticalBounds")) {
+      birdVerticalBounds =
+          wifi.webServer.arg("birdVerticalBounds").compareTo("true") == 0;
     }
     if (wifi.webServer.hasArg("birdHorizontalBounds")) {
-      birdHorizontalBounds = wifi.webServer.arg("birdHorizontalBounds").toInt();
+      birdHorizontalBounds =
+          wifi.webServer.arg("birdHorizontalBounds").compareTo("true") == 0;
     }
     generateBirds(LEDWidth, LEDHeight);
     wifi.webServer.send(200, "text/plain", "Bird settings updated");
   });
 
   wifi.setConnectSubroutine([]() { testMatrix(&matrix, LEDWidth, LEDHeight); });
-  // wifi.setConnectSubroutine([]() { testMatrix(); });
   wifi.enableMDNS("spectral-analyzer");
   wifi.Start();
 }
