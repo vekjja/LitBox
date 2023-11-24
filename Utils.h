@@ -22,7 +22,7 @@ uint32_t hexToColor(String hexColor) {
   int g = (number >> 8) & 0xFF;
   int b = number & 0xFF;
 
-  // Reorder the components to match the GRB format for WS2812B LEDs
+  // Reorder the components to match the GRB format for NEO_GRB LEDs
   return ((g & 0xFF) << 16) | ((r & 0xFF) << 8) | (b & 0xFF);
 }
 
@@ -36,7 +36,7 @@ void runAtFrameRate(void (*functionToRun)(), unsigned int fps) {
   unsigned long currentTime = millis();
   if (currentTime - lastFrameTime >= frameDuration) {
     lastFrameTime = currentTime;
-    functionToRun();  // Call the passed function
+    functionToRun();
   }
 }
 

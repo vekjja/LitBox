@@ -131,39 +131,21 @@ function setVisualization(mode) {
 
 document.getElementById('sendText').addEventListener('click', function () {
     var text = document.getElementById('customText').value;
-    fetch('/scrollText', {
+    var textColor = document.getElementById('textColor').value;
+    var textSpeed = document.getElementById('textSpeed').value;
+
+    fetch('/text', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: 'text=' + encodeURIComponent(text)
+            + '&textColor=' + encodeURIComponent(textColor)
+            + '&textSpeed=' + encodeURIComponent(textSpeed)
     })
         .then(response => response.text())
-        .then(data => console.log(data))
+        .then(data => console.log('Text and speed updated:', data))
         .catch(error => console.error('Error:', error));
-});
-
-document.getElementById('textColor').addEventListener('change', function () {
-    var color = this.value;
-    fetch('/setTextColor', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: 'color=' + encodeURIComponent(color)
-    });
-    console.log('Text Color changed to ' + color);
-});
-
-document.getElementById('textSpeed').addEventListener('change', function () {
-    var speed = this.value;
-    fetch('/setTextSpeed', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: 'speed=' + encodeURIComponent(speed)
-    });
 });
 
 document.getElementById('updateBirds').addEventListener('click', function () {

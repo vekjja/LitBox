@@ -27,13 +27,15 @@ const int maxBrightness = 255;
 int brightness = 6;
 
 // Visualization Config
-int frameRate = 60;
+const int maxFrameRate = 120;
+unsigned int frameRate = 60;
 int visualization = 0;
 int maxVisualization = 3;
 
 // text color and speed
-uint32_t textColor = WHITE;  // Default color
-int textSpeed = 60;          // Default speed
+int textSpeed = 60;                // Default speed
+uint32_t textColor = WHITE;        // Default color
+String text = "*.*. LuciFi .*.*";  // Default text
 
 // Web Server Config
 ESPWiFi wifi = ESPWiFi("LuciFi", "abcd1234");
@@ -144,6 +146,8 @@ void setVisualization(int newMode) {
   visualization = constrain(newMode, 0, maxVisualization);
 }
 
+void setFPS(int newFPS) { frameRate = constrain(newFPS, 0, maxFrameRate); }
+
 void scrollText(String text) {
   matrix.setTextColor(textColor);  // Set the text color
   matrix.fillScreen(0);
@@ -196,33 +200,20 @@ void initializeWebServer() {
     }
   });
 
-  wifi.webServer.on("/scrollText", HTTP_POST, []() {
-    if (wifi.webServer.hasArg("text")) {
-      String text = wifi.webServer.arg("text");
-      scrollText(text);
-      wifi.webServer.send(200, "text/plain", "Text updated");
-    } else {
-      wifi.webServer.send(400, "text/plain", "Missing text");
-    }
-  });
-
-  wifi.webServer.on("/setTextColor", HTTP_POST, []() {
-    if (wifi.webServer.hasArg("color")) {
-      String color = wifi.webServer.arg("color");
+  wifi.webServer.on("/text", HTTP_POST, []() {
+    if (wifi.webServer.hasArg("textColor")) {
+      String color = wifi.webServer.arg("textColor");
       textColor = hexToColor(color);
-      wifi.webServer.send(200, "text/plain", "Color updated");
-    } else {
-      wifi.webServer.send(400, "text/plain", "Missing color value");
     }
-  });
-
-  wifi.webServer.on("/setTextSpeed", HTTP_POST, []() {
-    if (wifi.webServer.hasArg("speed")) {
-      textSpeed = wifi.webServer.arg("speed").toInt();
+    if (wifi.webServer.hasArg("textSpeed")) {
+      textSpeed = wifi.webServer.arg("textSpeed").toInt();
       wifi.webServer.send(200, "text/plain", "Speed updated");
-    } else {
-      wifi.webServer.send(400, "text/plain", "Missing speed value");
     }
+    if (wifi.webServer.hasArg("text")) {
+      text = wifi.webServer.arg("text");
+    }
+    scrollText(text);
+    wifi.webServer.send(200, "text/plain", "Text updated");
   });
 
   wifi.webServer.on("/birds", HTTP_GET, []() {

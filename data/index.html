@@ -12,18 +12,6 @@
             <label class="header"> LuciFi </label>
             <div class="content">
 
-                <div class="setting"> <!-- Sensitivity -->
-                    <input id="toggleSensitivity" type="checkbox"
-                        class="toggle-button">
-                    <label for="toggleSensitivity" class="clickable">Sensitivity</label>
-                    <div class="toggle-content">
-                        <input id="sensitivityValue" type="range"
-                            style="transform: scaleX(-1)"
-                            id="sensitivityRange"
-                            min="1" max="100">
-                    </div>
-                </div>
-
                 <div class="setting"> <!-- Brightness -->
                     <input id="toggleBrightness" type="checkbox"
                         class="toggle-button">
@@ -31,6 +19,17 @@
                     <div class="toggle-content">
                         <input id="brightnessValue" type="range"
                             id="brightnessRange"
+                            min="1" max="255">
+                    </div>
+                </div>
+
+                <div class="setting"> <!-- Framerate -->
+                    <input id="toggleFramerate" type="checkbox"
+                        class="toggle-button">
+                    <label for="toggleFramerate" class="clickable">Framerate</label>
+                    <div class="toggle-content">
+                        <input id="framerateValue" type="range"
+                            id="framerateRange"
                             min="1" max="255">
                     </div>
                 </div>
@@ -78,21 +77,36 @@
                             class="clickable button">Update
                             Birds</button>
                     </div>
+
                     <div class="toggle-content" id="text-settings">
                         <div class="setting"><!-- Text -->
                             <input type="text" id="customText"
-                                placeholder="Enter custom text">
-                            <button id="sendText" class="clickable button">Scroll</button>
+                                value=".*.* LuciFi *.*.">
+                            <button id="sendText" class="clickable button">Send</button>
                         </div>
                         <div class="setting">
                             <input type="color" id="textColor"
-                                title="Choose your color">
+                                title="Choose A Text Color">
                         </div>
                         <div class="setting">
                             Scroll Speed
                             <input type="range" id="textSpeed" min="1"
                                 max="100"
                                 value="50">
+                        </div>
+                    </div>
+
+                    <div class="toggle-content" id="audio-settings">
+                        <div class="setting"> <!-- Sensitivity -->
+                            <input id="toggleSensitivity" type="checkbox"
+                                class="toggle-button">
+                            <label for="toggleSensitivity" class="clickable">Sensitivity</label>
+                            <div class="toggle-content">
+                                <input id="sensitivityValue" type="range"
+                                    style="transform: scaleX(-1)"
+                                    id="sensitivityRange"
+                                    min="1" max="100">
+                            </div>
                         </div>
                     </div>
                 </div>
