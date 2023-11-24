@@ -36,7 +36,7 @@ uint32_t textColor = WHITE;  // Default color
 int textSpeed = 60;          // Default speed
 
 // Web Server Config
-ESPWiFi wifi = ESPWiFi("SpectralAnalyzer", "12345678");
+ESPWiFi wifi = ESPWiFi("LuciFi", "abcd1234");
 
 void setup() {
   matrix.begin();
@@ -50,10 +50,9 @@ void setup() {
 
 void loop() {
   wifi.handleClient();
-  spectralAnalyzer(LEDWidth, LEDHeight);
   switch (visualization) {
     case 1:
-      drawCircles(spectralData);
+      drawCircles();
       break;
     case 2:
       runAtFrameRate(drawBirds, frameRate);
@@ -62,7 +61,7 @@ void loop() {
       runAtFrameRate(drawGameOfLife, frameRate);
       break;
     default:
-      drawBars(spectralData);
+      drawBars();
       break;
   }
 }
@@ -84,7 +83,8 @@ void drawGameOfLife() {
   matrix.show();
 }
 
-void drawCircles(int* spectralData) {
+void drawCircles() {
+  spectralAnalyzer(LEDWidth, LEDHeight);
   matrix.fillScreen(0);
   for (int x = 0; x < LEDWidth; x++) {
     int circleRadius = spectralData[x];
@@ -102,7 +102,8 @@ void drawCircles(int* spectralData) {
   matrix.show();
 }
 
-void drawBars(int* spectralData) {
+void drawBars() {
+  spectralAnalyzer(LEDWidth, LEDHeight);
   matrix.fillScreen(0);
   for (int x = 0; x < LEDWidth; x++) {
     for (int y = 0; y < spectralData[x]; y++) {
@@ -267,6 +268,6 @@ void initializeWebServer() {
   });
 
   wifi.setConnectSubroutine([]() { testMatrix(&matrix, LEDWidth, LEDHeight); });
-  wifi.enableMDNS("spectral-analyzer");
+  wifi.enableMDNS("lucifi");
   wifi.Start();
 }

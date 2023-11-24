@@ -6,6 +6,24 @@ body {
     color: #fff;
 }
 
+.header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: #333;
+    background-color: none;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+    z-index: 1000;
+    font-size: 36px;
+}
+
+.content {
+    padding-top: 60px;
+    overflow-y: auto;
+}
+
 .container,
 .settings-container {
     height: 100vh;
@@ -85,12 +103,6 @@ body {
     display: none;
     border-radius: 12px;
     padding: 15px 32px;
-}
-
-.header {
-    font-size: 36px;
-    background-color: none;
-    margin-bottom: 1%;
 }
 
 /* Slider styles */
