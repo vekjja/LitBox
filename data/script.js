@@ -155,9 +155,9 @@ document.getElementById('textColor').addEventListener('change', function () {
     console.log('Text Color changed to ' + color);
 });
 
-document.getElementById('speedControl').addEventListener('change', function () {
+document.getElementById('textSpeed').addEventListener('change', function () {
     var speed = this.value;
-    fetch('/setSpeed', {
+    fetch('/setTextSpeed', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
