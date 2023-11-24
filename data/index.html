@@ -23,26 +23,30 @@
                     </div>
                 </div>
 
-                <div class="setting"> <!-- Framerate -->
-                    <input id="toggleFramerate" type="checkbox"
-                        class="toggle-button">
-                    <label for="toggleFramerate" class="clickable">Framerate</label>
-                    <div class="toggle-content">
-                        <input id="framerateValue" type="range"
-                            id="framerateRange"
-                            min="1" max="255">
-                    </div>
-                </div>
-
                 <div class="setting"> <!-- Visualizations -->
                     <select id="visualizationSelect"
                         class="clickable">
-                        <option value="0">Bars</option>
-                        <option value="1">Circles</option>
-                        <option value="2">Birds</option>
-                        <option value="3">Game of Life</option>
-                        <option value="TEXT">Text</option>
+                        <option value="bars">Bars</option>
+                        <option value="birds">Birds</option>
+                        <option value="circles">Circles</option>
+                        <option value="gameOfLife">Game of Life</option>
+                        <option value="text">Text</option>
                     </select>
+
+                    <div class="toggle-content" id="animation-settings">
+                        <div class="setting"> <!-- Framerate -->
+                            <input id="toggleFrameRate" type="checkbox"
+                                class="toggle-button">
+                            <label for="toggleFrameRate" class="clickable">
+                                Frame Rate</label>
+                            <div class="toggle-content">
+                                <input id="frameRateValue" type="range"
+                                    id="frameRateRange"
+                                    min="1" max="255">
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="toggle-content" id="bird-settings">
                         <div class="setting">
                             <!-- Birds -->
@@ -96,7 +100,8 @@
                         </div>
                     </div>
 
-                    <div class="toggle-content" id="audio-settings">
+                    <div class="toggle-content" id="audio-settings"
+                        style="display: block;">
                         <div class="setting"> <!-- Sensitivity -->
                             <input id="toggleSensitivity" type="checkbox"
                                 class="toggle-button">

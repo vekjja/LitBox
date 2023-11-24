@@ -14,28 +14,27 @@ uint32_t hexToColor(String hexColor) {
     hexColor = hexColor.substring(1);
   }
 
-  // Convert the hex string to a long integer
+  // Convert the hex string to an integer
   unsigned long number = strtoul(hexColor.c_str(), NULL, 16);
 
-  // Split into RGB components
-  int r = (number >> 16) & 0xFF;
-  int g = (number >> 8) & 0xFF;
-  int b = number & 0xFF;
+  // Extract RGB components
+  uint8_t r = (number >> 16) & 0xFF;  // Extract the RR byte
+  uint8_t g = (number >> 8) & 0xFF;   // Extract the GG byte
+  uint8_t b = number & 0xFF;          // Extract the BB byte
 
-  // Reorder the components to match the GRB format for NEO_GRB LEDs
-  return ((g & 0xFF) << 16) | ((r & 0xFF) << 8) | (b & 0xFF);
+  // Convert to 5-6-5 format
+  uint16_t rgb565 = ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
+
+  return rgb565;
 }
 
 void runAtFrameRate(void (*functionToRun)(), unsigned int fps) {
   static unsigned long lastFrameTime = 0;
-  static unsigned int frameDuration = 0;
-  if (fps != 0) {
-    frameDuration = 1000 / fps;
-  }
+  unsigned long currentFrameTime = millis();
+  unsigned int frameDuration = 1000 / fps;
 
-  unsigned long currentTime = millis();
-  if (currentTime - lastFrameTime >= frameDuration) {
-    lastFrameTime = currentTime;
+  if (currentFrameTime - lastFrameTime >= frameDuration) {
+    lastFrameTime = currentFrameTime;
     functionToRun();
   }
 }

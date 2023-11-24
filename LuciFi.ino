@@ -22,19 +22,19 @@ Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(
     LEDWidth, LEDHeight, ledData.pin(), matrixType, NEO_GRB + NEO_KHZ800);
 
 // Brightness and Color Config
-const int minBrightness = 1;
 const int maxBrightness = 255;
+const int minBrightness = 1;
+uint32_t pixelColor = WHITE;  // Default color
 int brightness = 6;
 
 // Visualization Config
 const int maxFrameRate = 120;
 unsigned int frameRate = 60;
-int visualization = 0;
 int maxVisualization = 3;
+int visualization = 0;
 
 // text color and speed
 int textSpeed = 60;                // Default speed
-uint32_t textColor = WHITE;        // Default color
 String text = "*.*. LuciFi .*.*";  // Default text
 
 // Web Server Config
@@ -146,10 +146,12 @@ void setVisualization(int newMode) {
   visualization = constrain(newMode, 0, maxVisualization);
 }
 
-void setFPS(int newFPS) { frameRate = constrain(newFPS, 0, maxFrameRate); }
+void setFramerate(unsigned int fps) {
+  frameRate = constrain(fps, 1, maxFrameRate);
+}
 
 void scrollText(String text) {
-  matrix.setTextColor(textColor);  // Set the text color
+  matrix.setTextColor(pixelColor);  // Set the text color
   matrix.fillScreen(0);
   int startX = matrix.width();
   int len = text.length() * 6;  // Approx width of a character
@@ -167,12 +169,12 @@ void initializeWebServer() {
     wifi.webServer.send(200, "text/plain", String(sensitivity));
   });
   wifi.webServer.on("/sensitivity", HTTP_POST, []() {
-    if (wifi.webServer.hasArg("value")) {
-      int newSensitivity = wifi.webServer.arg("value").toInt();
+    if (wifi.webServer.hasArg("sensitivity")) {
+      int newSensitivity = wifi.webServer.arg("sensitivity").toInt();
       setSensitivity(newSensitivity);
       wifi.webServer.send(200, "text/plain", "Sensitivity updated");
     } else {
-      wifi.webServer.send(400, "text/plain", "Missing sensitivity value");
+      wifi.webServer.send(400, "text/plain", "Missing Sensitivity value");
     }
   });
 
@@ -180,16 +182,29 @@ void initializeWebServer() {
     wifi.webServer.send(200, "text/plain", String(brightness));
   });
   wifi.webServer.on("/brightness", HTTP_POST, []() {
-    if (wifi.webServer.hasArg("value")) {
-      int newBrightness = wifi.webServer.arg("value").toInt();
+    if (wifi.webServer.hasArg("brightness")) {
+      int newBrightness = wifi.webServer.arg("brightness").toInt();
       setBrightness(newBrightness);
       wifi.webServer.send(200, "text/plain", "Brightness updated");
     } else {
-      wifi.webServer.send(400, "text/plain", "Missing brightness value");
+      wifi.webServer.send(400, "text/plain", "Missing Brightness value");
     }
   });
 
-  wifi.webServer.on("/visualization", HTTP_GET, []() {
+  wifi.webServer.on("/frameRate", HTTP_GET, []() {
+    wifi.webServer.send(200, "text/plain", String(frameRate));
+  });
+  wifi.webServer.on("/frameRate", HTTP_POST, []() {
+    if (wifi.webServer.hasArg("frameRate")) {
+      unsigned int fps = wifi.webServer.arg("frameRate").toInt();
+      setFramerate(fps);
+      wifi.webServer.send(200, "text/plain", "Frame Rate updated");
+    } else {
+      wifi.webServer.send(400, "text/plain", "Missing Frame Rate value");
+    }
+  });
+
+  wifi.webServer.on("/visualization", HTTP_POST, []() {
     if (wifi.webServer.hasArg("mode")) {
       int newMode = wifi.webServer.arg("mode").toInt();
       setVisualization(newMode);
@@ -203,7 +218,7 @@ void initializeWebServer() {
   wifi.webServer.on("/text", HTTP_POST, []() {
     if (wifi.webServer.hasArg("textColor")) {
       String color = wifi.webServer.arg("textColor");
-      textColor = hexToColor(color);
+      pixelColor = hexToColor(color);
     }
     if (wifi.webServer.hasArg("textSpeed")) {
       textSpeed = wifi.webServer.arg("textSpeed").toInt();

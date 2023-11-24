@@ -18,6 +18,17 @@ function fetchInitialSettings() {
         .catch(error => {
             console.error('Error fetching initial brightness:', error);
         });
+
+    fetch('/framerate', { method: 'GET' })
+        .then(response => response.text())
+        .then(data => {
+            var framerateValue = parseInt(data, 10);
+            framerateSlider.value = framerateValue; // Update the slider's value
+        })
+        .catch(error => {
+            console.error('Error fetching initial framerate:', error);
+        });
+
 }
 
 function fetchBirdSettings() {
@@ -74,7 +85,7 @@ document.querySelectorAll('.toggle-button').forEach(function (toggle) {
 var sensitivitySlider = document.getElementById('sensitivityValue');
 sensitivitySlider.addEventListener('change', function () {
     var formData = new FormData();
-    formData.append('value', sensitivitySlider.value);
+    formData.append('sensitivity', sensitivitySlider.value);
     fetch('/sensitivity', { method: 'POST', body: formData })
         .then(response => response.text())
         .then(data => {
@@ -88,7 +99,7 @@ sensitivitySlider.addEventListener('change', function () {
 var brightnessSlider = document.getElementById('brightnessValue');
 brightnessSlider.addEventListener('change', function () {
     var formData = new FormData();
-    formData.append('value', brightnessSlider.value);
+    formData.append('brightness', brightnessSlider.value);
     fetch('/brightness', { method: 'POST', body: formData })
         .then(response => response.text())
         .then(data => {
@@ -99,27 +110,64 @@ brightnessSlider.addEventListener('change', function () {
         });
 });
 
+var frameRateSlider = document.getElementById('frameRateValue');
+frameRateSlider.addEventListener('change', function () {
+    var formData = new FormData();
+    formData.append('frameRate', frameRateSlider.value);
+    fetch('/frameRate', { method: 'POST', body: formData })
+        .then(response => response.text())
+        .then(data => {
+            console.log(data);
+        })
+        .catch(error => {
+            console.error('Error setting frame rate:', error);
+        });
+});
+
 var visualizationSelect = document.getElementById('visualizationSelect');
 visualizationSelect.addEventListener('change', function () {
     var selectedValue = visualizationSelect.value;
-    document.getElementById('bird-settings').style.display = 'none';
-    document.getElementById('text-settings').style.display = 'none';
 
-    switch (selectedValue) {
-        case '2':
-            document.getElementById('bird-settings').style.display = 'block';
-            setVisualization(selectedValue);
-            break;
-        case 'TEXT':
-            document.getElementById('text-settings').style.display = 'block';
-            break;
-        default:
-            setVisualization(selectedValue);
+    var birdSettings = document.getElementById('bird-settings');
+    birdSettings.style.display = 'none';
+
+    var textSettings = document.getElementById('text-settings');
+    textSettings.style.display = 'none';
+
+    var audioSettings = document.getElementById('audio-settings');
+    audioSettings.style.display = 'none';
+
+    var animationSettings = document.getElementById('animation-settings');
+    animationSettings.style.display = 'none';
+
+    if (selectedValue === 'bars') {
+        setVisualization(0);
     }
+
+    if (selectedValue === 'birds') {
+        birdSettings.style.display = 'block';
+        animationSettings.style.display = 'block';
+        setVisualization(2);
+    }
+
+    if (selectedValue === 'circles') {
+        audioSettings.style.display = 'block';
+        setVisualization(1);
+    }
+
+    if (selectedValue === 'gameOfLife') {
+        animationSettings.style.display = 'block';
+        setVisualization(3);
+    }
+
+    if (selectedValue === 'text') {
+        textSettings.style.display = 'block';
+    }
+
 });
 
 function setVisualization(mode) {
-    fetch('/visualization?mode=' + mode, { method: 'GET' })
+    fetch('/visualization?mode=' + mode, { method: 'POST' })
         .then(response => response.text())
         .then(data => {
             console.log(data);
@@ -133,6 +181,7 @@ document.getElementById('sendText').addEventListener('click', function () {
     var text = document.getElementById('customText').value;
     var textColor = document.getElementById('textColor').value;
     var textSpeed = document.getElementById('textSpeed').value;
+    console.log('Sending text:', text, textColor, textSpeed);
 
     fetch('/text', {
         method: 'POST',
