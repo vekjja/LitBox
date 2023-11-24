@@ -196,8 +196,8 @@ void initializeWebServer() {
   });
   wifi.webServer.on("/frameRate", HTTP_POST, []() {
     if (wifi.webServer.hasArg("frameRate")) {
-      unsigned int fps = wifi.webServer.arg("frameRate").toInt();
-      setFramerate(fps);
+      unsigned int newFrameRate = wifi.webServer.arg("frameRate").toInt();
+      setFramerate(newFrameRate);  // Update the global framerate
       wifi.webServer.send(200, "text/plain", "Frame Rate updated");
     } else {
       wifi.webServer.send(400, "text/plain", "Missing Frame Rate value");

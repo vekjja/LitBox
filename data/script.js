@@ -117,7 +117,7 @@ frameRateSlider.addEventListener('change', function () {
     fetch('/frameRate', { method: 'POST', body: formData })
         .then(response => response.text())
         .then(data => {
-            console.log(data);
+            console.log("Framerate updated: " + data);
         })
         .catch(error => {
             console.error('Error setting frame rate:', error);

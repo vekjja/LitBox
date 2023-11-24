@@ -31,7 +31,8 @@ uint32_t hexToColor(String hexColor) {
 void runAtFrameRate(void (*functionToRun)(), unsigned int fps) {
   static unsigned long lastFrameTime = 0;
   unsigned long currentFrameTime = millis();
-  unsigned int frameDuration = 1000 / fps;
+  unsigned int frameDuration =
+      1000 / fps;  // Duration of each frame in milliseconds
 
   if (currentFrameTime - lastFrameTime >= frameDuration) {
     lastFrameTime = currentFrameTime;
