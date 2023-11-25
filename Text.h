@@ -63,7 +63,7 @@ void rainbowText(Adafruit_NeoMatrix* matrix, String text) {
     matrix->print(text);
     matrix->show();
     delay(100 - textSpeed);  // Adjust speed based on your preference
-    hue += textSpeed;
+    hue += 255;
     // Adjust the hue increment for a faster/slower color change
   }
 }

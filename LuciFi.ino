@@ -153,7 +153,8 @@ void initializeWebServer() {
     if (wifi.webServer.hasArg("brightness")) {
       int newBrightness = wifi.webServer.arg("brightness").toInt();
       setBrightness(newBrightness);
-      wifi.webServer.send(200, "text/plain", "Brightness updated");
+      wifi.webServer.send(200, "text/plain",
+                          "Brightness updated: " + String(brightness) + " %");
     } else {
       wifi.webServer.send(400, "text/plain", "Missing Brightness value");
     }
@@ -166,7 +167,8 @@ void initializeWebServer() {
     if (wifi.webServer.hasArg("frameRate")) {
       unsigned int newFrameRate = wifi.webServer.arg("frameRate").toInt();
       setFramerate(newFrameRate);  // Update the global framerate
-      wifi.webServer.send(200, "text/plain", "Frame Rate updated");
+      wifi.webServer.send(200, "text/plain",
+                          "Frame Rate updated: " + String(frameRate) + " fps");
     } else {
       wifi.webServer.send(400, "text/plain", "Missing Frame Rate value");
     }
