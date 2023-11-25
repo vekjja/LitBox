@@ -190,10 +190,10 @@ void initializeWebServer() {
 
   wifi.webServer.on("/colors", HTTP_GET, []() {
     wifi.webServer.send(200, "text/plain",
-                        "color1=" + String(colorPallet[0]) + "\n" +
-                            "color2=" + String(colorPallet[1]) + "\n" +
-                            "color3=" + String(colorPallet[2]) + "\n" +
-                            "color4=" + String(colorPallet[3]));
+                        "color1=" + colorToHex(colorPallet[0]) + "\n" +
+                            "color2=" + colorToHex(colorPallet[1]) + "\n" +
+                            "color3=" + colorToHex(colorPallet[2]) + "\n" +
+                            "color4=" + colorToHex(colorPallet[3]));
   });
   wifi.webServer.on("/colors", HTTP_POST, []() {
     if (wifi.webServer.hasArg("color1")) {

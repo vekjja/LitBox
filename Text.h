@@ -28,8 +28,8 @@ void waveText(Adafruit_NeoMatrix* matrix, String text) {
   int textWidth =
       6 * strlen(text.c_str());  // 6 is an approx width of a character
   for (int x = 0; x < matrix->width() + textWidth; x++) {
-    int y = 4 + sin(x / 2.0) * 4;  // Sine wave for vertical position
-    matrix->fillScreen(0);         // Clear the matrix
+    int y = sin(x / 2.0) * 4;  // Sine wave for vertical position
+    matrix->fillScreen(0);     // Clear the matrix
     matrix->setCursor(matrix->width() - x, y);  // Set start position
     matrix->print(text);                        // Print the text
     matrix->show();                             // Show on the matrix

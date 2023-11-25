@@ -2,8 +2,7 @@ function fetchSliderSettings() {
     fetch('/sensitivity', { method: 'GET' })
         .then(response => response.text())
         .then(data => {
-            var sensitivityValue = parseInt(data, 10);
-            sensitivitySlider.value = sensitivityValue; // Update the slider's value
+            sensitivitySlider.value = parseInt(data, 10); // Update the slider's value
         })
         .catch(error => {
             console.error('Error fetching initial sensitivity:', error);
@@ -12,8 +11,7 @@ function fetchSliderSettings() {
     fetch('/brightness', { method: 'GET' })
         .then(response => response.text())
         .then(data => {
-            var brightnessValue = parseInt(data, 10);
-            brightnessSlider.value = brightnessValue; // Update the slider's value
+            brightnessSlider.value = parseInt(data, 10); // Update the slider's value
         })
         .catch(error => {
             console.error('Error fetching initial brightness:', error);
@@ -22,13 +20,21 @@ function fetchSliderSettings() {
     fetch('/frameRate', { method: 'GET' })
         .then(response => response.text())
         .then(data => {
-            var framerateValue = parseInt(data, 10);
-            framerateSlider.value = framerateValue; // Update the slider's value
+            frameRateSlider.value = parseInt(data, 10); // Update the slider's value
         })
         .catch(error => {
             console.error('Error fetching initial framerate:', error);
         });
 
+    fetch('/visualization', { method: 'GET' })
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('visualizationSelect').value = data;
+            visualizationSelect.dispatchEvent(new Event('change'));
+        })
+        .catch(error => {
+            console.error('Error fetching initial visualization:', error);
+        });
 }
 
 function fetchBirdSettings() {
@@ -54,10 +60,10 @@ function fetchBirdSettings() {
                         document.getElementById('birdSeparation').value = value;
                         break;
                     case 'birdVerticalBounds':
-                        document.querySelector('#birdVerticalBounds').checked = (value === 'true');
+                        document.querySelector('#birdVerticalBounds').checked = (value === 1);
                         break;
                     case 'birdHorizontalBounds':
-                        document.querySelector('#birdHorizontalBounds').checked = (value === 'true');
+                        document.querySelector('#birdHorizontalBounds').checked = (value === 1);
                         break;
                 }
             });
@@ -160,7 +166,7 @@ frameRateSlider.addEventListener('change', function () {
     fetch('/frameRate', { method: 'POST', body: formData })
         .then(response => response.text())
         .then(data => {
-            console.log("Framerate updated: " + data);
+            console.log(data);
         })
         .catch(error => {
             console.error('Error setting frame rate:', error);
@@ -185,6 +191,9 @@ visualizationSelect.addEventListener('change', function () {
 
     var animationSettings = document.getElementById('animation-settings');
     animationSettings.style.display = 'none';
+
+    var colorsSettings = document.getElementById('colors-settings');
+    colorsSettings.style.display = 'block';
 
     setVisualization(visualization);
     switch (visualization) {
@@ -230,7 +239,7 @@ function setVisualization(visualization) {
 
 document.getElementById('sendText').addEventListener('click', function () {
     var text = document.getElementById('customText').value;
-    var textColor = document.getElementById('textColor').value;
+    var textColor = document.getElementById('color1').value;
     var textSpeed = document.getElementById('textSpeed').value;
     var textAnimation = document.getElementById('textAnimation').value;
     console.log('Sending text:', text, textColor, textSpeed);
