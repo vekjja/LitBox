@@ -3,7 +3,6 @@
 #include <Adafruit_NeoPixel.h>
 #include <ESPWiFi.h>
 #include <arduinoFFT.h>
-#include <math.h>
 
 #include "Birds.h"
 #include "Colors.h"
@@ -45,7 +44,6 @@ void setup() {
 
 void loop() {
   wifi.handleClient();
-
   if (visualization == "circles") {
     drawCircles();
   } else if (visualization == "birds") {
@@ -174,15 +172,14 @@ void initializeWebServer() {
     }
   });
 
-  wifi.webServer.on("/visualization", HTTP_POST, []() {
-    wifi.webServer.send(200, "text/plain", String(visualization));
+  wifi.webServer.on("/visualization", HTTP_GET, []() {
+    wifi.webServer.send(200, "text/plain", visualization);
   });
   wifi.webServer.on("/visualization", HTTP_POST, []() {
     if (wifi.webServer.hasArg("visualization")) {
-      // setVisualization(newMode);
       visualization = wifi.webServer.arg("visualization");
       wifi.webServer.send(200, "text/plain",
-                          "Visualization set to: " + String(visualization));
+                          "Visualization set to: " + visualization);
     } else {
       wifi.webServer.send(400, "text/plain", "Missing visualization mode");
     }
@@ -206,8 +203,8 @@ void initializeWebServer() {
         scrollText(&matrix, text);
       } else if (textAnimation == "wave") {
         waveText(&matrix, text);
-      } else if (textAnimation == "blinking") {
-        blinkText(&matrix, text);
+      } else if (textAnimation == "rainbow") {
+        rainbowText(&matrix, text);
       }
     } else {
       scrollText(&matrix, text);
@@ -227,12 +224,6 @@ void initializeWebServer() {
   });
 
   wifi.webServer.on("/birds", HTTP_POST, []() {
-    if (wifi.webServer.hasArg("max_velocity")) {
-      birdMaxVelocity = wifi.webServer.arg("max_velocity").toFloat();
-    }
-    if (wifi.webServer.hasArg("min_velocity")) {
-      birdMinVelocity = wifi.webServer.arg("min_velocity").toFloat();
-    }
     if (wifi.webServer.hasArg("birdCount")) {
       birdCount = wifi.webServer.arg("birdCount").toInt();
     }

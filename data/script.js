@@ -169,7 +169,13 @@ visualizationSelect.addEventListener('change', function () {
 });
 
 function setVisualization(visualization) {
-    fetch('/visualization?visualization=' + visualization, { method: 'POST' })
+    fetch('/visualization', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'visualization=' + encodeURIComponent(visualization)
+    })
         .then(response => response.text())
         .then(data => {
             console.log(data);

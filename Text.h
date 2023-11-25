@@ -51,4 +51,20 @@ void blinkText(Adafruit_NeoMatrix* matrix, String text) {
     isVisible = !isVisible;  // Toggle the visibility
   }
 }
+void rainbowText(Adafruit_NeoMatrix* matrix, String text) {
+  int startX = matrix->width();
+  int len = text.length() * 6;  // Approx width of a character
+  int hue = 0;
+  for (int x = startX; x > -len; x--) {
+    matrix->fillScreen(0);
+    matrix->setCursor(x, 0);
+    // Use HSV to cycle through colors
+    matrix->setTextColor(matrix->ColorHSV(hue));
+    matrix->print(text);
+    matrix->show();
+    delay(100 - textSpeed);  // Adjust speed based on your preference
+    hue += textSpeed;
+    // Adjust the hue increment for a faster/slower color change
+  }
+}
 #endif
