@@ -2,24 +2,23 @@
 #include <Adafruit_NeoMatrix.h>
 #include <Adafruit_NeoPixel.h>
 #include <ESPWiFi.h>
-#include <IOPin.h>
 #include <arduinoFFT.h>
+#include <math.h>
 
 #include "Birds.h"
 #include "Colors.h"
 #include "GameofLife.h"
 #include "SpectralAnalyzer.h"
-
-// IOPins
-IOPin ledData(12);  // Board Pin D6
+#include "Text.h"
 
 // LED Matrix Config
 int LEDWidth = 32;
 int LEDHeight = 8;
+int ledDataPin = 12;  // Board Pin D6
 uint8_t matrixType =
     NEO_MATRIX_TOP + NEO_MATRIX_LEFT + NEO_MATRIX_COLUMNS + NEO_MATRIX_ZIGZAG;
 Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(
-    LEDWidth, LEDHeight, ledData.pin(), matrixType, NEO_GRB + NEO_KHZ800);
+    LEDWidth, LEDHeight, ledDataPin, matrixType, NEO_GRB + NEO_KHZ800);
 
 // Brightness and Color Config
 const int maxBrightness = 255;
@@ -30,12 +29,7 @@ int brightness = 6;
 // Visualization Config
 const int maxFrameRate = 120;
 unsigned int frameRate = 60;
-int maxVisualization = 3;
-int visualization = 0;
-
-// text color and speed
-int textSpeed = 60;                // Default speed
-String text = "*.*. LuciFi .*.*";  // Default text
+String visualization = "bars";
 
 // Web Server Config
 ESPWiFi wifi = ESPWiFi("LuciFi", "abcd1234");
@@ -44,7 +38,6 @@ void setup() {
   matrix.begin();
   Serial.begin(115200);
   matrix.setTextWrap(false);
-  ledData.setPinMode(OUTPUT);
   matrix.setBrightness(brightness);
   testMatrix(&matrix, LEDWidth, LEDHeight);
   initializeWebServer();
@@ -52,58 +45,17 @@ void setup() {
 
 void loop() {
   wifi.handleClient();
-  switch (visualization) {
-    case 1:
-      drawCircles();
-      break;
-    case 2:
-      runAtFrameRate(drawBirds, frameRate);
-      break;
-    case 3:
-      runAtFrameRate(drawGameOfLife, frameRate);
-      break;
-    default:
-      drawBars();
-      break;
+
+  if (visualization == "circles") {
+    drawCircles();
+  } else if (visualization == "birds") {
+    runAtFrameRate(drawBirds, frameRate);
+  } else if (visualization == "gameOfLife") {
+    runAtFrameRate(drawGameOfLife, frameRate);
+  } else {
+    drawBars();
   }
 }
-
-void drawGameOfLife() {
-  if (gol_Cells == nullptr) {
-    startGameOfLife(LEDWidth, LEDHeight);
-  }
-  int cellColor = colorPallets[currentPalette][0];
-  updateGameOfLife(LEDWidth, LEDHeight, 231);
-  matrix.fillScreen(0);
-  for (int x = 0; x < LEDWidth; x++) {
-    for (int y = 0; y < LEDHeight; y++) {
-      if (gol_Cells[x][y] == 1) {
-        matrix.drawPixel(x, y, cellColor);
-      }
-    }
-  }
-  matrix.show();
-}
-
-void drawCircles() {
-  spectralAnalyzer(LEDWidth, LEDHeight);
-  matrix.fillScreen(0);
-  for (int x = 0; x < LEDWidth; x++) {
-    int circleRadius = spectralData[x];
-    int circleColor = colorPallets[currentPalette][0];
-    circleColor =
-        (circleRadius > 2) ? colorPallets[currentPalette][1] : circleColor;
-    circleColor =
-        (circleRadius > 3) ? colorPallets[currentPalette][2] : circleColor;
-    circleColor =
-        (circleRadius > 5) ? colorPallets[currentPalette][3] : circleColor;
-    if (circleRadius > 0) {
-      matrix.drawCircle(x, 4, circleRadius, circleColor);
-    }
-  }
-  matrix.show();
-}
-
 void drawBars() {
   spectralAnalyzer(LEDWidth, LEDHeight);
   matrix.fillScreen(0);
@@ -131,6 +83,42 @@ void drawBirds() {
   matrix.show();
 }
 
+void drawCircles() {
+  spectralAnalyzer(LEDWidth, LEDHeight);
+  matrix.fillScreen(0);
+  for (int x = 0; x < LEDWidth; x++) {
+    int circleRadius = spectralData[x];
+    int circleColor = colorPallets[currentPalette][0];
+    circleColor =
+        (circleRadius > 2) ? colorPallets[currentPalette][1] : circleColor;
+    circleColor =
+        (circleRadius > 3) ? colorPallets[currentPalette][2] : circleColor;
+    circleColor =
+        (circleRadius > 5) ? colorPallets[currentPalette][3] : circleColor;
+    if (circleRadius > 0) {
+      matrix.drawCircle(x, 4, circleRadius, circleColor);
+    }
+  }
+  matrix.show();
+}
+
+void drawGameOfLife() {
+  if (gol_Cells == nullptr) {
+    startGameOfLife(LEDWidth, LEDHeight);
+  }
+  int cellColor = colorPallets[currentPalette][0];
+  updateGameOfLife(LEDWidth, LEDHeight, 231);
+  matrix.fillScreen(0);
+  for (int x = 0; x < LEDWidth; x++) {
+    for (int y = 0; y < LEDHeight; y++) {
+      if (gol_Cells[x][y] == 1) {
+        matrix.drawPixel(x, y, cellColor);
+      }
+    }
+  }
+  matrix.show();
+}
+
 void setBrightness(int newBrightness) {
   brightness = constrain(newBrightness, minBrightness, maxBrightness);
   matrix.setBrightness(brightness);
@@ -142,26 +130,8 @@ void setSensitivity(int newSensitivity) {
   sensitivity = newSensitivity;
 }
 
-void setVisualization(int newMode) {
-  visualization = constrain(newMode, 0, maxVisualization);
-}
-
 void setFramerate(unsigned int fps) {
   frameRate = constrain(fps, 1, maxFrameRate);
-}
-
-void scrollText(String text) {
-  matrix.setTextColor(pixelColor);  // Set the text color
-  matrix.fillScreen(0);
-  int startX = matrix.width();
-  int len = text.length() * 6;  // Approx width of a character
-  for (int x = startX; x > -len; x--) {
-    matrix.fillScreen(0);
-    matrix.setCursor(x, 0);
-    matrix.print(text);
-    matrix.show();
-    delay(100 - textSpeed);  // Adjust speed based on textSpeed
-  }
 }
 
 void initializeWebServer() {
@@ -205,9 +175,12 @@ void initializeWebServer() {
   });
 
   wifi.webServer.on("/visualization", HTTP_POST, []() {
-    if (wifi.webServer.hasArg("mode")) {
-      int newMode = wifi.webServer.arg("mode").toInt();
-      setVisualization(newMode);
+    wifi.webServer.send(200, "text/plain", String(visualization));
+  });
+  wifi.webServer.on("/visualization", HTTP_POST, []() {
+    if (wifi.webServer.hasArg("visualization")) {
+      // setVisualization(newMode);
+      visualization = wifi.webServer.arg("visualization");
       wifi.webServer.send(200, "text/plain",
                           "Visualization set to: " + String(visualization));
     } else {
@@ -227,7 +200,18 @@ void initializeWebServer() {
     if (wifi.webServer.hasArg("text")) {
       text = wifi.webServer.arg("text");
     }
-    scrollText(text);
+    if (wifi.webServer.hasArg("textAnimation")) {
+      String textAnimation = wifi.webServer.arg("textAnimation");
+      if (textAnimation == "scroll") {
+        scrollText(&matrix, text);
+      } else if (textAnimation == "wave") {
+        waveText(&matrix, text);
+      } else if (textAnimation == "blinking") {
+        blinkText(&matrix, text);
+      }
+    } else {
+      scrollText(&matrix, text);
+    }
     wifi.webServer.send(200, "text/plain", "Text updated");
   });
 

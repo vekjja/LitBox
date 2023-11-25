@@ -1,5 +1,6 @@
 #ifndef COLORS_H
 #define COLORS_H
+
 // Color definitions
 #define BLACK 0x0000
 #define BLUE 0x001F

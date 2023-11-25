@@ -29,6 +29,7 @@
                         <option value="bars">Bars</option>
                         <option value="birds">Birds</option>
                         <option value="circles">Circles</option>
+                        <option value="leaves">Leaves</option>
                         <option value="gameOfLife">Game of Life</option>
                         <option value="text">Text</option>
                     </select>
@@ -47,9 +48,8 @@
                         </div>
                     </div>
 
-                    <div class="toggle-content" id="bird-settings">
+                    <div class="toggle-content" id="bird-settings"><!-- Birds -->
                         <div class="setting">
-                            <!-- Birds -->
                             <label>Number of Birds</label>
                             <input type="number" id="birdCount"
                                 placeholder="Number of Birds">
@@ -82,8 +82,15 @@
                             Birds</button>
                     </div>
 
-                    <div class="toggle-content" id="text-settings">
-                        <div class="setting"><!-- Text -->
+                    <div class="toggle-content" id="text-settings"><!-- Text -->
+                        <div class="setting">
+                            <select id="textAnimation" class="clickable">
+                                <option value="scroll">Scroll</option>
+                                <option value="wave">Wave</option>
+                                <option value="blink">Blink</option>
+                            </select>
+                        </div>
+                        <div class="setting">
                             <input type="text" id="customText"
                                 value=".*.* LuciFi *.*.">
                             <button id="sendText" class="clickable button">Send</button>
@@ -97,6 +104,18 @@
                             <input type="range" id="textSpeed" min="1"
                                 max="100"
                                 value="50">
+                        </div>
+                    </div>
+
+                    <div class="toggle-content" id="leaves-settings"><!-- leaves -->
+                        <div class="setting">
+                            <input type="text" id="customText"
+                                value=".*.* LuciFi *.*.">
+                            <button id="updateLeaves" class="clickable button">Send</button>
+                        </div>
+                        <div class="setting">
+                            <input type="color" id="leafColor1"
+                                title="Choose A Leaf Color">
                         </div>
                     </div>
 

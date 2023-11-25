@@ -19,7 +19,7 @@ function fetchInitialSettings() {
             console.error('Error fetching initial brightness:', error);
         });
 
-    fetch('/framerate', { method: 'GET' })
+    fetch('/frameRate', { method: 'GET' })
         .then(response => response.text())
         .then(data => {
             var framerateValue = parseInt(data, 10);
@@ -126,10 +126,13 @@ frameRateSlider.addEventListener('change', function () {
 
 var visualizationSelect = document.getElementById('visualizationSelect');
 visualizationSelect.addEventListener('change', function () {
-    var selectedValue = visualizationSelect.value;
+    var visualization = visualizationSelect.value;
 
     var birdSettings = document.getElementById('bird-settings');
     birdSettings.style.display = 'none';
+
+    var leavesSettings = document.getElementById('leaves-settings');
+    leavesSettings.style.display = 'none';
 
     var textSettings = document.getElementById('text-settings');
     textSettings.style.display = 'none';
@@ -140,34 +143,33 @@ visualizationSelect.addEventListener('change', function () {
     var animationSettings = document.getElementById('animation-settings');
     animationSettings.style.display = 'none';
 
-    if (selectedValue === 'bars') {
-        setVisualization(0);
+    setVisualization(visualization);
+    switch (visualization) {
+        case 'bars':
+            audioSettings.style.display = 'block';
+            break;
+        case 'birds':
+            birdSettings.style.display = 'block';
+            animationSettings.style.display = 'block';
+            break;
+        case 'circles':
+            audioSettings.style.display = 'block';
+            break;
+        case 'leaves':
+            leavesSettings.style.display = 'block';
+            animationSettings.style.display = 'block';
+            break;
+        case 'gameOfLife':
+            animationSettings.style.display = 'block';
+            break;
+        case 'text':
+            textSettings.style.display = 'block';
+            break;
     }
-
-    if (selectedValue === 'birds') {
-        birdSettings.style.display = 'block';
-        animationSettings.style.display = 'block';
-        setVisualization(2);
-    }
-
-    if (selectedValue === 'circles') {
-        audioSettings.style.display = 'block';
-        setVisualization(1);
-    }
-
-    if (selectedValue === 'gameOfLife') {
-        animationSettings.style.display = 'block';
-        setVisualization(3);
-    }
-
-    if (selectedValue === 'text') {
-        textSettings.style.display = 'block';
-    }
-
 });
 
-function setVisualization(mode) {
-    fetch('/visualization?mode=' + mode, { method: 'POST' })
+function setVisualization(visualization) {
+    fetch('/visualization?visualization=' + visualization, { method: 'POST' })
         .then(response => response.text())
         .then(data => {
             console.log(data);
@@ -181,6 +183,7 @@ document.getElementById('sendText').addEventListener('click', function () {
     var text = document.getElementById('customText').value;
     var textColor = document.getElementById('textColor').value;
     var textSpeed = document.getElementById('textSpeed').value;
+    var textAnimation = document.getElementById('textAnimation').value;
     console.log('Sending text:', text, textColor, textSpeed);
 
     fetch('/text', {
@@ -191,6 +194,7 @@ document.getElementById('sendText').addEventListener('click', function () {
         body: 'text=' + encodeURIComponent(text)
             + '&textColor=' + encodeURIComponent(textColor)
             + '&textSpeed=' + encodeURIComponent(textSpeed)
+            + '&textAnimation=' + encodeURIComponent(textAnimation)
     })
         .then(response => response.text())
         .then(data => console.log('Text and speed updated:', data))
