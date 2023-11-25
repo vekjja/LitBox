@@ -140,8 +140,7 @@ void updateFlock(int maxX, int maxY) {
 
 void hatchBirds(int maxX, int maxY) {
   for (int i = 0; i < birdCount; i++) {
-    uint32_t birdColor =
-        colorPallets[currentPalette][random(0, palletSize - 1)];
+    uint32_t birdColor = colorPallet[random(0, palletSize - 1)];
     birds[i].pixel.x = random(0, maxX);
     birds[i].pixel.y = random(0, maxY);
     birds[i].pixel.intensity = random(100, 255);  // Random intensity

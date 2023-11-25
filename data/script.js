@@ -1,4 +1,4 @@
-function fetchInitialSettings() {
+function fetchSliderSettings() {
     fetch('/sensitivity', { method: 'GET' })
         .then(response => response.text())
         .then(data => {
@@ -67,8 +67,39 @@ function fetchBirdSettings() {
         });
 }
 
+function fetchColorSettings() {
+    fetch('/colors', { method: 'GET' })
+        .then(response => response.text())
+        .then(data => {
+            var settings = data.split('\n');
+            settings.forEach(setting => {
+                var parts = setting.split('=');
+                var key = parts[0];
+                var value = parts[1];
+                switch (key) {
+                    case 'color1':
+                        document.getElementById('color1').value = value;
+                        break;
+                    case 'color2':
+                        document.getElementById('color2').value = value;
+                        break;
+                    case 'color3':
+                        document.getElementById('color3').value = value;
+                        break;
+                    case 'color4':
+                        document.getElementById('color4').value = value;
+                        break;
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching color settings:', error);
+        });
+}
+
 window.onload = function () {
-    fetchInitialSettings();
+    fetchSliderSettings();
+    fetchColorSettings();
     fetchBirdSettings();
 }
 
@@ -79,6 +110,18 @@ document.querySelectorAll('.toggle-button').forEach(function (toggle) {
     // Save state on change
     toggle.addEventListener('click', function () {
         localStorage.setItem(contentId, toggle.checked);
+    });
+});
+
+
+// for each color picker input field add an event listener to update the color
+document.querySelectorAll('.color-picker').forEach(function (colorPicker) {
+    colorPicker.addEventListener('change', function () {
+        var color1 = document.getElementById('color1').value;
+        var color2 = document.getElementById('color2').value;
+        var color3 = document.getElementById('color3').value;
+        var color4 = document.getElementById('color4').value;
+        updateColor(color1, color2, color3, color4);
     });
 });
 
@@ -240,4 +283,19 @@ document.getElementById('wifiErase').addEventListener('click', function () {
     window.location.href = '/erase';
 });
 
+function updateColor(color1, color2, color3, color4) {
 
+    fetch('/colors', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'color1=' + color1
+            + '&color2=' + color2
+            + '&color3=' + color3
+            + '&color4=' + color4
+    })
+        .then(response => response.text())
+        .then(data => console.log(data))
+        .catch(error => console.error('Error:', error));
+}

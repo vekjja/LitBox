@@ -23,6 +23,10 @@ Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(
 const int maxBrightness = 255;
 const int minBrightness = 1;
 uint32_t pixelColor = WHITE;  // Default color
+uint32_t color1 = WHITE;      // Default color
+uint32_t color2 = WHITE;      // Default color
+uint32_t color3 = WHITE;      // Default color
+uint32_t color4 = WHITE;      // Default color
 int brightness = 6;
 
 // Visualization Config
@@ -59,10 +63,10 @@ void drawBars() {
   matrix.fillScreen(0);
   for (int x = 0; x < LEDWidth; x++) {
     for (int y = 0; y < spectralData[x]; y++) {
-      uint32_t pixelColor = colorPallets[currentPalette][0];
-      pixelColor = (y > 1) ? colorPallets[currentPalette][1] : pixelColor;
-      pixelColor = (y > 3) ? colorPallets[currentPalette][2] : pixelColor;
-      pixelColor = (y > 6) ? colorPallets[currentPalette][3] : pixelColor;
+      uint32_t pixelColor = colorPallet[0];
+      pixelColor = (y > 1) ? colorPallet[1] : pixelColor;
+      pixelColor = (y > 3) ? colorPallet[2] : pixelColor;
+      pixelColor = (y > 6) ? colorPallet[3] : pixelColor;
       matrix.drawPixel(x, LEDHeight - 1 - y, pixelColor);
     }
   }
@@ -86,13 +90,10 @@ void drawCircles() {
   matrix.fillScreen(0);
   for (int x = 0; x < LEDWidth; x++) {
     int circleRadius = spectralData[x];
-    int circleColor = colorPallets[currentPalette][0];
-    circleColor =
-        (circleRadius > 2) ? colorPallets[currentPalette][1] : circleColor;
-    circleColor =
-        (circleRadius > 3) ? colorPallets[currentPalette][2] : circleColor;
-    circleColor =
-        (circleRadius > 5) ? colorPallets[currentPalette][3] : circleColor;
+    int circleColor = colorPallet[0];
+    circleColor = (circleRadius > 2) ? colorPallet[1] : circleColor;
+    circleColor = (circleRadius > 3) ? colorPallet[2] : circleColor;
+    circleColor = (circleRadius > 5) ? colorPallet[3] : circleColor;
     if (circleRadius > 0) {
       matrix.drawCircle(x, 4, circleRadius, circleColor);
     }
@@ -104,7 +105,7 @@ void drawGameOfLife() {
   if (gol_Cells == nullptr) {
     startGameOfLife(LEDWidth, LEDHeight);
   }
-  int cellColor = colorPallets[currentPalette][0];
+  int cellColor = colorPallet[0];
   updateGameOfLife(LEDWidth, LEDHeight, 231);
   matrix.fillScreen(0);
   for (int x = 0; x < LEDWidth; x++) {
@@ -185,6 +186,37 @@ void initializeWebServer() {
     } else {
       wifi.webServer.send(400, "text/plain", "Missing visualization mode");
     }
+  });
+
+  wifi.webServer.on("/colors", HTTP_GET, []() {
+    wifi.webServer.send(200, "text/plain",
+                        "color1=" + String(colorPallet[0]) + "\n" +
+                            "color2=" + String(colorPallet[1]) + "\n" +
+                            "color3=" + String(colorPallet[2]) + "\n" +
+                            "color4=" + String(colorPallet[3]));
+  });
+  wifi.webServer.on("/colors", HTTP_POST, []() {
+    if (wifi.webServer.hasArg("color1")) {
+      String color = wifi.webServer.arg("color1");
+      colorPallet[0] = hexToColor(wifi.webServer.arg("color1"));
+    }
+    if (wifi.webServer.hasArg("color2")) {
+      String color = wifi.webServer.arg("color2");
+      colorPallet[1] = hexToColor(wifi.webServer.arg("color2"));
+    }
+    if (wifi.webServer.hasArg("color3")) {
+      String color = wifi.webServer.arg("color3");
+      colorPallet[2] = hexToColor(wifi.webServer.arg("color3"));
+    }
+    if (wifi.webServer.hasArg("color4")) {
+      String color = wifi.webServer.arg("color4");
+      colorPallet[3] = hexToColor(wifi.webServer.arg("color4"));
+    }
+    wifi.webServer.send(200, "text/plain",
+                        "Color Pallet set to: " + String(colorPallet[0]) +
+                            ", " + String(colorPallet[1]) + ", " +
+                            String(colorPallet[2]) + ", " +
+                            String(colorPallet[3]));
   });
 
   wifi.webServer.on("/text", HTTP_POST, []() {
