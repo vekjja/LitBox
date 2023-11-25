@@ -24,6 +24,73 @@
                     </select>
                 </div>
 
+                <div class="setting"> <!-- Brightness -->
+                    <input id="toggleBrightness" type="checkbox"
+                        class="toggle-button">
+                    <label for="toggleBrightness" class="clickable">Brightness</label>
+                    <div class="toggle-content">
+                        <div class="setting">
+                            <input id="brightnessValue" type="range"
+                                id="brightnessRange"
+                                min="1" max="255">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="toggle-content" id="audio-settings"
+                    style="display: block;">
+                    <div class="setting"> <!-- Sensitivity -->
+                        <input id="toggleSensitivity" type="checkbox"
+                            class="toggle-button">
+                        <label for="toggleSensitivity" class="clickable">Sensitivity</label>
+                        <div class="toggle-content">
+                            <input id="sensitivityValue" type="range"
+                                style="transform: scaleX(-1)"
+                                id="sensitivityRange"
+                                min="1" max="100">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="toggle-content" id="animation-settings"><!-- Framerate -->
+                    <div class="setting">
+                        <input id="toggleFrameRate" type="checkbox"
+                            class="toggle-button">
+                        <label for="toggleFrameRate" class="clickable">
+                            Frame Rate</label>
+                        <div class="toggle-content">
+                            <input id="frameRateValue" type="range"
+                                id="frameRateRange"
+                                min="1" max="255">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="setting"> <!-- Colors -->
+                    <input type="checkbox" class="toggle-button"
+                        id="toggleColorSettings">
+                    <label for="toggleColorSettings"
+                        class="clickable">Colors</label>
+                    <div class="toggle-content">
+                        <div class="setting">
+                            <input type="color" id="color4"
+                                title="Choose A Color" class="color-picker">
+                        </div>
+                        <div class="setting">
+                            <input type="color" id="color3"
+                                title="Choose A Color" class="color-picker">
+                        </div>
+                        <div class="setting">
+                            <input type="color" id="color2"
+                                title="Choose A Color" class="color-picker">
+                        </div>
+                        <div class="setting">
+                            <input type="color" id="color1"
+                                title="Choose A Color" class="color-picker">
+                        </div>
+                    </div>
+                </div>
+
                 <div class="toggle-content" id="bird-settings"><!-- Birds -->
                     <div class="setting">
                         <label>Number of Birds</label>
@@ -95,81 +162,16 @@
                     </div>
                 </div>
 
-                <div class="toggle-content" id="audio-settings"
-                    style="display: block;">
-                    <div class="setting"> <!-- Sensitivity -->
-                        <input id="toggleSensitivity" type="checkbox"
-                            class="toggle-button">
-                        <label for="toggleSensitivity" class="clickable">Sensitivity</label>
-                        <div class="toggle-content">
-                            <input id="sensitivityValue" type="range"
-                                style="transform: scaleX(-1)"
-                                id="sensitivityRange"
-                                min="1" max="100">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="toggle-content" id="animation-settings"><!-- Framerate -->
-                    <div class="setting">
-                        <input id="toggleFrameRate" type="checkbox"
-                            class="toggle-button">
-                        <label for="toggleFrameRate" class="clickable">
-                            Frame Rate</label>
-                        <div class="toggle-content">
-                            <input id="frameRateValue" type="range"
-                                id="frameRateRange"
-                                min="1" max="255">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="setting"> <!-- Brightness -->
-                    <input id="toggleBrightness" type="checkbox"
-                        class="toggle-button">
-                    <label for="toggleBrightness" class="clickable">Brightness</label>
-                    <div class="toggle-content">
-                        <div class="setting">
-                            <input id="brightnessValue" type="range"
-                                id="brightnessRange"
-                                min="1" max="255">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="setting"> <!-- Colors -->
-                    <input type="checkbox" class="toggle-button"
-                        id="toggleColorSettings">
-                    <label for="toggleColorSettings"
-                        class="clickable">Colors</label>
-                    <div class="toggle-content">
-                        <div class="setting">
-                            <input type="color" id="color4"
-                                title="Choose A Color" class="color-picker">
-                        </div>
-                        <div class="setting">
-                            <input type="color" id="color3"
-                                title="Choose A Color" class="color-picker">
-                        </div>
-                        <div class="setting">
-                            <input type="color" id="color2"
-                                title="Choose A Color" class="color-picker">
-                        </div>
-                        <div class="setting">
-                            <input type="color" id="color1"
-                                title="Choose A Color" class="color-picker">
-                        </div>
-                    </div>
-                </div>
-
                 <div class="setting"> <!-- WiFi -->
                     <input type="checkbox" class="toggle-button"
                         id="toggleWifiSettings">
                     <label for="toggleWifiSettings"
                         class="clickable">WiFi</label>
                     <div class="toggle-content">
-                        <button id="wifiSetup" class="clickable button">Setup</button>
-                        <button id="wifiErase" class="clickable button">Erase</button>
+                        <button id="wifiSetup" class="clickable button"
+                            style="background-color: brown;">Setup</button>
+                        <button id="wifiErase" class="clickable button"
+                            style="background-color: brown;">Erase</button>
                     </div>
                 </div>
 
