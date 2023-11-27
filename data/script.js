@@ -119,18 +119,6 @@ document.querySelectorAll('.toggle-button').forEach(function (toggle) {
     });
 });
 
-
-// for each color picker input field add an event listener to update the color
-document.querySelectorAll('.color-picker').forEach(function (colorPicker) {
-    colorPicker.addEventListener('change', function () {
-        var color1 = document.getElementById('color1').value;
-        var color2 = document.getElementById('color2').value;
-        var color3 = document.getElementById('color3').value;
-        var color4 = document.getElementById('color4').value;
-        updateColor(color1, color2, color3, color4);
-    });
-});
-
 var sensitivitySlider = document.getElementById('sensitivityValue');
 sensitivitySlider.addEventListener('change', function () {
     var formData = new FormData();
@@ -292,6 +280,16 @@ document.getElementById('wifiErase').addEventListener('click', function () {
     window.location.href = '/erase';
 });
 
+// for each color picker input field add an event listener to update the color
+document.querySelectorAll('.color-picker').forEach(function (colorPicker) {
+    colorPicker.addEventListener('change', function () {
+        var color1 = document.getElementById('color1').value;
+        var color2 = document.getElementById('color2').value;
+        var color3 = document.getElementById('color3').value;
+        var color4 = document.getElementById('color4').value;
+        updateColor(color1, color2, color3, color4);
+    });
+});
 function updateColor(color1, color2, color3, color4) {
 
     fetch('/colors', {

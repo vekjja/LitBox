@@ -1,5 +1,6 @@
 #ifndef SPECTRAL_ANALYZER_H
 #define SPECTRAL_ANALYZER_H
+
 #include <IOPin.h>
 #include <arduinoFFT.h>
 
@@ -61,4 +62,4 @@ void spectralAnalyzer(int maxWidth, int maxHeight) {
   }
   peakDetection(spectralData, maxWidth, maxHeight);
 }
-#endif
+#endif  // SPECTRAL_ANALYZER_H

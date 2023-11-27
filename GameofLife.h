@@ -1,7 +1,6 @@
 #ifndef GAMEOFLIFE_H
 #define GAMEOFLIFE_H
 
-uint32_t gol_Color = 0;
 int gol_Generations = 0;
 int** gol_Cells = nullptr;
 

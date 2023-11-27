@@ -6,11 +6,10 @@
 #include "Colors.h"
 
 int textSpeed = 60;                // Default speed
-uint32_t textColor = WHITE;        // Default color
 String text = "*.*. LuciFi .*.*";  // Default text
 
 void scrollText(Adafruit_NeoMatrix* matrix, String text) {
-  matrix->setTextColor(textColor);  // Set the text color
+  matrix->setTextColor(colorPallet[0]);  // Set the text color
   matrix->fillScreen(0);
   int startX = matrix->width();
   int len = text.length() * 6;  // Approx width of a character
@@ -24,7 +23,7 @@ void scrollText(Adafruit_NeoMatrix* matrix, String text) {
 }
 
 void waveText(Adafruit_NeoMatrix* matrix, String text) {
-  matrix->setTextColor(textColor);  // Set the text color
+  matrix->setTextColor(colorPallet[0]);  // Set the text color
   int textWidth =
       6 * strlen(text.c_str());  // 6 is an approx width of a character
   for (int x = 0; x < matrix->width() + textWidth; x++) {

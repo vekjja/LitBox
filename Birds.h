@@ -1,5 +1,6 @@
 #ifndef BIRDS_H
 #define BIRDS_H
+
 #include "Colors.h"
 #include "Utils.h"
 
@@ -154,4 +155,4 @@ void generateBirds(int maxX, int maxY) {
   birds = new Bird[birdCount];
   hatchBirds(maxX, maxY);
 }
-#endif
+#endif  // BIRDS_H
