@@ -35,7 +35,7 @@ unsigned int frameRate = 60;
 String visualization = "bars";
 
 // Web Server Config
-ESPWiFi wifi = ESPWiFi("LuciFi", "abcd1234");
+ESPWiFi wifi = ESPWiFi("Luci-Fi", "abcd1234");
 
 void setup() {
   matrix.begin();
@@ -283,6 +283,6 @@ void initializeWebServer() {
   });
 
   wifi.setConnectSubroutine([]() { testMatrix(&matrix, LEDWidth, LEDHeight); });
-  wifi.enableMDNS("lucifi");
+  wifi.enableMDNS("luci-fi");
   wifi.Start();
 }
