@@ -165,11 +165,14 @@ var visualizationSelect = document.getElementById('visualizationSelect');
 visualizationSelect.addEventListener('change', function () {
     var visualization = visualizationSelect.value;
 
+    var brightnessSettings = document.getElementById('brightness-settings');
+    brightnessSettings.style.display = 'block';
+
     var birdSettings = document.getElementById('bird-settings');
     birdSettings.style.display = 'none';
 
-    var leavesSettings = document.getElementById('leaves-settings');
-    leavesSettings.style.display = 'none';
+    // var leavesSettings = document.getElementById('leaves-settings');
+    // leavesSettings.style.display = 'none';
 
     var textSettings = document.getElementById('text-settings');
     textSettings.style.display = 'none';
@@ -180,33 +183,49 @@ visualizationSelect.addEventListener('change', function () {
     var animationSettings = document.getElementById('animation-settings');
     animationSettings.style.display = 'none';
 
+    var colorSettings = document.getElementById('color-settings');
+    colorSettings.style.display = 'none';
+
     var colorsSettings = document.getElementById('colors-settings');
-    colorsSettings.style.display = 'block';
+    colorsSettings.style.display = 'none';
+
+    var wifiSettings = document.getElementById('wifi-settings');
+    wifiSettings.style.display = 'none';
 
     setVisualization(visualization);
     switch (visualization) {
         case 'bars':
             audioSettings.style.display = 'block';
+            colorsSettings.style.display = 'block';
             break;
         case 'birds':
             birdSettings.style.display = 'block';
             animationSettings.style.display = 'block';
+            colorsSettings.style.display = 'block';
             break;
         case 'circles':
             audioSettings.style.display = 'block';
+            colorsSettings.style.display = 'block';
             break;
-        case 'leaves':
-            leavesSettings.style.display = 'block';
-            animationSettings.style.display = 'block';
-            break;
+        // case 'leaves':
+        //     leavesSettings.style.display = 'block';
+        //     animationSettings.style.display = 'block';
+        //     break;
         case 'gameOfLife':
             animationSettings.style.display = 'block';
+            colorSettings.style.display = 'block';
             break;
         case 'text':
             textSettings.style.display = 'block';
+            colorSettings.style.display = 'block';
+            break;
+        case 'wifi':
+            wifiSettings.style.display = 'block';
+            brightnessSettings.style.display = 'none';
             break;
     }
 });
+
 
 function setVisualization(visualization) {
     fetch('/visualization', {
@@ -227,7 +246,7 @@ function setVisualization(visualization) {
 
 document.getElementById('sendText').addEventListener('click', function () {
     var text = document.getElementById('customText').value;
-    var textColor = document.getElementById('color1').value;
+    var textColor = document.getElementById('pixelColor').value;
     var textSpeed = document.getElementById('textSpeed').value;
     var textAnimation = document.getElementById('textAnimation').value;
     console.log('Sending text:', text, textColor, textSpeed);
@@ -287,10 +306,11 @@ document.querySelectorAll('.color-picker').forEach(function (colorPicker) {
         var color2 = document.getElementById('color2').value;
         var color3 = document.getElementById('color3').value;
         var color4 = document.getElementById('color4').value;
-        updateColor(color1, color2, color3, color4);
+        var pixelColor = document.getElementById('pixelColor').value;
+        updateColor(color1, color2, color3, color4, pixelColor);
     });
 });
-function updateColor(color1, color2, color3, color4) {
+function updateColor(color1, color2, color3, color4, pixelColor) {
 
     fetch('/colors', {
         method: 'POST',
@@ -301,6 +321,7 @@ function updateColor(color1, color2, color3, color4) {
             + '&color2=' + color2
             + '&color3=' + color3
             + '&color4=' + color4
+            + '&pixelColor=' + pixelColor
     })
         .then(response => response.text())
         .then(data => console.log(data))

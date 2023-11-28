@@ -22,11 +22,6 @@ Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(
 // Brightness and Color Config
 const int maxBrightness = 255;
 const int minBrightness = 1;
-uint32_t pixelColor = WHITE;  // Default color
-uint32_t color1 = WHITE;      // Default color
-uint32_t color2 = WHITE;      // Default color
-uint32_t color3 = WHITE;      // Default color
-uint32_t color4 = WHITE;      // Default color
 int brightness = 6;
 
 // Visualization Config
@@ -105,13 +100,12 @@ void drawGameOfLife() {
   if (gol_Cells == nullptr) {
     startGameOfLife(LEDWidth, LEDHeight);
   }
-  int cellColor = colorPallet[0];
   updateGameOfLife(LEDWidth, LEDHeight, 231);
   matrix.fillScreen(0);
   for (int x = 0; x < LEDWidth; x++) {
     for (int y = 0; y < LEDHeight; y++) {
       if (gol_Cells[x][y] == 1) {
-        matrix.drawPixel(x, y, cellColor);
+        matrix.drawPixel(x, y, pixelColor);
       }
     }
   }
@@ -193,7 +187,8 @@ void initializeWebServer() {
                         "color1=" + colorToHex(colorPallet[0]) + "\n" +
                             "color2=" + colorToHex(colorPallet[1]) + "\n" +
                             "color3=" + colorToHex(colorPallet[2]) + "\n" +
-                            "color4=" + colorToHex(colorPallet[3]));
+                            "color4=" + colorToHex(colorPallet[3]) + "\n" +
+                            "pixelColor=" + colorToHex(pixelColor) + "\n");
   });
   wifi.webServer.on("/colors", HTTP_POST, []() {
     if (wifi.webServer.hasArg("color1")) {
@@ -212,11 +207,15 @@ void initializeWebServer() {
       String color = wifi.webServer.arg("color4");
       colorPallet[3] = hexToColor(wifi.webServer.arg("color4"));
     }
+    if (wifi.webServer.hasArg("pixelColor")) {
+      String color = wifi.webServer.arg("pixelColor");
+      pixelColor = hexToColor(wifi.webServer.arg("pixelColor"));
+    }
     wifi.webServer.send(200, "text/plain",
                         "Color Pallet set to: " + String(colorPallet[0]) +
                             ", " + String(colorPallet[1]) + ", " +
                             String(colorPallet[2]) + ", " +
-                            String(colorPallet[3]));
+                            String(colorPallet[3]) + ", " + String(pixelColor));
   });
 
   wifi.webServer.on("/text", HTTP_POST, []() {

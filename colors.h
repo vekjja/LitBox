@@ -24,15 +24,8 @@
 #define PEACH 0xFEA6
 
 const int palletSize = 4;
+uint32_t pixelColor = WHITE;  // Default color
 uint32_t colorPallet[palletSize] = {BLUE, CYAN, VIOLET, WHITE};
-// int currentPalette = 1;
-// const int colorPalletCount = 7;
-// uint32_t colorPallets[colorPalletCount][palletSize] = {
-//     {GREEN, YELLOW, ORANGE, RED},       {BLUE, CYAN, VIOLET, WHITE},
-//     {MAGENTA, MAGENTA, VIOLET, VIOLET}, {CORAL, SALMON, SALMON, ROSE},
-//     {ROSE, ROSE, ROSE, ROSE},           {GREEN, GREEN, GREEN, GREEN},
-//     {WHITE, WHITE, WHITE, WHITE},
-// };
 
 String colorToHex(uint16_t rgb565) {
   // Extract RGB components

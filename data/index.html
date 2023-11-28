@@ -3,28 +3,29 @@
     <head>
         <meta charset="UTF-8">
         <link rel="stylesheet" href="style.css">
-        <title>LuciFi</title>
+        <title>Luci-Fi</title>
         <link rel="icon" href="favicon.ico" type="image/x-icon">
         <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
     <body>
         <div class="container"> <!-- LuciFi -->
             <label class="header"> Luci-Fi </label>
-            <div class="settings-content">
-
+            <div class="setting">
                 <div class="setting"> <!-- Visualizations -->
                     <select id="visualizationSelect"
                         class="clickable">
                         <option value="bars">Bars</option>
                         <option value="birds">Birds</option>
                         <option value="circles">Circles</option>
-                        <option value="leaves">Leaves</option>
+                        <!-- <option value="leaves">Leaves</option> -->
                         <option value="gameOfLife">Game of Life</option>
                         <option value="text">Text</option>
+                        <option value="wifi">WiFi</option>
                     </select>
                 </div>
 
-                <div class="setting"> <!-- Brightness -->
+                <div class="setting" id="brightness-settings">
+                    <!-- Brightness -->
                     <input id="toggleBrightness" type="checkbox"
                         class="toggle-button">
                     <label for="toggleBrightness" class="clickable">Brightness</label>
@@ -37,12 +38,12 @@
                     </div>
                 </div>
 
-                <div class="toggle-content" id="audio-settings"><!-- Sensitivity -->
-                    <div class="setting">
-                        <input id="toggleSensitivity" type="checkbox"
-                            class="toggle-button">
-                        <label for="toggleSensitivity" class="clickable">Sensitivity</label>
-                        <div class="toggle-content">
+                <div class="setting" id="audio-settings"><!-- Sensitivity -->
+                    <input id="toggleSensitivity" type="checkbox"
+                        class="toggle-button">
+                    <label for="toggleSensitivity" class="clickable">Sensitivity</label>
+                    <div class="toggle-content">
+                        <div class="setting">
                             <input id="sensitivityValue" type="range"
                                 style="transform: scaleX(-1)"
                                 id="sensitivityRange"
@@ -58,20 +59,35 @@
                         <label for="toggleFrameRate" class="clickable">
                             Frame Rate</label>
                         <div class="toggle-content">
-                            <input id="frameRateValue" type="range"
-                                id="frameRateRange"
-                                min="1" max="255">
+                            <div class="setting">
+                                <input id="frameRateValue" type="range"
+                                    id="frameRateRange"
+                                    min="1" max="255">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="toggle-content" id="color-settings"><!-- Color -->
+                    <input type="checkbox" class="toggle-button"
+                        id="toggleColorSettings">
+                    <label for="toggleColorSettings"
+                        class="clickable">Color</label>
+                    <div class="toggle-content">
+                        <div class="setting">
+                            <input type="color" id="pixelColor"
+                                title="Choose A Color" class="color-picker">
                         </div>
                     </div>
                 </div>
 
                 <div class="toggle-content" id="colors-settings"><!-- Colors -->
-                    <div class="setting">
-                        <input type="checkbox" class="toggle-button"
-                            id="toggleColorSettings">
-                        <label for="toggleColorSettings"
-                            class="clickable">Colors</label>
-                        <div class="toggle-content">
+                    <input type="checkbox" class="toggle-button"
+                        id="toggleColorsSettings">
+                    <label for="toggleColorsSettings"
+                        class="clickable">Colors</label>
+                    <div class="toggle-content">
+                        <div class="setting">
                             <div class="setting">
                                 <input type="color" id="color4"
                                     title="Choose A Color" class="color-picker">
@@ -88,7 +104,6 @@
                                 <input type="color" id="color1"
                                     title="Choose A Color" class="color-picker">
                             </div>
-                            <header9 style="font-size: 9px;">Text ⬆ Color</header9>
                         </div>
                     </div>
                 </div>
@@ -129,25 +144,17 @@
 
                 <div class="toggle-content" id="text-settings"><!-- Text -->
                     <div class="setting">
-                        <input type="text" id="customText"
-                            value=".*.* Luci-Fi *.*.">
-
-                    </div>
-                    <div class="setting">
-                        <button id="sendText" class="clickable button">Send</button>
-                    </div>
-                    <div class="setting">
                         <select id="textAnimation" class="clickable">
                             <option value="scroll">Scroll</option>
                             <option value="wave">Wave</option>
-                            <option value="rainbow">Rainbow</option>
+                            <!-- <option value="rainbow">Rainbow</option> -->
                         </select>
                     </div>
                     <div class="setting"> <!-- Scroll Speed -->
                         <input id="toggleTextScrollSpeed" type="checkbox"
                             class="toggle-button">
                         <label for="toggleTextScrollSpeed"
-                            class="clickable">Scroll Speed</label>
+                            class="clickable">Text Speed</label>
                         <div class="toggle-content">
                             <div class="setting">
                                 <input type="range" id="textSpeed"
@@ -157,34 +164,36 @@
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <div class="toggle-content" id="leaves-settings"><!-- leaves -->
                     <div class="setting">
                         <input type="text" id="customText"
-                            value=".*.* LuciFi *.*.">
-                        <button id="updateLeaves" class="clickable button">Send</button>
+                            value=".*.* Luci-Fi *.*.">
                     </div>
                     <div class="setting">
-                        <input type="color" id="leafColor1"
-                            title="Choose A Leaf Color">
+                        <button id="sendText" class="clickable button">Send</button>
                     </div>
                 </div>
 
-                <div class="setting"> <!-- WiFi -->
-                    <input type="checkbox" class="toggle-button"
-                        id="toggleWifiSettings">
-                    <label for="toggleWifiSettings"
-                        class="clickable">WiFi</label>
-                    <div class="toggle-content">
-                        <button id="wifiSetup" class="clickable button"
-                            style="background-color: brown;">Setup</button>
-                        <button id="wifiErase" class="clickable button"
-                            style="background-color: brown;">Erase</button>
-                    </div>
+                <!-- <div class="toggle-content" id="leaves-settings"><!-- leaves
+                <div class="setting">
+                    <input type="text" id="customText"
+                        value=".*.* LuciFi *.*.">
+                    <button id="updateLeaves" class="clickable button">Send</button>
+                </div>
+                <div class="setting">
+                    <input type="color" id="leafColor1"
+                        title="Choose A Leaf Color">
+                </div>
+                </div> -->
+
+                <div class="toggle-content" id="wifi-settings"> <!-- WiFi -->
+                    <button id="wifiSetup" class="clickable button"
+                        style="background-color: brown;">Setup</button>
+                    <button id="wifiErase" class="clickable button"
+                        style="background-color: brown;">Erase</button>
                 </div>
 
             </div>
-            <script src="script.js"></script>
-        </body>
-    </html>
+        </div>
+        <script src="script.js"></script>
+    </body>
+</html>
