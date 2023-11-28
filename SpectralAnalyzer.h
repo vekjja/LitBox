@@ -28,15 +28,16 @@ void logarithmicScaling(int* spectralData, int maxWidth, int maxHeight) {
 }
 
 void peakDetection(int* peakData, int maxWidth, int maxHeight) {
-  int avgRange = usableSamples / maxWidth;
+  int avgRange = (usableSamples - 1) /
+                 maxWidth;  // Adjust the range, skipping the first bin
 
-  // Start from 1 instead of 0 to skip the first bin
-  // The first bin (bin 0) usually contains the DC component of the signal,
-  // which is often not useful for audio visualization.
-  for (int i = 1; i < maxWidth; i++) {
+  // Start the loop from 1 to skip the first bin
+  for (int i = 1; i <= maxWidth; i++) {
     double peak = 0;
-    for (int j = i * avgRange; j < (i + 1) * avgRange && j < usableSamples;
-         j++) {
+    int startFreqBin = (i)*avgRange + 1;  // Adjust start to skip first bin
+    int endFreqBin = startFreqBin + avgRange;
+
+    for (int j = startFreqBin; j < endFreqBin && j < usableSamples; j++) {
       if (vReal[j] > peak) {
         peak = vReal[j];
       }
@@ -44,6 +45,7 @@ void peakDetection(int* peakData, int maxWidth, int maxHeight) {
     // Map the peak value to a row on the LED matrix
     peakData[i - 1] = map(peak, 0, maxInput, 0, maxHeight);
   }
+
   if (scaling) logarithmicScaling(peakData, maxWidth, maxHeight);
 }
 
