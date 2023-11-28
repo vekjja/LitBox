@@ -4,10 +4,12 @@
 #include <IOPin.h>
 #include <arduinoFFT.h>
 
+#define SAMPLE_RATE 40000  // sampling rate
+
 // Audio Config
 IOPin audio(A0, INPUT);
 arduinoFFT FFT = arduinoFFT();
-const int maxInput = 81;
+const int maxInput = 1023;
 const int minSensitivity = 1;
 const int maxSensitivity = 100;
 const uint16_t audioSamples = 128;
@@ -21,8 +23,10 @@ int sensitivity = 6;
 void logarithmicScaling(int* spectralData, int maxWidth, int maxHeight) {
   for (int i = 0; i < maxWidth; i++) {
     if (spectralData[i] > 0) {
-      // Apply logarithmic scaling
-      spectralData[i] = log10(spectralData[i]) * (maxHeight / log10(maxInput));
+      // Adjust the scaling factor and add an offset
+      float scaledValue =
+          log10(spectralData[i] + 1) * (maxHeight / log10(maxInput + 1));
+      spectralData[i] = static_cast<int>(scaledValue);
     }
   }
 }
@@ -46,12 +50,13 @@ void peakDetection(int* peakData, int maxWidth, int maxHeight) {
     peakData[i - 1] = map(peak, 0, maxInput, 0, maxHeight);
   }
 
-  if (scaling) logarithmicScaling(peakData, maxWidth, maxHeight);
+  // if (scaling) logarithmicScaling(peakData, maxWidth, maxHeight);
 }
 
 void spectralAnalyzer(int maxWidth, int maxHeight) {
   for (int i = 0; i < audioSamples; i++) {
-    vReal[i] = audio.readA() / sensitivity;
+    // Scale the audio input according to sensitivity
+    vReal[i] = audio.readA() * (sensitivity / 10.0);
     vImage[i] = 0;
   }
 

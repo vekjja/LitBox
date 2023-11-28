@@ -125,7 +125,18 @@ void drawWaveform() {
     int value = spectralData[x] / 2;  // Get the value for this column
     for (int y = 0; y < value; y++) {
       // Draw upwards from the middle
+      uint32_t pixelColor = colorPallet[0];
+      if (y > 1) {
+        pixelColor = colorPallet[1];
+      }
+      if (y > 2) {
+        pixelColor = colorPallet[2];
+      }
+      if (y > 3) {
+        pixelColor = colorPallet[3];
+      }
       matrix.drawPixel(x, middleY - y, pixelColor);
+      // Draw downwards from the middle
       if (y > 0 && middleY + y < LEDHeight) {
         matrix.drawPixel(x, middleY + y, pixelColor);
       }
@@ -158,7 +169,8 @@ void initializeWebServer() {
     if (wifi.webServer.hasArg("sensitivity")) {
       int newSensitivity = wifi.webServer.arg("sensitivity").toInt();
       setSensitivity(newSensitivity);
-      wifi.webServer.send(200, "text/plain", "Sensitivity updated");
+      wifi.webServer.send(200, "text/plain",
+                          "Sensitivity updated: " + String(sensitivity) + " %");
     } else {
       wifi.webServer.send(400, "text/plain", "Missing Sensitivity value");
     }
