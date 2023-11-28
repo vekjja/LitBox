@@ -122,20 +122,10 @@ void drawWaveform() {
 
   // Drawing a line for each column based on the spectral data
   for (int x = 0; x < LEDWidth; x++) {
-    int value = spectralData[x];  // Get the value for this column
-    int mappedValue =
-        map(value, 0, maxInput, 0,
-            middleY);  // Map it to half the height of the LED matrix
-
-    // Ensure the mapped value is within the matrix bounds
-    mappedValue = constrain(mappedValue, 0, middleY);
-
-    for (int y = 0; y < mappedValue; y++) {
+    int value = spectralData[x] / 2;  // Get the value for this column
+    for (int y = 0; y < value; y++) {
       // Draw upwards from the middle
       matrix.drawPixel(x, middleY - y, pixelColor);
-
-      // Draw downwards from the middle
-      // Check to avoid drawing the middle line twice
       if (y > 0 && middleY + y < LEDHeight) {
         matrix.drawPixel(x, middleY + y, pixelColor);
       }
