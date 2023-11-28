@@ -221,11 +221,16 @@ visualizationSelect.addEventListener('change', function () {
             textSettings.style.display = 'block';
             colorSettings.style.display = 'block';
             break;
+        case 'waveform':
+            audioSettings.style.display = 'block';
+            colorsSettings.style.display = 'block';
+            break;
         case 'wifi':
             wifiSettings.style.display = 'block';
             brightnessSettings.style.display = 'none';
             break;
     }
+
     if (visualization !== 'wifi' && visualization !== 'text') {
         setVisualization(visualization);
     }

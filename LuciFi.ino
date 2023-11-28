@@ -43,7 +43,9 @@ void setup() {
 
 void loop() {
   wifi.handleClient();
-  if (visualization == "circles") {
+  if (visualization == "waveform") {
+    drawWaveform();
+  } else if (visualization == "circles") {
     drawCircles();
   } else if (visualization == "birds") {
     runAtFrameRate(drawBirds, frameRate);
@@ -110,6 +112,37 @@ void drawGameOfLife() {
     }
   }
   matrix.show();
+}
+
+void drawWaveform() {
+  spectralAnalyzer(LEDWidth, LEDHeight);  // Analyze the audio input
+  matrix.fillScreen(0);                   // Clear the matrix
+
+  int middleY = LEDHeight / 2;  // Calculate the middle row of the matrix
+
+  // Drawing a line for each column based on the spectral data
+  for (int x = 0; x < LEDWidth; x++) {
+    int value = spectralData[x];  // Get the value for this column
+    int mappedValue =
+        map(value, 0, maxInput, 0,
+            middleY);  // Map it to half the height of the LED matrix
+
+    // Ensure the mapped value is within the matrix bounds
+    mappedValue = constrain(mappedValue, 0, middleY);
+
+    for (int y = 0; y < mappedValue; y++) {
+      // Draw upwards from the middle
+      matrix.drawPixel(x, middleY - y, pixelColor);
+
+      // Draw downwards from the middle
+      // Check to avoid drawing the middle line twice
+      if (y > 0 && middleY + y < LEDHeight) {
+        matrix.drawPixel(x, middleY + y, pixelColor);
+      }
+    }
+  }
+
+  matrix.show();  // Update the display with the waveform
 }
 
 void setBrightness(int newBrightness) {
