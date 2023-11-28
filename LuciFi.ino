@@ -51,6 +51,16 @@ void loop() {
     runAtFrameRate(drawBirds, frameRate);
   } else if (visualization == "gameOfLife") {
     runAtFrameRate(drawGameOfLife, frameRate);
+  } else if (visualization == "matrix") {
+    // the matrix visualization will be a 2d matrix of pixels that will
+    // simulate the screen from the matrix movie
+    // runAtFrameRate(drawMatrix, frameRate);
+  } else if (visualization == "starPulse") {
+    // Star Pulse will have moving stars that pulse to the music
+    // each star will have a color from the color pallet and an initial position
+    // and velocity the stars will move in a specific direction and accelerate
+    // based on the music
+    // drawStarPulse();
   } else {
     drawBars();
   }
@@ -86,7 +96,7 @@ void drawCircles() {
   spectralAnalyzer(LEDWidth, LEDHeight);
   matrix.fillScreen(0);
   for (int x = 0; x < LEDWidth; x++) {
-    int circleRadius = spectralData[x];
+    int circleRadius = spectralData[x] / 2;
     int circleColor = colorPallet[0];
     circleColor = (circleRadius > 2) ? colorPallet[1] : circleColor;
     circleColor = (circleRadius > 3) ? colorPallet[2] : circleColor;
