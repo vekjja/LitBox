@@ -95,6 +95,9 @@ function fetchColorSettings() {
                     case 'color4':
                         document.getElementById('color4').value = value;
                         break;
+                    case 'pixelColor':
+                        document.getElementById('pixelColor').value = value;
+                        break;
                 }
             });
         })
@@ -192,7 +195,6 @@ visualizationSelect.addEventListener('change', function () {
     var wifiSettings = document.getElementById('wifi-settings');
     wifiSettings.style.display = 'none';
 
-    setVisualization(visualization);
     switch (visualization) {
         case 'bars':
             audioSettings.style.display = 'block';
@@ -223,6 +225,9 @@ visualizationSelect.addEventListener('change', function () {
             wifiSettings.style.display = 'block';
             brightnessSettings.style.display = 'none';
             break;
+    }
+    if (visualization !== 'wifi' && visualization !== 'text') {
+        setVisualization(visualization);
     }
 });
 
