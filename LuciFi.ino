@@ -100,7 +100,7 @@ void drawCircles() {
     int circleColor = colorPallet[0];
     circleColor = (circleRadius > 2) ? colorPallet[1] : circleColor;
     circleColor = (circleRadius > 3) ? colorPallet[2] : circleColor;
-    circleColor = (circleRadius > 5) ? colorPallet[3] : circleColor;
+    circleColor = (circleRadius >= 4) ? colorPallet[3] : circleColor;
     if (circleRadius > 0) {
       matrix.drawCircle(x, 4, circleRadius, circleColor);
     }
@@ -328,5 +328,5 @@ void initializeWebServer() {
 
   wifi.setConnectSubroutine([]() { testMatrix(&matrix, LEDWidth, LEDHeight); });
   wifi.enableMDNS("luci-fi");
-  wifi.Start();
+  wifi.start();
 }
