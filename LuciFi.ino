@@ -215,6 +215,18 @@ void initializeWebServer() {
     }
   });
 
+  wifi.webServer.on("/starPulse", HTTP_GET, []() {
+    wifi.webServer.send(200, "text/plain",
+                        "starCount=" + String(starCount) + "\n");
+  });
+  wifi.webServer.on("/starPulse", HTTP_POST, []() {
+    if (wifi.webServer.hasArg("starCount")) {
+      starCount = wifi.webServer.arg("starCount").toInt();
+    }
+    initializeStars(LEDWidth, LEDHeight);
+    wifi.webServer.send(200, "text/plain", "Star Pulse settings updated");
+  });
+
   wifi.webServer.on("/frameRate", HTTP_GET, []() {
     wifi.webServer.send(200, "text/plain", String(frameRate));
   });

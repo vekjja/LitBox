@@ -4,12 +4,7 @@
 #include "Colors.h"
 #include "Utils.h"
 
-struct Bird : public Pixel {
-  int x, y;
-  int vx, vy;
-  byte intensity;
-  uint32_t color;
-};
+struct Bird : public Pixel {};
 
 // Birds Config
 int birdCount = 18;

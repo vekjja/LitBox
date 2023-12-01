@@ -35,6 +35,25 @@ function fetchSliderSettings() {
         .catch(error => {
             console.error('Error fetching initial visualization:', error);
         });
+
+    fetch('/starPulse', { method: 'GET' })
+        .then(response => response.text())
+        .then(data => {
+            var settings = data.split('\n');
+            settings.forEach(setting => {
+                var parts = setting.split('=');
+                var key = parts[0];
+                var value = parts[1];
+                switch (key) {
+                    case 'starCount':
+                        document.getElementById('starCount').value = value;
+                        break;
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching bird settings:', error);
+        });
 }
 
 function fetchBirdSettings() {
@@ -174,9 +193,6 @@ visualizationSelect.addEventListener('change', function () {
     var birdSettings = document.getElementById('bird-settings');
     birdSettings.style.display = 'none';
 
-    // var leavesSettings = document.getElementById('leaves-settings');
-    // leavesSettings.style.display = 'none';
-
     var textSettings = document.getElementById('text-settings');
     textSettings.style.display = 'none';
 
@@ -191,6 +207,9 @@ visualizationSelect.addEventListener('change', function () {
 
     var colorsSettings = document.getElementById('colors-settings');
     colorsSettings.style.display = 'none';
+
+    var starPulseSettings = document.getElementById('starPulse-settings');
+    starPulseSettings.style.display = 'none';
 
     var wifiSettings = document.getElementById('wifi-settings');
     wifiSettings.style.display = 'none';
@@ -209,15 +228,12 @@ visualizationSelect.addEventListener('change', function () {
             audioSettings.style.display = 'block';
             colorsSettings.style.display = 'block';
             break;
-        // case 'leaves':
-        //     leavesSettings.style.display = 'block';
-        //     animationSettings.style.display = 'block';
-        //     break;
         case 'gameOfLife':
             animationSettings.style.display = 'block';
             colorSettings.style.display = 'block';
             break;
         case 'starPulse':
+            starPulseSettings.style.display = 'block';
             audioSettings.style.display = 'block';
             colorsSettings.style.display = 'block';
             break;
@@ -277,6 +293,21 @@ document.getElementById('sendText').addEventListener('click', function () {
     })
         .then(response => response.text())
         .then(data => console.log('Text and speed updated:', data))
+        .catch(error => console.error('Error:', error));
+});
+
+document.getElementById('updateStarPulse').addEventListener('click', function () {
+    var starCount = document.getElementById('starCount').value;
+
+    fetch('/starPulse', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'starCount=' + encodeURIComponent(starCount)
+    })
+        .then(response => response.text())
+        .then(data => console.log('Star pulse updated:', data))
         .catch(error => console.error('Error:', error));
 });
 

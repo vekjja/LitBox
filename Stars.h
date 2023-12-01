@@ -4,14 +4,10 @@
 #include "Colors.h"
 
 struct Star : public Pixel {
-  int x, y;
-  int vx, vy;
-  byte intensity;
-  uint32_t color;
   int audioBand;
 };
 
-int starCount = 18;
+int starCount = 32;
 Star* stars = nullptr;
 
 // Function to initialize stars with random values
@@ -21,8 +17,6 @@ void initializeStars(int maxX, int maxY) {
   for (int i = 0; i < starCount; i++) {
     stars[i].x = random(maxX);
     stars[i].y = random(maxY);
-    // stars[i].vx = random(1, 3);  // Random velocity between -2 and 2
-    // stars[i].vy = 0;
     stars[i].color =
         colorPallet[random(0, palletSize - 1)];  // Random color from the pallet
     stars[i].audioBand = random(8, maxX - 1);
