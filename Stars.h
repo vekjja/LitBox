@@ -11,7 +11,7 @@ struct Star : public Pixel {
   int audioBand;
 };
 
-int starCount = 32;
+int starCount = 18;
 Star* stars = nullptr;
 
 // Function to initialize stars with random values
@@ -25,20 +25,11 @@ void initializeStars(int maxX, int maxY) {
     // stars[i].vy = 0;
     stars[i].color =
         colorPallet[random(0, palletSize - 1)];  // Random color from the pallet
-    // stars[i].audioBand = random(8, maxX - 1);
-    stars[i].audioBand = i;
+    stars[i].audioBand = random(8, maxX - 1);
   }
 }
 
 void updateStartPulse(int maxX, int maxY) {
-  // int acceleration = 0;
-
-  // for (int i = 12; i < 21; i++) {
-  //   if (spectralData[i] > 6) {
-  //     acceleration = 3;
-  //   }
-  // }
-
   for (int i = 0; i < starCount; i++) {
     stars[i].x += spectralData[stars[i].audioBand] / 2;
   }
