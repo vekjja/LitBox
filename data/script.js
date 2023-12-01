@@ -217,6 +217,10 @@ visualizationSelect.addEventListener('change', function () {
             animationSettings.style.display = 'block';
             colorSettings.style.display = 'block';
             break;
+        case 'starPulse':
+            audioSettings.style.display = 'block';
+            colorsSettings.style.display = 'block';
+            break;
         case 'text':
             textSettings.style.display = 'block';
             colorSettings.style.display = 'block';

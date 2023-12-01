@@ -23,6 +23,13 @@
 #define ROSE 0xF8A6
 #define PEACH 0xFEA6
 
+struct Pixel {
+  int x, y;
+  int vx, vy;
+  byte intensity;
+  uint32_t color;
+};
+
 const int palletSize = 4;
 uint32_t pixelColor = WHITE;  // Default color
 uint32_t colorPallet[palletSize] = {BLUE, CYAN, VIOLET, WHITE};

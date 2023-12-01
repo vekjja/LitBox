@@ -3,12 +3,6 @@
 
 #include <Adafruit_NeoMatrix.h>
 
-struct Pixel {
-  int x;
-  int y;
-  byte intensity;
-};
-
 void runAtFrameRate(void (*functionToRun)(), unsigned int fps) {
   static unsigned long lastFrameTime = 0;
   unsigned long currentFrameTime = millis();

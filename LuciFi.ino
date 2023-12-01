@@ -8,6 +8,7 @@
 #include "Colors.h"
 #include "GameofLife.h"
 #include "SpectralAnalyzer.h"
+#include "Stars.h"
 #include "Text.h"
 
 // LED Matrix Config
@@ -26,7 +27,7 @@ int brightness = 6;
 
 // Visualization Config
 const int maxFrameRate = 120;
-unsigned int frameRate = 60;
+unsigned int frameRate = 30;
 String visualization = "bars";
 
 // Web Server Config
@@ -60,7 +61,8 @@ void loop() {
     // each star will have a color from the color pallet and an initial position
     // and velocity the stars will move in a specific direction and accelerate
     // based on the music
-    // drawStarPulse();
+    drawStarPulse();
+    // runAtFrameRate(drawStarPulse, frameRate);
   } else {
     drawBars();
   }
@@ -87,7 +89,7 @@ void drawBirds() {
   updateFlock(LEDWidth, LEDHeight);
   matrix.fillScreen(0);
   for (int i = 0; i < birdCount; i++) {
-    matrix.drawPixel(birds[i].pixel.x, birds[i].pixel.y, birds[i].color);
+    matrix.drawPixel(birds[i].x, birds[i].y, birds[i].color);
   }
   matrix.show();
 }
@@ -120,6 +122,19 @@ void drawGameOfLife() {
         matrix.drawPixel(x, y, pixelColor);
       }
     }
+  }
+  matrix.show();
+}
+
+void drawStarPulse() {
+  if (stars == nullptr) {
+    initializeStars(LEDWidth, LEDHeight);
+  }
+  spectralAnalyzer(LEDWidth, LEDHeight);
+  updateStartPulse(LEDWidth, LEDHeight);
+  matrix.fillScreen(0);
+  for (int i = 0; i < starCount; i++) {
+    matrix.drawPixel(stars[i].x, stars[i].y, stars[i].color);
   }
   matrix.show();
 }
