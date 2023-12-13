@@ -1,14 +1,13 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_NeoMatrix.h>
 #include <Adafruit_NeoPixel.h>
-#include <BMI160Gen.h>
 #include <ESPWiFi.h>
 #include <arduinoFFT.h>
 
 #include "Birds.h"
 #include "Colors.h"
 #include "GameofLife.h"
-// #include "Motion.h"
+#include "Motion.h"
 #include "SpectralAnalyzer.h"
 #include "Stars.h"
 #include "Text.h"
@@ -43,8 +42,8 @@ void setup() {
   matrix.setTextWrap(false);
   matrix.setBrightness(brightness);
   testMatrix(&matrix, LEDWidth, LEDHeight);
-  BMI160.begin(BMI160GenClass::I2C_MODE, 0x69);
   initializeWebServer();
+  initializeMotion();
 }
 
 void loop() {
@@ -72,8 +71,13 @@ void loop() {
 }
 
 void drawMotion() {
-  // updateMotion();
-  drawBars();
+  motionAnimation(LEDWidth, LEDHeight);
+  matrix.fillScreen(0);
+  for (int i = 0; i < motionNumPixels; i++) {
+    matrix.drawPixel(motionPixels[i].x, motionPixels[i].y,
+                     motionPixels[i].color);
+  }
+  matrix.show();
 }
 
 void drawBars() {

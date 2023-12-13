@@ -16,10 +16,7 @@ void runAtFrameRate(void (*functionToRun)(), unsigned int fps) {
 }
 
 void testMatrix(Adafruit_NeoMatrix* matrix, int ledColumns, int ledRows) {
-  Serial.println("Begin Testing LED Matrix");
   int pixelColor = 0xFFFF;
-  // loop through each pixel from bottom left to top right
-  Serial.println("Looping through each pixel from bottom left to top right");
   for (int x = 0; x < ledColumns; x++) {
     for (int y = 0; y < ledRows; y++) {
       matrix->fillScreen(0);

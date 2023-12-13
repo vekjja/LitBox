@@ -25,7 +25,6 @@
 
 struct Pixel {
   int x, y;
-  int vx, vy;
   byte intensity;
   uint32_t color;
 };

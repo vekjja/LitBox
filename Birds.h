@@ -4,7 +4,9 @@
 #include "Colors.h"
 #include "Utils.h"
 
-struct Bird : public Pixel {};
+struct Bird : public Pixel {
+  int vx, vy;
+};
 
 // Birds Config
 int birdCount = 18;
@@ -134,7 +136,8 @@ void updateFlock(int maxX, int maxY) {
   }
 }
 
-void hatchBirds(int maxX, int maxY) {
+void generateBirds(int maxX, int maxY) {
+  birds = new Bird[birdCount];
   for (int i = 0; i < birdCount; i++) {
     uint32_t birdColor = colorPallet[random(0, palletSize - 1)];
     birds[i].x = random(0, maxX);
@@ -144,10 +147,5 @@ void hatchBirds(int maxX, int maxY) {
     birds[i].vy = random(0, 3);             // Random velocity Y
     birds[i].color = birdColor;  // Function to generate a random color
   }
-}
-
-void generateBirds(int maxX, int maxY) {
-  birds = new Bird[birdCount];
-  hatchBirds(maxX, maxY);
 }
 #endif  // BIRDS_H
