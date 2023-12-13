@@ -1,12 +1,14 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_NeoMatrix.h>
 #include <Adafruit_NeoPixel.h>
+#include <BMI160Gen.h>
 #include <ESPWiFi.h>
 #include <arduinoFFT.h>
 
 #include "Birds.h"
 #include "Colors.h"
 #include "GameofLife.h"
+// #include "Motion.h"
 #include "SpectralAnalyzer.h"
 #include "Stars.h"
 #include "Text.h"
@@ -28,7 +30,7 @@ int brightness = 6;
 // Visualization Config
 const int maxFrameRate = 120;
 unsigned int frameRate = 30;
-String visualization = "bars";
+String visualization = "motion";
 
 // Web Server Config
 ESPWiFi wifi = ESPWiFi("Luci-Fi", "abcd1234");
@@ -36,9 +38,12 @@ ESPWiFi wifi = ESPWiFi("Luci-Fi", "abcd1234");
 void setup() {
   matrix.begin();
   Serial.begin(115200);
+  while (!Serial) {
+  };
   matrix.setTextWrap(false);
   matrix.setBrightness(brightness);
   testMatrix(&matrix, LEDWidth, LEDHeight);
+  BMI160.begin(BMI160GenClass::I2C_MODE, 0x69);
   initializeWebServer();
 }
 
@@ -52,21 +57,25 @@ void loop() {
     runAtFrameRate(drawBirds, frameRate);
   } else if (visualization == "gameOfLife") {
     runAtFrameRate(drawGameOfLife, frameRate);
+  } else if (visualization == "motion") {
+    // runAtFrameRate(drawMotion, frameRate);
+    drawMotion();
   } else if (visualization == "matrix") {
     // the matrix visualization will be a 2d matrix of pixels that will
     // simulate the screen from the matrix movie
     // runAtFrameRate(drawMatrix, frameRate);
   } else if (visualization == "starPulse") {
-    // Star Pulse will have moving stars that pulse to the music
-    // each star will have a color from the color pallet and an initial position
-    // and velocity the stars will move in a specific direction and accelerate
-    // based on the music
     drawStarPulse();
-    // runAtFrameRate(drawStarPulse, frameRate);
   } else {
     drawBars();
   }
 }
+
+void drawMotion() {
+  // updateMotion();
+  drawBars();
+}
+
 void drawBars() {
   spectralAnalyzer(LEDWidth, LEDHeight);
   matrix.fillScreen(0);
