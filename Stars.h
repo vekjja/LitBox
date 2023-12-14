@@ -18,7 +18,7 @@ void initializeStars(int maxX, int maxY) {
     stars[i].x = random(maxX);
     stars[i].y = random(maxY);
     stars[i].color =
-        colorPallet[random(0, palletSize - 1)];  // Random color from the pallet
+        colorPallet[random(0, palletSize)];  // Random color from the pallet
     stars[i].audioBand = random(8, maxX - 1);
   }
 }
