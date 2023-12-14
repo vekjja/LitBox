@@ -57,8 +57,8 @@ void loop() {
   } else if (visualization == "gameOfLife") {
     runAtFrameRate(drawGameOfLife, frameRate);
   } else if (visualization == "motion") {
-    runAtFrameRate(drawMotion, frameRate);
-    // drawMotion();
+    // runAtFrameRate(drawMotion, frameRate);
+    drawMotion();
   } else if (visualization == "matrix") {
     // the matrix visualization will be a 2d matrix of pixels that will
     // simulate the screen from the matrix movie
