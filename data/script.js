@@ -36,6 +36,23 @@ function fetchSliderSettings() {
             console.error('Error fetching initial visualization:', error);
         });
 
+    fetch('/motion', { method: 'GET' })
+        .then(response => response.text())
+        .then(data => {
+            var settings = data.split('\n');
+            settings.forEach(setting => {
+                var parts = setting.split('=');
+                var key = parts[0];
+                var value = parts[1];
+                switch (key) {
+                    case 'motionNumObjects':
+                        document.getElementById('motionNumObjects').value = value;
+                        break;
+                }
+            });
+        })
+
+
     fetch('/starPulse', { method: 'GET' })
         .then(response => response.text())
         .then(data => {
@@ -211,6 +228,9 @@ visualizationSelect.addEventListener('change', function () {
     var starPulseSettings = document.getElementById('starPulse-settings');
     starPulseSettings.style.display = 'none';
 
+    var motionSettings = document.getElementById('motion-settings');
+    motionSettings.style.display = 'none';
+
     var wifiSettings = document.getElementById('wifi-settings');
     wifiSettings.style.display = 'none';
 
@@ -231,6 +251,10 @@ visualizationSelect.addEventListener('change', function () {
         case 'gameOfLife':
             animationSettings.style.display = 'block';
             colorSettings.style.display = 'block';
+            break;
+        case 'motion':
+            motionSettings.style.display = 'block';
+            colorsSettings.style.display = 'block';
             break;
         case 'starPulse':
             starPulseSettings.style.display = 'block';
@@ -308,6 +332,21 @@ document.getElementById('updateStarPulse').addEventListener('click', function ()
     })
         .then(response => response.text())
         .then(data => console.log('Star pulse updated:', data))
+        .catch(error => console.error('Error:', error));
+});
+
+document.getElementById('updateMotion').addEventListener('click', function () {
+    var motionNumObjects = document.getElementById('motionNumObjects').value;
+
+    fetch('/motion', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'motionNumObjects=' + encodeURIComponent(motionNumObjects)
+    })
+        .then(response => response.text())
+        .then(data => console.log(data))
         .catch(error => console.error('Error:', error));
 });
 

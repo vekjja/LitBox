@@ -228,6 +228,18 @@ void initializeWebServer() {
     }
   });
 
+  wifi.webServer.on("/motion", HTTP_GET, []() {
+    wifi.webServer.send(200, "text/plain",
+                        "motionNumObjects=" + String(motionNumObjects) + "\n");
+  });
+  wifi.webServer.on("/motion", HTTP_POST, []() {
+    if (wifi.webServer.hasArg("motionNumObjects")) {
+      motionNumObjects = wifi.webServer.arg("motionNumObjects").toInt();
+    }
+    generateMotionObjects(LEDWidth, LEDHeight);
+    wifi.webServer.send(200, "text/plain", "Motion settings updated");
+  });
+
   wifi.webServer.on("/starPulse", HTTP_GET, []() {
     wifi.webServer.send(200, "text/plain",
                         "starCount=" + String(starCount) + "\n");

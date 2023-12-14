@@ -14,7 +14,7 @@ struct Object {
 
 const int motion_i2c_addr = 0x69;
 Object* motionObjects = nullptr;
-int motionNumObjects = 6;
+int motionNumObjects = 9;
 
 float pitch = 0, roll = 0, yaw = 0;
 int gx = 0, gy = 0, gz = 0;
@@ -23,8 +23,10 @@ void generateMotionObjects(int maxX, int maxY) {
   motionObjects = new Object[motionNumObjects];
   for (int i = 0; i < motionNumObjects; i++) {
     motionObjects[i].color = colorPallet[random(0, palletSize)];
-    motionObjects[i].x = random(0, maxX);
-    motionObjects[i].y = random(0, maxY);
+    motionObjects[i].x = random(1, maxX - 1);
+    motionObjects[i].y = random(1, maxY - 1);
+    motionObjects[i].vx = 0;
+    motionObjects[i].vy = 0;
   }
 }
 
