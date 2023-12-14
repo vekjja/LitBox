@@ -255,6 +255,7 @@ visualizationSelect.addEventListener('change', function () {
         case 'motion':
             motionSettings.style.display = 'block';
             colorsSettings.style.display = 'block';
+            animationSettings.style.display = 'block';
             break;
         case 'starPulse':
             starPulseSettings.style.display = 'block';
