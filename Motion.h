@@ -30,15 +30,6 @@ void generateMotionObjects(int maxX, int maxY) {
   }
 }
 
-bool checkI2CDevice(uint8_t address) {
-  Wire.begin();  // Initialize I2C communication
-  Wire.beginTransmission(address);
-  if (Wire.endTransmission() == 0) {
-    return true;  // Device found at this address
-  }
-  return false;  // No device found
-}
-
 void initializeMotion(int maxX, int maxY) {
   if (checkI2CDevice(motion_i2c_addr)) {
     if (BMI160.begin(BMI160GenClass::I2C_MODE, motion_i2c_addr)) {
