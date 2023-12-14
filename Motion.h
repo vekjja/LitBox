@@ -4,6 +4,7 @@
 #include <BMI160Gen.h>
 
 #include "Colors.h"
+#include "Vector2D.h"
 
 struct Object {
   float x, y;
@@ -13,19 +14,23 @@ struct Object {
 
 const int motion_i2c_addr = 0x69;
 Object* motionObjects = nullptr;
-int motionNumObjects = 3;
+int motionNumObjects = 6;
 
 float pitch = 0, roll = 0, yaw = 0;
 int gx = 0, gy = 0, gz = 0;
 
-void initializeMotion(int maxX, int maxY) {
-  BMI160.begin(BMI160GenClass::I2C_MODE, motion_i2c_addr);
+void generateMotionObjects(int maxX, int maxY) {
   motionObjects = new Object[motionNumObjects];
   for (int i = 0; i < motionNumObjects; i++) {
     motionObjects[i].color = colorPallet[random(0, palletSize)];
     motionObjects[i].x = random(0, maxX);
     motionObjects[i].y = random(0, maxY);
   }
+}
+
+void initializeMotion(int maxX, int maxY) {
+  BMI160.begin(BMI160GenClass::I2C_MODE, motion_i2c_addr);
+  generateMotionObjects(maxX, maxY);
 }
 
 float convertRawGyro(int gRaw) {
@@ -38,29 +43,12 @@ float convertRawGyro(int gRaw) {
 }
 
 void readSensors() {
-  // Read current time
-  static unsigned long lastUpdateTime = 0;
-  unsigned long currentTime = millis();
-  float deltaTime =
-      (currentTime - lastUpdateTime) / 1000.0;  // Convert to seconds
-
   int gxRaw, gyRaw, gzRaw;
-  int axRaw, ayRaw, azRaw;
-  // BMI160.readGyro(gxRaw, gyRaw, gzRaw);
-  BMI160.readMotionSensor(axRaw, ayRaw, azRaw, gxRaw, gyRaw, gzRaw);
+  BMI160.readGyro(gxRaw, gyRaw, gzRaw);
 
   gx = convertRawGyro(gxRaw);
   gy = convertRawGyro(gyRaw);
   gz = convertRawGyro(gzRaw);
-
-  // Update rotation angles based on gyro data and time elapsed
-  // map proper axis to proper angle
-  pitch += gy * deltaTime;
-  roll += gz * deltaTime;
-  yaw += gx * deltaTime;
-
-  // Update last update time
-  lastUpdateTime = currentTime;
 
   Serial.print("g:\t");
   Serial.print(gx);
@@ -69,13 +57,12 @@ void readSensors() {
   Serial.print("\t");
   Serial.print(gz);
   Serial.println();
+}
 
-  // Serial.print("Pitch: ");
-  // Serial.print(pitch);
-  // Serial.print("\tRoll: ");
-  // Serial.print(roll);
-  // Serial.print("\tYaw: ");
-  // Serial.println(yaw);
+bool isCollision(Object& obj1, Object& obj2) {
+  float distance = sqrt(pow(obj1.x - obj2.x, 2) + pow(obj1.y - obj2.y, 2));
+  return distance < 1.0;  // collisionThreshold is the minimum
+                          // distance for collision
 }
 
 void motionAnimation(int maxX, int maxY) {
@@ -85,6 +72,9 @@ void motionAnimation(int maxX, int maxY) {
   for (int i = 0; i < motionNumObjects; i++) {
     motionObjects[i].vx += -gx * scale;
     motionObjects[i].vy += gy * scale;
+
+    motionObjects[i].vx *= damping;
+    motionObjects[i].vy *= damping;
 
     motionObjects[i].x += motionObjects[i].vx;
     motionObjects[i].y += motionObjects[i].vy;
@@ -106,9 +96,24 @@ void motionAnimation(int maxX, int maxY) {
       motionObjects[i].vy = -motionObjects[i].vy;
     }
 
-    motionObjects[i].vx *= damping;
-    motionObjects[i].vy *= damping;
+    for (int j = i + 1; j < motionNumObjects; j++) {
+      if (isCollision(motionObjects[i], motionObjects[j])) {
+        Vector2D pos1 = makeVector(motionObjects[i].x, motionObjects[i].y);
+        Vector2D pos2 = makeVector(motionObjects[j].x, motionObjects[j].y);
+        Vector2D vel1 = makeVector(motionObjects[i].vx, motionObjects[i].vy);
+        Vector2D vel2 = makeVector(motionObjects[j].vx, motionObjects[j].vy);
+
+        Vector2D collisionNormal = normalize(subtract(pos2, pos1));
+        float v1n = dotProduct(collisionNormal, vel1);
+        float v2n = dotProduct(collisionNormal, vel2);
+
+        // Swap the normal components of the velocities
+        motionObjects[i].vx += (v2n - v1n) * collisionNormal.x;
+        motionObjects[i].vy += (v2n - v1n) * collisionNormal.y;
+        motionObjects[j].vx += (v1n - v2n) * collisionNormal.x;
+        motionObjects[j].vy += (v1n - v2n) * collisionNormal.y;
+      }
+    }
   }
 }
-
 #endif  // MOTION_H
