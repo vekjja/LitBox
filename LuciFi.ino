@@ -42,8 +42,8 @@ void setup() {
   matrix.setTextWrap(false);
   matrix.setBrightness(brightness);
   testMatrix(&matrix, LEDWidth, LEDHeight);
-  initializeWebServer();
   initializeMotion(LEDWidth, LEDHeight);
+  initializeWebServer();
 }
 
 void loop() {

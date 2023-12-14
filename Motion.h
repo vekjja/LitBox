@@ -29,7 +29,8 @@ void initializeMotion(int maxX, int maxY) {
 }
 
 float convertRawGyro(int gRaw) {
-  // since we are using 250 degrees/seconds range
+  // convert the raw gyro data to degrees/second
+  // we are using 250 degrees/seconds range
   // -250 maps to a raw value of -32768
   // +250 maps to a raw value of 32767
   float g = (gRaw * 250.0) / 32768.0;
@@ -38,15 +39,16 @@ float convertRawGyro(int gRaw) {
 
 void readSensors() {
   // Read current time
-  static unsigned long lastUpdateTime = millis();
+  static unsigned long lastUpdateTime = 0;
   unsigned long currentTime = millis();
   float deltaTime =
       (currentTime - lastUpdateTime) / 1000.0;  // Convert to seconds
 
   int gxRaw, gyRaw, gzRaw;
-  BMI160.readGyro(gxRaw, gyRaw, gzRaw);
+  int axRaw, ayRaw, azRaw;
+  // BMI160.readGyro(gxRaw, gyRaw, gzRaw);
+  BMI160.readMotionSensor(axRaw, ayRaw, azRaw, gxRaw, gyRaw, gzRaw);
 
-  // convert the raw gyro data to degrees/second
   gx = convertRawGyro(gxRaw);
   gy = convertRawGyro(gyRaw);
   gz = convertRawGyro(gzRaw);
@@ -68,28 +70,44 @@ void readSensors() {
   Serial.print(gz);
   Serial.println();
 
-  // Optional: Print the rotation angles
-  Serial.print("Pitch: ");
-  Serial.print(pitch);
-  Serial.print("\tRoll: ");
-  Serial.print(roll);
-  Serial.print("\tYaw: ");
-  Serial.println(yaw);
+  // Serial.print("Pitch: ");
+  // Serial.print(pitch);
+  // Serial.print("\tRoll: ");
+  // Serial.print(roll);
+  // Serial.print("\tYaw: ");
+  // Serial.println(yaw);
 }
 
 void motionAnimation(int maxX, int maxY) {
   readSensors();
-  float scale = 0.01;
+  float scale = 0.001;
+  float damping = 0.99;
   for (int i = 0; i < motionNumObjects; i++) {
-    motionObjects[i].vx += gx * scale;
+    motionObjects[i].vx += -gx * scale;
     motionObjects[i].vy += gy * scale;
 
     motionObjects[i].x += motionObjects[i].vx;
     motionObjects[i].y += motionObjects[i].vy;
-    if (motionObjects[i].x < 0) motionObjects[i].x = 0;
-    if (motionObjects[i].x >= maxX) motionObjects[i].x = maxX - 1;
-    if (motionObjects[i].y < 0) motionObjects[i].y = 0;
-    if (motionObjects[i].y >= maxY) motionObjects[i].y = maxY - 1;
+
+    if (motionObjects[i].x < 0) {
+      motionObjects[i].x = 0;
+      motionObjects[i].vx = -motionObjects[i].vx;
+    }
+    if (motionObjects[i].x >= maxX) {
+      motionObjects[i].x = maxX - 1;
+      motionObjects[i].vx = -motionObjects[i].vx;
+    }
+    if (motionObjects[i].y < 0) {
+      motionObjects[i].y = 0;
+      motionObjects[i].vy = -motionObjects[i].vy;
+    }
+    if (motionObjects[i].y >= maxY) {
+      motionObjects[i].y = maxY - 1;
+      motionObjects[i].vy = -motionObjects[i].vy;
+    }
+
+    motionObjects[i].vx *= damping;
+    motionObjects[i].vy *= damping;
   }
 }
 
