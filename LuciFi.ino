@@ -29,7 +29,7 @@ int brightness = 6;
 // Visualization Config
 const int maxFrameRate = 120;
 unsigned int frameRate = 30;
-String visualization = "temperature";
+String visualization = "bars";
 
 // temperature Config
 String temperatureUnit = "C";
@@ -78,7 +78,7 @@ void drawTemperature() {
   matrix.setTextColor(pixelColor);
   matrix.setTextSize(1);
   matrix.print(getTemperature(temperatureUnit));
-  matrix.print(" " + temperatureUnit);
+  matrix.print(temperatureUnit);
   matrix.show();
 }
 
@@ -108,9 +108,6 @@ void drawBars() {
 }
 
 void drawBirds() {
-  if (birds == nullptr) {
-    generateBirds(LEDWidth, LEDHeight);
-  }
   updateFlock(LEDWidth, LEDHeight);
   matrix.fillScreen(0);
   for (int i = 0; i < birdCount; i++) {
@@ -136,9 +133,6 @@ void drawCircles() {
 }
 
 void drawGameOfLife() {
-  if (gol_Cells == nullptr) {
-    startGameOfLife(LEDWidth, LEDHeight);
-  }
   updateGameOfLife(LEDWidth, LEDHeight, 231);
   matrix.fillScreen(0);
   for (int x = 0; x < LEDWidth; x++) {
@@ -152,9 +146,6 @@ void drawGameOfLife() {
 }
 
 void drawStarPulse() {
-  if (stars == nullptr) {
-    initializeStars(LEDWidth, LEDHeight);
-  }
   spectralAnalyzer(LEDWidth, LEDHeight);
   updateStartPulse(LEDWidth, LEDHeight);
   matrix.fillScreen(0);

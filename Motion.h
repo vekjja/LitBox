@@ -15,7 +15,7 @@ struct Object {
 const int motion_i2c_addr = 0x69;
 Object* motionObjects = nullptr;
 int motionNumObjects = 9;
-
+bool BMI160Initialized = false;
 float pitch = 0, roll = 0, yaw = 0;
 int gx = 0, gy = 0, gz = 0;
 
@@ -30,9 +30,29 @@ void generateMotionObjects(int maxX, int maxY) {
   }
 }
 
+bool checkI2CDevice(uint8_t address) {
+  Wire.begin();  // Initialize I2C communication
+  Wire.beginTransmission(address);
+  if (Wire.endTransmission() == 0) {
+    return true;  // Device found at this address
+  }
+  return false;  // No device found
+}
+
 void initializeMotion(int maxX, int maxY) {
-  BMI160.begin(BMI160GenClass::I2C_MODE, motion_i2c_addr);
-  generateMotionObjects(maxX, maxY);
+  if (checkI2CDevice(motion_i2c_addr)) {
+    if (BMI160.begin(BMI160GenClass::I2C_MODE, motion_i2c_addr)) {
+      generateMotionObjects(maxX, maxY);
+      BMI160Initialized = true;
+    } else {
+      BMI160Initialized = false;
+      Serial.println("BMI160 initialization failed!");
+    }
+  } else {
+    BMI160Initialized = false;
+    Serial.println("BMI160 sensor not detected at the specified I2C address:" +
+                   String(motion_i2c_addr));
+  }
 }
 
 float convertRawGyro(int gRaw) {
@@ -45,6 +65,9 @@ float convertRawGyro(int gRaw) {
 }
 
 float getTemperature(String unit) {
+  if (!BMI160Initialized) {
+    return 0;  // or some default value or error code
+  }
   int16_t rawTemp = BMI160.getTemperature();  // returns a 16-bit integer
   // The temperature data is a signed 16-bit value where 0x0000 corresponds to
   // 23°C, and each least significant bit (LSB) represents approximately
@@ -81,6 +104,10 @@ bool isCollision(Object& obj1, Object& obj2) {
 }
 
 void motionAnimation(int maxX, int maxY) {
+  if (motionObjects == nullptr) {
+    generateMotionObjects(maxX, maxY);
+  }
+  if (!BMI160Initialized) return;
   readSensors();
   float scale = 0.001;
   float damping = 0.99;

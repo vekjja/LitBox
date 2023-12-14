@@ -24,6 +24,9 @@ void initializeStars(int maxX, int maxY) {
 }
 
 void updateStartPulse(int maxX, int maxY) {
+  if (stars == nullptr) {
+    initializeStars(maxX, maxY);
+  }
   for (int i = 0; i < starCount; i++) {
     stars[i].x += spectralData[stars[i].audioBand] / 2;
   }

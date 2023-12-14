@@ -68,6 +68,9 @@ void startGameOfLife(int width, int height) {
 }
 
 void updateGameOfLife(int width, int height, int maxGenerations) {
+  if (gol_Cells == nullptr) {
+    startGameOfLife(width, height);
+  }
   applyRulesToCells(width, height);
   if (gol_Generations++ >= maxGenerations) {
     startGameOfLife(width, height);

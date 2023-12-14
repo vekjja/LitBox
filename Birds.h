@@ -20,7 +20,23 @@ int birdEdgeBuffer = 1;  // Distance from edge to start avoiding
 float birdRandomVelocityChangeFactor = 3;  // Max random change in velocity
 int birdRandomChangeChance = 3;  // Chance of random change (in percentage)
 
+void generateBirds(int maxX, int maxY) {
+  birds = new Bird[birdCount];
+  for (int i = 0; i < birdCount; i++) {
+    uint32_t birdColor = colorPallet[random(0, palletSize - 1)];
+    birds[i].x = random(0, maxX);
+    birds[i].y = random(0, maxY);
+    birds[i].intensity = random(100, 255);  // Random intensity
+    birds[i].vx = random(0, 3);             // Random velocity X
+    birds[i].vy = random(0, 3);             // Random velocity Y
+    birds[i].color = birdColor;  // Function to generate a random color
+  }
+}
+
 void updateFlock(int maxX, int maxY) {
+  if (birds == nullptr) {
+    generateBirds(maxX, maxY);
+  }
   for (int i = 0; i < birdCount; i++) {
     float avgVx = 0;
     float avgVy = 0;
@@ -134,16 +150,4 @@ void updateFlock(int maxX, int maxY) {
   }
 }
 
-void generateBirds(int maxX, int maxY) {
-  birds = new Bird[birdCount];
-  for (int i = 0; i < birdCount; i++) {
-    uint32_t birdColor = colorPallet[random(0, palletSize - 1)];
-    birds[i].x = random(0, maxX);
-    birds[i].y = random(0, maxY);
-    birds[i].intensity = random(100, 255);  // Random intensity
-    birds[i].vx = random(0, 3);             // Random velocity X
-    birds[i].vy = random(0, 3);             // Random velocity Y
-    birds[i].color = birdColor;  // Function to generate a random color
-  }
-}
 #endif  // BIRDS_H
