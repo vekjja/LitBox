@@ -21,6 +21,7 @@
                         <option value="motion">Motion</option>
                         <option value="starPulse">Star Pulse</option>
                         <option value="text">Text</option>
+                        <option value="temperature">Temperature</option>
                         <option value="waveform">Waveform</option>
                         <option value="wifi">WiFi</option>
                     </select>
@@ -127,6 +128,19 @@
                     </div>
                 </div>
 
+                <div class="toggle-content" id="temperature-settings"><!-- Temperature -->
+                    <div class="setting">
+                        <button id="temperature" class="clickable button">Temperature
+                            0.0 ºC</button>
+                    </div>
+                    <div class="setting">
+                        <select id="temperatureSelect" class="clickable">
+                            <option value="C">Celsius</option>
+                            <option value="F">Fahrenheit</option>
+                        </select>
+                    </div>
+                </div>
+
                 <div class="toggle-content" id="bird-settings"><!-- Birds -->
                     <div class="setting">
                         <label>Number of Birds</label>
@@ -191,7 +205,8 @@
                     </div>
                 </div>
 
-                <div class="toggle-content" id="wifi-settings"> <!-- WiFi -->
+                <div class="toggle-content" id="wifi-settings">
+                    <!-- WiFi -->
                     <button id="wifiSetup" class="clickable button"
                         style="background-color: brown;">Setup</button>
                     <button id="wifiErase" class="clickable button"

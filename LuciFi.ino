@@ -29,7 +29,10 @@ int brightness = 6;
 // Visualization Config
 const int maxFrameRate = 120;
 unsigned int frameRate = 30;
-String visualization = "motion";
+String visualization = "temperature";
+
+// temperature Config
+String temperatureUnit = "C";
 
 // Web Server Config
 ESPWiFi wifi = ESPWiFi("Luci-Fi", "abcd1234");
@@ -52,22 +55,31 @@ void loop() {
     drawWaveform();
   } else if (visualization == "circles") {
     drawCircles();
+  } else if (visualization == "motion") {
+    drawMotion();
   } else if (visualization == "birds") {
     runAtFrameRate(drawBirds, frameRate);
   } else if (visualization == "gameOfLife") {
     runAtFrameRate(drawGameOfLife, frameRate);
-  } else if (visualization == "motion") {
-    // runAtFrameRate(drawMotion, frameRate);
-    drawMotion();
+  } else if (visualization == "temperature") {
+    runAtFrameRate(drawTemperature, frameRate);
   } else if (visualization == "matrix") {
-    // the matrix visualization will be a 2d matrix of pixels that will
-    // simulate the screen from the matrix movie
     // runAtFrameRate(drawMatrix, frameRate);
   } else if (visualization == "starPulse") {
     drawStarPulse();
   } else {
     drawBars();
   }
+}
+
+void drawTemperature() {
+  matrix.fillScreen(0);
+  matrix.setCursor(0, 0);
+  matrix.setTextColor(pixelColor);
+  matrix.setTextSize(1);
+  matrix.print(getTemperature(temperatureUnit));
+  matrix.print(" " + temperatureUnit);
+  matrix.show();
 }
 
 void drawMotion() {
@@ -226,6 +238,19 @@ void initializeWebServer() {
     } else {
       wifi.webServer.send(400, "text/plain", "Missing Brightness value");
     }
+  });
+
+  wifi.webServer.on("/temperature", HTTP_GET, []() {
+    wifi.webServer.send(
+        200, "text/plain",
+        "temperatureUnit=" + temperatureUnit + "\n" +
+            "temperature=" + String(getTemperature(temperatureUnit)) + "\n");
+  });
+  wifi.webServer.on("/temperature", HTTP_POST, []() {
+    if (wifi.webServer.hasArg("temperatureUnit")) {
+      temperatureUnit = wifi.webServer.arg("temperatureUnit");
+    }
+    wifi.webServer.send(200, "text/plain", "Temperature settings updated");
   });
 
   wifi.webServer.on("/motion", HTTP_GET, []() {

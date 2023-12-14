@@ -44,6 +44,19 @@ float convertRawGyro(int gRaw) {
   return g;
 }
 
+float getTemperature(String unit) {
+  int16_t rawTemp = BMI160.getTemperature();  // returns a 16-bit integer
+  // The temperature data is a signed 16-bit value where 0x0000 corresponds to
+  // 23°C, and each least significant bit (LSB) represents approximately
+  // 0.00195°C.
+  float tempC = 23.0 + ((float)rawTemp) * 0.00195;
+  if (unit == "F") {
+    float tempF = tempC * 9.0 / 5.0 + 32.0;  // Convert to Fahrenheit
+    return tempF;
+  }
+  return tempC;
+}
+
 void readSensors() {
   int gxRaw, gyRaw, gzRaw;
   BMI160.readGyro(gxRaw, gyRaw, gzRaw);

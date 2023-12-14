@@ -142,7 +142,33 @@ function fetchColorSettings() {
         });
 }
 
+function fetchTemperatureSettings() {
+    fetch('/temperature', { method: 'GET' })
+        .then(response => response.text())
+        .then(data => {
+            var settings = data.split('\n');
+            settings.forEach(setting => {
+                var parts = setting.split('=');
+                var key = parts[0];
+                var value = parts[1];
+                switch (key) {
+                    case 'temperatureUnit':
+                        document.getElementById('temperatureSelect').value = value;
+                        break;
+                    case 'temperature':
+                        var unit = document.getElementById('temperatureSelect').value;
+                        document.getElementById('temperature').textContent = "Temp: " + value + "°" + unit;
+                        break;
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching temperature settings:', error);
+        });
+}
+
 window.onload = function () {
+    fetchTemperatureSettings();
     fetchSliderSettings();
     fetchColorSettings();
     fetchBirdSettings();
@@ -200,6 +226,22 @@ frameRateSlider.addEventListener('change', function () {
         });
 });
 
+var temperatureSelect = document.getElementById('temperatureSelect');
+temperatureSelect.addEventListener('change', function () {
+    var temperatureUnit = temperatureSelect.value;
+    var formData = new FormData();
+    formData.append('temperatureUnit', temperatureUnit);
+    fetch('/temperature', { method: 'POST', body: formData })
+        .then(response => response.text())
+        .then(data => {
+            console.log(data);
+        })
+        .catch(error => {
+            console.error('Error setting temperature:', error);
+        });
+    fetchTemperatureSettings();
+});
+
 var visualizationSelect = document.getElementById('visualizationSelect');
 visualizationSelect.addEventListener('change', function () {
     var visualization = visualizationSelect.value;
@@ -227,6 +269,9 @@ visualizationSelect.addEventListener('change', function () {
 
     var starPulseSettings = document.getElementById('starPulse-settings');
     starPulseSettings.style.display = 'none';
+
+    var temperatureSettings = document.getElementById('temperature-settings');
+    temperatureSettings.style.display = 'none';
 
     var motionSettings = document.getElementById('motion-settings');
     motionSettings.style.display = 'none';
@@ -263,6 +308,11 @@ visualizationSelect.addEventListener('change', function () {
             break;
         case 'text':
             textSettings.style.display = 'block';
+            colorSettings.style.display = 'block';
+            break;
+        case 'temperature':
+            temperatureSettings.style.display = 'block';
+            animationSettings.style.display = 'block';
             colorSettings.style.display = 'block';
             break;
         case 'waveform':
