@@ -184,7 +184,7 @@ void drawWaveform() {
     }
   }
 
-  matrix.show();  // Update the display with the waveform
+  matrix.show();
 }
 
 void setBrightness(int newBrightness) {
