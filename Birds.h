@@ -4,9 +4,7 @@
 #include "Colors.h"
 #include "Utils.h"
 
-struct Bird : public Pixel {
-  int vx, vy;
-};
+struct Bird : public Pixel {};
 
 // Birds Config
 int birdCount = 18;

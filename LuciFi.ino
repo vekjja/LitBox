@@ -43,7 +43,7 @@ void setup() {
   matrix.setBrightness(brightness);
   testMatrix(&matrix, LEDWidth, LEDHeight);
   initializeWebServer();
-  initializeMotion();
+  initializeMotion(LEDWidth, LEDHeight);
 }
 
 void loop() {
@@ -73,9 +73,9 @@ void loop() {
 void drawMotion() {
   motionAnimation(LEDWidth, LEDHeight);
   matrix.fillScreen(0);
-  for (int i = 0; i < motionNumPixels; i++) {
-    matrix.drawPixel(motionPixels[i].x, motionPixels[i].y,
-                     motionPixels[i].color);
+  for (int i = 0; i < motionNumObjects; i++) {
+    matrix.drawPixel(motionObjects[i].x, motionObjects[i].y,
+                     motionObjects[i].color);
   }
   matrix.show();
 }

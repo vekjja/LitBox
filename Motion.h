@@ -5,21 +5,26 @@
 
 #include "Colors.h"
 
-Pixel* motionPixels = nullptr;
-int motionNumPixels = 3;
-
-int gx = 0, gy = 0, gz = 0;
-int ax = 0, ay = 0, az = 0;
+struct Object {
+  float x, y;
+  float vx, vy;
+  uint32_t color;
+};
 
 const int motion_i2c_addr = 0x69;
+Object* motionObjects = nullptr;
+int motionNumObjects = 3;
 
-void initializeMotion() {
+float pitch = 0, roll = 0, yaw = 0;
+int gx = 0, gy = 0, gz = 0;
+
+void initializeMotion(int maxX, int maxY) {
   BMI160.begin(BMI160GenClass::I2C_MODE, motion_i2c_addr);
-  motionPixels = new Pixel[motionNumPixels];
-  for (int i = 0; i < motionNumPixels; i++) {
-    motionPixels[i].color = colorPallet[random(0, palletSize)];
-    motionPixels[i].x = random(0, 7);
-    motionPixels[i].y = random(0, 7);
+  motionObjects = new Object[motionNumObjects];
+  for (int i = 0; i < motionNumObjects; i++) {
+    motionObjects[i].color = colorPallet[random(0, palletSize)];
+    motionObjects[i].x = random(0, maxX);
+    motionObjects[i].y = random(0, maxY);
   }
 }
 
@@ -32,14 +37,28 @@ float convertRawGyro(int gRaw) {
 }
 
 void readSensors() {
+  // Read current time
+  static unsigned long lastUpdateTime = millis();
+  unsigned long currentTime = millis();
+  float deltaTime =
+      (currentTime - lastUpdateTime) / 1000.0;  // Convert to seconds
+
   int gxRaw, gyRaw, gzRaw;
-  int axRaw, ayRaw, azRaw;
   BMI160.readGyro(gxRaw, gyRaw, gzRaw);
 
   // convert the raw gyro data to degrees/second
   gx = convertRawGyro(gxRaw);
   gy = convertRawGyro(gyRaw);
   gz = convertRawGyro(gzRaw);
+
+  // Update rotation angles based on gyro data and time elapsed
+  // map proper axis to proper angle
+  pitch += gy * deltaTime;
+  roll += gz * deltaTime;
+  yaw += gx * deltaTime;
+
+  // Update last update time
+  lastUpdateTime = currentTime;
 
   Serial.print("g:\t");
   Serial.print(gx);
@@ -48,19 +67,29 @@ void readSensors() {
   Serial.print("\t");
   Serial.print(gz);
   Serial.println();
+
+  // Optional: Print the rotation angles
+  Serial.print("Pitch: ");
+  Serial.print(pitch);
+  Serial.print("\tRoll: ");
+  Serial.print(roll);
+  Serial.print("\tYaw: ");
+  Serial.println(yaw);
 }
 
 void motionAnimation(int maxX, int maxY) {
   readSensors();
-  for (int i = 0; i < motionNumPixels; i++) {
-    motionPixels[i].x += gz;
-    motionPixels[i].y += gy;
+  float scale = 0.01;
+  for (int i = 0; i < motionNumObjects; i++) {
+    motionObjects[i].vx += gx * scale;
+    motionObjects[i].vy += gy * scale;
 
-    // Boundary conditions
-    if (motionPixels[i].x < 0) motionPixels[i].x = 0;
-    if (motionPixels[i].x >= maxX) motionPixels[i].x = maxX - 1;
-    if (motionPixels[i].y < 0) motionPixels[i].y = 0;
-    if (motionPixels[i].y >= maxY) motionPixels[i].y = maxY - 1;
+    motionObjects[i].x += motionObjects[i].vx;
+    motionObjects[i].y += motionObjects[i].vy;
+    if (motionObjects[i].x < 0) motionObjects[i].x = 0;
+    if (motionObjects[i].x >= maxX) motionObjects[i].x = maxX - 1;
+    if (motionObjects[i].y < 0) motionObjects[i].y = 0;
+    if (motionObjects[i].y >= maxY) motionObjects[i].y = maxY - 1;
   }
 }
 
