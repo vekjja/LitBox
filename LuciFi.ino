@@ -156,14 +156,13 @@ void drawStarPulse() {
 }
 
 void drawWaveform() {
-  spectralAnalyzer(LEDWidth, LEDHeight);  // Analyze the audio input
-  matrix.fillScreen(0);                   // Clear the matrix
+  spectralAnalyzer(LEDWidth, LEDHeight);
+  matrix.fillScreen(0);
 
   int middleY = LEDHeight / 2;  // Calculate the middle row of the matrix
 
-  // Drawing a line for each column based on the spectral data
   for (int x = 0; x < LEDWidth; x++) {
-    int value = spectralData[x] / 2;  // Get the value for this column
+    int value = spectralData[x] / 2;
     for (int y = 0; y < value; y++) {
       // Draw upwards from the middle
       uint32_t pixelColor = colorPallet[0];
