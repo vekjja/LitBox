@@ -7,6 +7,7 @@
 #include "Birds.h"
 #include "Colors.h"
 #include "GameofLife.h"
+#include "MatrixAnimation.h"
 #include "Motion.h"
 #include "SpectralAnalyzer.h"
 #include "Stars.h"
@@ -29,7 +30,7 @@ int brightness = 6;
 // Visualization Config
 const int maxFrameRate = 120;
 unsigned int frameRate = 30;
-String visualization = "bars";
+String visualization = "matrix";
 
 // temperature Config
 String temperatureUnit = "C";
@@ -67,7 +68,7 @@ void loop() {
   } else if (visualization == "temperature") {
     runAtFrameRate(drawTemperature, frameRate);
   } else if (visualization == "matrix") {
-    // runAtFrameRate(drawMatrix, frameRate);
+    runAtFrameRate(drawMatrixAnimation, frameRate);
   } else if (visualization == "starPulse") {
     drawStarPulse();
   } else {
@@ -78,6 +79,8 @@ void loop() {
 void drawTemperature() {
   staticText(&matrix, String(getTemperature(temperatureUnit)));
 }
+
+void drawMatrixAnimation() { matrixAnimation(&matrix, LEDWidth, LEDHeight); }
 
 void drawMotion() {
   motionAnimation(LEDWidth, LEDHeight);

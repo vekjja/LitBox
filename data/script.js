@@ -297,6 +297,9 @@ visualizationSelect.addEventListener('change', function () {
             animationSettings.style.display = 'block';
             colorSettings.style.display = 'block';
             break;
+        case 'matrix':
+            animationSettings.style.display = 'block';
+            break;
         case 'motion':
             motionSettings.style.display = 'block';
             colorsSettings.style.display = 'block';
