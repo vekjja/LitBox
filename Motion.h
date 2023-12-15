@@ -12,7 +12,9 @@ struct Object {
   uint32_t color;
 };
 
-const int motion_i2c_addr = 0x69;
+// SDA/D2
+// SCL/D1
+const int motion_i2c_addr = 0x69;  // pin
 Object* motionObjects = nullptr;
 int motionNumObjects = 9;
 bool BMI160Initialized = false;

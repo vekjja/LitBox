@@ -8,7 +8,7 @@
 int textSpeed = 60;                // Default speed
 String text = "*.*. LuciFi .*.*";  // Default text
 
-void scrollText(Adafruit_NeoMatrix* matrix, String text) {
+void scrollText(Adafruit_NeoMatrix* matrix, String text, ESPWiFi* wifi) {
   matrix->setTextColor(pixelColor);  // Set the text color
   matrix->fillScreen(0);
   int startX = matrix->width();
@@ -19,6 +19,28 @@ void scrollText(Adafruit_NeoMatrix* matrix, String text) {
     matrix->print(text);
     matrix->show();
     delay(100 - textSpeed);
+    if (wifi != nullptr) {
+      wifi->handleClient();
+    }
+  }
+}
+
+void staticText(Adafruit_NeoMatrix* matrix, String text) {
+  matrix->fillScreen(0);
+  matrix->setCursor(0, 0);
+  matrix->setTextColor(pixelColor);
+  matrix->print(text);
+  matrix->show();
+}
+
+void displayOrScrollText(Adafruit_NeoMatrix* matrix, String text,
+                         ESPWiFi* wifi) {
+  int textLength =
+      text.length() * 6;  // Assuming each character is 6 pixels wide
+  if (textLength > matrix->width()) {
+    scrollText(matrix, text, wifi);  // Scroll text if it's too long
+  } else {
+    staticText(matrix, text);  // Display static text if it fits
   }
 }
 

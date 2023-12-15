@@ -29,7 +29,7 @@ int brightness = 6;
 // Visualization Config
 const int maxFrameRate = 120;
 unsigned int frameRate = 30;
-String visualization = "bars";
+String visualization = "waveform";
 
 // temperature Config
 String temperatureUnit = "C";
@@ -57,6 +57,8 @@ void loop() {
     drawCircles();
   } else if (visualization == "motion") {
     drawMotion();
+  } else if (visualization == "text") {
+    displayOrScrollText(&matrix, text, &wifi);
   } else if (visualization == "birds") {
     runAtFrameRate(drawBirds, frameRate);
   } else if (visualization == "gameOfLife") {
@@ -330,6 +332,11 @@ void initializeWebServer() {
                             String(colorPallet[3]) + ", " + String(pixelColor));
   });
 
+  wifi.webServer.on("/text", HTTP_GET, []() {
+    wifi.webServer.send(
+        200, "text/plain",
+        "text=" + text + "\n" + "textSpeed=" + String(textSpeed) + "\n");
+  });
   wifi.webServer.on("/text", HTTP_POST, []() {
     if (wifi.webServer.hasArg("textColor")) {
       String color = wifi.webServer.arg("textColor");
@@ -345,14 +352,14 @@ void initializeWebServer() {
     if (wifi.webServer.hasArg("textAnimation")) {
       String textAnimation = wifi.webServer.arg("textAnimation");
       if (textAnimation == "scroll") {
-        scrollText(&matrix, text);
+        scrollText(&matrix, text, &wifi);
       } else if (textAnimation == "wave") {
         waveText(&matrix, text);
       } else if (textAnimation == "rainbow") {
         rainbowText(&matrix, text);
+      } else if (textAnimation == "display") {
+        visualization = "text";
       }
-    } else {
-      scrollText(&matrix, text);
     }
     wifi.webServer.send(200, "text/plain", "Text updated");
   });
