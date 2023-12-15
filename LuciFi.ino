@@ -30,7 +30,7 @@ int brightness = 6;
 // Visualization Config
 const int maxFrameRate = 120;
 unsigned int frameRate = 30;
-String visualization = "matrix";
+String visualization = "bars";
 
 // temperature Config
 String temperatureUnit = "C";
