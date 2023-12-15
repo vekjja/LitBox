@@ -29,7 +29,7 @@ int brightness = 6;
 // Visualization Config
 const int maxFrameRate = 120;
 unsigned int frameRate = 30;
-String visualization = "waveform";
+String visualization = "bars";
 
 // temperature Config
 String temperatureUnit = "C";
@@ -44,6 +44,7 @@ void setup() {
   };
   matrix.setTextWrap(false);
   matrix.setBrightness(brightness);
+  randomSeed(analogRead(A0));
   testMatrix(&matrix, LEDWidth, LEDHeight);
   initializeMotion(LEDWidth, LEDHeight);
   initializeWebServer();
@@ -75,13 +76,7 @@ void loop() {
 }
 
 void drawTemperature() {
-  matrix.fillScreen(0);
-  matrix.setCursor(0, 0);
-  matrix.setTextColor(pixelColor);
-  matrix.setTextSize(1);
-  matrix.print(getTemperature(temperatureUnit));
-  matrix.print(temperatureUnit);
-  matrix.show();
+  staticText(&matrix, String(getTemperature(temperatureUnit)));
 }
 
 void drawMotion() {
@@ -355,8 +350,6 @@ void initializeWebServer() {
         scrollText(&matrix, text, &wifi);
       } else if (textAnimation == "wave") {
         waveText(&matrix, text);
-      } else if (textAnimation == "rainbow") {
-        rainbowText(&matrix, text);
       } else if (textAnimation == "display") {
         visualization = "text";
       }

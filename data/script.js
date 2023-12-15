@@ -308,12 +308,12 @@ visualizationSelect.addEventListener('change', function () {
             break;
         case 'text':
             textSettings.style.display = 'block';
-            colorSettings.style.display = 'block';
+            colorsSettings.style.display = 'block';
             break;
         case 'temperature':
             temperatureSettings.style.display = 'block';
             animationSettings.style.display = 'block';
-            colorSettings.style.display = 'block';
+            colorsSettings.style.display = 'block';
             break;
         case 'waveform':
             audioSettings.style.display = 'block';
