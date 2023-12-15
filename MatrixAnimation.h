@@ -41,11 +41,12 @@ void matrixAnimation(Adafruit_NeoMatrix* matrix, int maxX, int maxY) {
                         matrix->Color(255, 255, 255));
     }
 
-    // Green tail with decreasing brightness
+    // Green tail with randomly varying brightness
     for (int j = 1; j <= matrixColumns[i].length; j++) {
       int tailY = headY - j;
       if (tailY >= 0 && tailY < maxY) {
-        uint8_t brightness = 255 * (1 - (float)j / matrixColumns[i].length);
+        uint8_t brightness =
+            random(90, 255);  // Random brightness for each pixel
         matrix->drawPixel(matrixColumns[i].x, tailY,
                           matrix->Color(0, brightness, 0));
       }
@@ -56,7 +57,7 @@ void matrixAnimation(Adafruit_NeoMatrix* matrix, int maxX, int maxY) {
     if (matrixColumns[i].y - matrixColumns[i].length > maxY) {
       matrixColumns[i].y = -matCharHeight;
       matrixColumns[i].speed = random(matMinColSpeed, matMaxColSpeed + 1);
-      matrixColumns[i].length = random(3, matMaxTailLength + 1);
+      matrixColumns[i].length = random(5, matMaxTailLength + 1);
     }
   }
   matrix->show();
