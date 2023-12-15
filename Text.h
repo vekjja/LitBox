@@ -5,14 +5,16 @@
 
 #include "Colors.h"
 
+int textSize = 1;                  // Default text size
 int textSpeed = 60;                // Default speed
+int textPixelSize = 5;             // Number of pixels per character
 String text = "*.*. LuciFi .*.*";  // Default text
 
 void scrollText(Adafruit_NeoMatrix* matrix, String text, ESPWiFi* wifi) {
-  matrix->setTextColor(pixelColor);  // Set the text color
+  matrix->setTextColor(pixelColor);
   matrix->fillScreen(0);
   int startX = matrix->width();
-  int len = text.length() * 6;  // Approx width of a character
+  int len = text.length() * 5;  // Approx width of a character
   for (int x = startX; x > -len; x--) {
     matrix->fillScreen(0);
     matrix->setCursor(x, 0);
@@ -27,16 +29,16 @@ void scrollText(Adafruit_NeoMatrix* matrix, String text, ESPWiFi* wifi) {
 
 void staticText(Adafruit_NeoMatrix* matrix, String text) {
   matrix->fillScreen(0);
-  matrix->setCursor(0, 0);
   matrix->setTextColor(pixelColor);
+  matrix->setTextSize(textSize);
+  matrix->setCursor(0, 0);
   matrix->print(text);
   matrix->show();
 }
 
 void displayOrScrollText(Adafruit_NeoMatrix* matrix, String text,
                          ESPWiFi* wifi) {
-  int textLength =
-      text.length() * 6;  // Assuming each character is 6 pixels wide
+  int textLength = text.length() * textPixelSize;
   if (textLength > matrix->width()) {
     scrollText(matrix, text, wifi);  // Scroll text if it's too long
   } else {
@@ -46,9 +48,8 @@ void displayOrScrollText(Adafruit_NeoMatrix* matrix, String text,
 
 void waveText(Adafruit_NeoMatrix* matrix, String text) {
   matrix->setTextColor(pixelColor);  // Set the text color
-  int textWidth =
-      6 * strlen(text.c_str());  // 6 is an approx width of a character
-  for (int x = 0; x < matrix->width() + textWidth; x++) {
+  int textLength = text.length() * textPixelSize;
+  for (int x = 0; x < matrix->width() + textLength; x++) {
     int y = sin(x / 2.0) * 4;  // Sine wave for vertical position
     matrix->fillScreen(0);     // Clear the matrix
     matrix->setCursor(matrix->width() - x, y);  // Set start position
@@ -59,9 +60,9 @@ void waveText(Adafruit_NeoMatrix* matrix, String text) {
 }
 void blinkText(Adafruit_NeoMatrix* matrix, String text) {
   int startX = matrix->width();
-  int len = text.length() * 6;  // Approx width of a character
-  bool isVisible = true;        // To toggle visibility
-  for (int x = startX; x > -len; x--) {
+  int textLength = text.length() * textPixelSize;
+  bool isVisible = true;  // To toggle visibility
+  for (int x = startX; x > -textLength; x--) {
     matrix->fillScreen(0);
     matrix->setCursor(x, 0);
     if (isVisible) {
@@ -74,9 +75,9 @@ void blinkText(Adafruit_NeoMatrix* matrix, String text) {
 }
 void rainbowText(Adafruit_NeoMatrix* matrix, String text) {
   int startX = matrix->width();
-  int len = text.length() * 6;  // Approx width of a character
+  int textLength = text.length() * textPixelSize;
   int hue = 0;
-  for (int x = startX; x > -len; x--) {
+  for (int x = startX; x > -textLength; x--) {
     matrix->fillScreen(0);
     matrix->setCursor(x, 0);
     // Use HSV to cycle through colors

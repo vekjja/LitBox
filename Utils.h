@@ -16,7 +16,8 @@ void runAtFrameRate(void (*functionToRun)(), unsigned int fps) {
 }
 
 void testMatrix(Adafruit_NeoMatrix* matrix, int ledColumns, int ledRows) {
-  int pixelColor = 0xFFFF;
+  uint16_t red = rand() % 256, green = rand() % 256, blue = rand() % 256;
+  uint16_t pixelColor = matrix->Color(red, green, blue);
   for (int x = 0; x < ledColumns; x++) {
     for (int y = 0; y < ledRows; y++) {
       matrix->fillScreen(0);
