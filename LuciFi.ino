@@ -13,10 +13,16 @@
 #include "Stars.h"
 #include "Text.h"
 
+// WeMosPin Config
+// Audio Pin A0
+// SCL Pin D1
+// SDA Pin D2
+// LED Pin D6
+
 // LED Matrix Config
 int LEDWidth = 32;
 int LEDHeight = 8;
-int ledDataPin = 12;  // Board Pin D6
+int ledDataPin = 12;  // LED Pin D6
 uint8_t matrixType =
     NEO_MATRIX_TOP + NEO_MATRIX_LEFT + NEO_MATRIX_COLUMNS + NEO_MATRIX_ZIGZAG;
 Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(
