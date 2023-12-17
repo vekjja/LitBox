@@ -36,7 +36,7 @@ int brightness = 6;
 // Visualization Config
 const int maxFrameRate = 120;
 unsigned int frameRate = 30;
-String visualization = "bars";
+String visualization = "motion";
 
 // temperature Config
 String temperatureUnit = "C";
@@ -256,6 +256,10 @@ void initializeWebServer() {
   wifi.webServer.on("/motion", HTTP_POST, []() {
     if (wifi.webServer.hasArg("motionNumObjects")) {
       motionNumObjects = wifi.webServer.arg("motionNumObjects").toInt();
+    }
+    if (wifi.webServer.hasArg("gravityEnabled")) {
+      gravityEnabled =
+          wifi.webServer.arg("gravityEnabled").compareTo("true") == 0;
     }
     generateMotionObjects(LEDWidth, LEDHeight);
     wifi.webServer.send(200, "text/plain", "Motion settings updated");

@@ -8,11 +8,15 @@
 
 // SDA/D2
 // SCL/D1
-const int motion_i2c_addr = 0x69;
-Pixel* motionObjects = nullptr;
-int motionNumObjects = 9;
+int motionNumObjects = 3;
+bool gravityEnabled = true;
+float energyLossFactor = 0.99;
+float gx = 0, gy = 0, gz = 0;
+float ax = 0, ay = 0, az = 0;
 bool BMI160Initialized = false;
-int gx = 0, gy = 0, gz = 0;
+Pixel* motionObjects = nullptr;
+const int motion_i2c_addr = 0x69;
+const float rawDataConversion = 32768.0;
 
 void generateMotionObjects(int maxX, int maxY) {
   motionObjects = new Pixel[motionNumObjects];
@@ -29,6 +33,13 @@ void initializeMotion(int maxX, int maxY) {
   if (checkI2CDevice(motion_i2c_addr)) {
     if (BMI160.begin(BMI160GenClass::I2C_MODE, motion_i2c_addr)) {
       generateMotionObjects(maxX, maxY);
+      Serial.print("BMI160 Auto Calibration Starting");
+      BMI160.autoCalibrateXAccelOffset(1);
+      BMI160.autoCalibrateYAccelOffset(1);
+      BMI160.autoCalibrateZAccelOffset(1);
+      BMI160.autoCalibrateGyroOffset();
+      delay(250);
+      Serial.print("BMI160 Auto Calibration Complete");
       BMI160Initialized = true;
     } else {
       BMI160Initialized = false;
@@ -39,15 +50,6 @@ void initializeMotion(int maxX, int maxY) {
     Serial.print("BMI160 sensor not detected at the specified I2C address:" +
                  String(motion_i2c_addr));
   }
-}
-
-float convertRawGyro(int gRaw) {
-  // convert the raw gyro data to degrees/second
-  // we are using 250 degrees/seconds range
-  // -250 maps to a raw value of -32768
-  // +250 maps to a raw value of 32767
-  float g = (gRaw * 250.0) / 32768.0;
-  return g;
 }
 
 float getTemperature(String unit) {
@@ -66,27 +68,45 @@ float getTemperature(String unit) {
   return tempC;
 }
 
+float convertRawGyro(int gRaw) {
+  // convert the raw gyro data to degrees/second
+  // we are using 250 degrees/seconds range
+  // -250 maps to a raw value of -32768
+  // +250 maps to a raw value of 32767
+  return (gRaw * 250.0) / rawDataConversion;
+}
+
+float convertRawAccel(int raw, int offset) {
+  // Assuming the full scale range is ±2g
+  // Scale Factor for ±2g = 32768/2 = 16384
+  return (raw - offset) / (rawDataConversion / BMI160.getAccelerometerRange());
+}
+
 void readSensors() {
   int gxRaw, gyRaw, gzRaw;
+  int axRaw, ayRaw, azRaw;
   BMI160.readGyro(gxRaw, gyRaw, gzRaw);
+  BMI160.readAccelerometer(axRaw, ayRaw, azRaw);
 
   gx = convertRawGyro(gxRaw);
   gy = convertRawGyro(gyRaw);
   gz = convertRawGyro(gzRaw);
 
-  Serial.print("g:\t");
-  Serial.print(gx);
-  Serial.print("\t");
-  Serial.print(gy);
-  Serial.print("\t");
-  Serial.print(gz);
-  Serial.println();
+  ax = convertRawAccel(axRaw, BMI160.getXAccelOffset());
+  ay = convertRawAccel(ayRaw, BMI160.getYAccelOffset());
+  az = convertRawAccel(azRaw, BMI160.getZAccelOffset());
+
+  // Serial.println("g: " + String(gx) + ", " + String(gy) + ", " + String(gz));
+  Serial.println("a: " + String(ax) + ", " + String(ay) + ", " + String(az));
 }
 
 bool isCollision(Pixel& obj1, Pixel& obj2) {
-  float distance = sqrt(pow(obj1.x - obj2.x, 2) + pow(obj1.y - obj2.y, 2));
-  return distance < 1.0;  // collisionThreshold is the minimum
-                          // distance for collision
+  // Check horizontal overlap
+  if (obj1.x + 1 < obj2.x || obj1.x > obj2.x + 1) return false;
+  // Check vertical overlap
+  if (obj1.y + 1 < obj2.y || obj1.y > obj2.y + 1) return false;
+  // Overlapping in both directions
+  return true;
 }
 
 void motionAnimation(int maxX, int maxY) {
@@ -96,52 +116,62 @@ void motionAnimation(int maxX, int maxY) {
   if (!BMI160Initialized) return;
   readSensors();
   float scale = 0.001;
-  float damping = 0.99;
+  float gravityMagnitude = 1.1;
+  float gravityX = -ay * gravityMagnitude;
+  float gravityY = -ax * gravityMagnitude;
   for (int i = 0; i < motionNumObjects; i++) {
-    motionObjects[i].vx += -gx * scale;
-    motionObjects[i].vy += gy * scale;
-
-    motionObjects[i].vx *= damping;
-    motionObjects[i].vy *= damping;
-
-    motionObjects[i].x += motionObjects[i].vx;
-    motionObjects[i].y += motionObjects[i].vy;
-
-    if (motionObjects[i].x < 0) {
-      motionObjects[i].x = 0;
-      motionObjects[i].vx = -motionObjects[i].vx;
-    }
-    if (motionObjects[i].x >= maxX) {
-      motionObjects[i].x = maxX - 1;
-      motionObjects[i].vx = -motionObjects[i].vx;
-    }
-    if (motionObjects[i].y < 0) {
-      motionObjects[i].y = 0;
-      motionObjects[i].vy = -motionObjects[i].vy;
-    }
-    if (motionObjects[i].y >= maxY) {
-      motionObjects[i].y = maxY - 1;
-      motionObjects[i].vy = -motionObjects[i].vy;
+    if (gravityEnabled) {
+      motionObjects[i].vx = gravityX;
+      motionObjects[i].vy = gravityY;
+    } else {
+      motionObjects[i].vx += -gx * scale;
+      motionObjects[i].vy += gy * scale;
+      motionObjects[i].vx *= energyLossFactor;
+      motionObjects[i].vy *= energyLossFactor;
     }
 
     for (int j = i + 1; j < motionNumObjects; j++) {
-      if (isCollision(motionObjects[i], motionObjects[j])) {
-        Vector2D pos1 = makeVector(motionObjects[i].x, motionObjects[i].y);
-        Vector2D pos2 = makeVector(motionObjects[j].x, motionObjects[j].y);
-        Vector2D vel1 = makeVector(motionObjects[i].vx, motionObjects[i].vy);
-        Vector2D vel2 = makeVector(motionObjects[j].vx, motionObjects[j].vy);
+      if (motionObjects[i].x == motionObjects[j].x &&
+          motionObjects[i].y == motionObjects[j].y) {
+        // Collision detected
 
-        Vector2D collisionNormal = normalize(subtract(pos2, pos1));
-        float v1n = dotProduct(collisionNormal, vel1);
-        float v2n = dotProduct(collisionNormal, vel2);
+        // Convert velocities to vectors
+        Vector2D v1 = makeVector(motionObjects[i].vx, motionObjects[i].vy);
+        Vector2D v2 = makeVector(motionObjects[j].vx, motionObjects[j].vy);
 
-        // Swap the normal components of the velocities
-        motionObjects[i].vx += (v2n - v1n) * collisionNormal.x;
-        motionObjects[i].vy += (v2n - v1n) * collisionNormal.y;
-        motionObjects[j].vx += (v1n - v2n) * collisionNormal.x;
-        motionObjects[j].vy += (v1n - v2n) * collisionNormal.y;
+        // Calculate new velocities
+        // Simple bounce logic: swap velocities
+        motionObjects[i].vx = v2.x;
+        motionObjects[i].vy = v2.y;
+        motionObjects[j].vx = v1.x;
+        motionObjects[j].vy = v1.y;
       }
     }
+
+    // Update position based on velocity and constrain to screen
+    motionObjects[i].x =
+        constrain(motionObjects[i].x += motionObjects[i].vx, 0, maxX - 1);
+    motionObjects[i].y =
+        constrain(motionObjects[i].y += motionObjects[i].vy, 0, maxY - 1);
+
+    // for (int j = i + 1; j < motionNumObjects; j++) {
+    //   if (isCollision(motionObjects[i], motionObjects[j])) {
+    //     Vector2D pos1 = makeVector(motionObjects[i].x, motionObjects[i].y);
+    //     Vector2D pos2 = makeVector(motionObjects[j].x, motionObjects[j].y);
+    //     Vector2D vel1 = makeVector(motionObjects[i].vx, motionObjects[i].vy);
+    //     Vector2D vel2 = makeVector(motionObjects[j].vx, motionObjects[j].vy);
+
+    //     Vector2D collisionNormal = normalize(subtract(pos2, pos1));
+    //     float v1n = dotProduct(collisionNormal, vel1);
+    //     float v2n = dotProduct(collisionNormal, vel2);
+
+    //     // Swap the normal components of the velocities
+    //     motionObjects[i].vx += (v2n - v1n) * collisionNormal.x;
+    //     motionObjects[i].vy += (v2n - v1n) * collisionNormal.y;
+    //     motionObjects[j].vx += (v1n - v2n) * collisionNormal.x;
+    //     motionObjects[j].vy += (v1n - v2n) * collisionNormal.y;
+    //   }
+    // }
   }
 }
 #endif  // MOTION_H
