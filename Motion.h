@@ -12,8 +12,8 @@ struct Object {
   uint32_t color;
 };
 
-// SDA/D2
 // SCL/D1
+// SDA/D2
 const int motion_i2c_addr = 0x69;  // pin
 Object* motionObjects = nullptr;
 int motionNumObjects = 9;
