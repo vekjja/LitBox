@@ -6,23 +6,16 @@
 #include "Colors.h"
 #include "Vector2D.h"
 
-struct Object {
-  float x, y;
-  float vx, vy;
-  uint32_t color;
-};
-
-// SCL/D1
 // SDA/D2
-const int motion_i2c_addr = 0x69;  // pin
-Object* motionObjects = nullptr;
+// SCL/D1
+const int motion_i2c_addr = 0x69;
+Pixel* motionObjects = nullptr;
 int motionNumObjects = 9;
 bool BMI160Initialized = false;
-float pitch = 0, roll = 0, yaw = 0;
 int gx = 0, gy = 0, gz = 0;
 
 void generateMotionObjects(int maxX, int maxY) {
-  motionObjects = new Object[motionNumObjects];
+  motionObjects = new Pixel[motionNumObjects];
   for (int i = 0; i < motionNumObjects; i++) {
     motionObjects[i].color = colorPallet[random(0, palletSize)];
     motionObjects[i].x = random(1, maxX - 1);
@@ -39,12 +32,12 @@ void initializeMotion(int maxX, int maxY) {
       BMI160Initialized = true;
     } else {
       BMI160Initialized = false;
-      Serial.println("BMI160 initialization failed!");
+      Serial.print("BMI160 initialization failed!");
     }
   } else {
     BMI160Initialized = false;
-    Serial.println("BMI160 sensor not detected at the specified I2C address:" +
-                   String(motion_i2c_addr));
+    Serial.print("BMI160 sensor not detected at the specified I2C address:" +
+                 String(motion_i2c_addr));
   }
 }
 
@@ -90,7 +83,7 @@ void readSensors() {
   Serial.println();
 }
 
-bool isCollision(Object& obj1, Object& obj2) {
+bool isCollision(Pixel& obj1, Pixel& obj2) {
   float distance = sqrt(pow(obj1.x - obj2.x, 2) + pow(obj1.y - obj2.y, 2));
   return distance < 1.0;  // collisionThreshold is the minimum
                           // distance for collision

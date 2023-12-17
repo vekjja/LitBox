@@ -7,7 +7,7 @@
 #define SAMPLE_RATE 40000  // sampling rate
 
 // Audio Config
-IOPin audio(A0, INPUT);
+IOPin audio(A0, INPUT);  // MIC Pin A0
 arduinoFFT FFT = arduinoFFT();
 const int maxInput = 1023;
 const int minSensitivity = 1;

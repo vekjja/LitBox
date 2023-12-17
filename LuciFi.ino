@@ -13,8 +13,8 @@
 #include "Stars.h"
 #include "Text.h"
 
-// WeMosPin Config
-// Audio Pin A0
+// WeMos Pin Config:
+// MIC Pin A0
 // SCL Pin D1
 // SDA Pin D2
 // LED Pin D6

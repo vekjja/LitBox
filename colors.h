@@ -24,8 +24,8 @@
 #define PEACH 0xFEA6
 
 struct Pixel {
-  int x, y;
-  int vx, vy;
+  float x, y;
+  float vx, vy;
   byte intensity;
   uint32_t color;
 };

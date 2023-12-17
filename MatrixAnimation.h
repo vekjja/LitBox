@@ -4,9 +4,7 @@
 #include <Adafruit_NeoMatrix.h>
 
 // Matrix Animation Configuration
-struct MatrixColumn {
-  int x;       // Column X position
-  int y;       // Current Y position of the leading character
+struct MatrixColumn : public Pixel {
   int speed;   // Speed of the column
   int length;  // Length of the trail
 };

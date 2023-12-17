@@ -4,11 +4,9 @@
 #include "Colors.h"
 #include "Utils.h"
 
-struct Bird : public Pixel {};
-
 // Birds Config
 int birdCount = 18;
-Bird* birds = nullptr;
+Pixel* birds = nullptr;
 float birdAlignment = 9;
 float birdSeparation = 1;
 float birdCohesion = 999;
@@ -21,7 +19,7 @@ float birdRandomVelocityChangeFactor = 3;  // Max random change in velocity
 int birdRandomChangeChance = 3;  // Chance of random change (in percentage)
 
 void generateBirds(int maxX, int maxY) {
-  birds = new Bird[birdCount];
+  birds = new Pixel[birdCount];
   for (int i = 0; i < birdCount; i++) {
     uint32_t birdColor = colorPallet[random(0, palletSize - 1)];
     birds[i].x = random(0, maxX);
