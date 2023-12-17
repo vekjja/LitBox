@@ -11,37 +11,34 @@
 
 // SDA/D2
 // SCL/D1
+const int motion_i2c_addr = 0x69;
 
-struct MotionObject : public Pixel {
+struct MotionObject {
   Body* body;
+  uint32_t color;
 };
 
 int motionNumObjects = 3;
 bool gravityEnabled = true;
 float energyLossFactor = 0.99;
-float gx = 0, gy = 0, gz = 0;
-float ax = 0, ay = 0, az = 0;
+float gx = 0.0, gy = 0.0, gz = 0.0;
+float ax = 0.0, ay = 0.0, az = 0.0;
 bool BMI160Initialized = false;
 MotionObject* motionObjects = nullptr;
-const int motion_i2c_addr = 0x69;
 const float rawDataConversion = 32768.0;
 
 // Physics
-float timeStep = 1.0f / 60.0f;
-Vec2 gravity(0.0f, -10.0f);
-int iterations = 10;
-World world(gravity, iterations);
+World world(Vec2{0.0, 0.0}, 10);
 
 void generateMotionObjects(int maxX, int maxY) {
+  world.Clear();
   motionObjects = new MotionObject[motionNumObjects];
   for (int i = 0; i < motionNumObjects; i++) {
+    motionObjects[i].body = new Body();
+    motionObjects[i].body->Set(Vec2{1.0f, 1.0f}, 1.0f);
+    motionObjects[i].body->position.Set(random(0, maxX), random(0, maxY));
+    world.Add(motionObjects[i].body);
     motionObjects[i].color = colorPallet[random(0, palletSize)];
-    motionObjects[i].x = random(1, maxX - 1);
-    motionObjects[i].y = random(1, maxY - 1);
-    motionObjects[i].vx = 0;
-    motionObjects[i].vy = 0;
-    world.Add(motionObjects[i].body = new Body());
-    motionObjects[i].body->position.Set(motionObjects[i].x, motionObjects[i].y);
   }
 }
 
@@ -96,7 +93,7 @@ float convertRawAccel(int raw, int offset) {
   return (raw - offset) / (rawDataConversion / BMI160.getAccelerometerRange());
 }
 
-void readSensors() {
+void readSensor() {
   if (!BMI160Initialized) return;
   int gxRaw, gyRaw, gzRaw;
   int axRaw, ayRaw, azRaw;
@@ -115,34 +112,26 @@ void readSensors() {
   // Serial.println("a: " + String(ax) + ", " + String(ay) + ", " + String(az));
 }
 
-void motionAnimation(int maxX, int maxY) {
+void motionAnimation(int maxX, int maxY, float frameRate) {
   if (motionObjects == nullptr) {
     generateMotionObjects(maxX, maxY);
   }
-  world.Step(timeStep);
-  readSensors();
-  float scale = 0.001;
-  float gravityMagnitude = 1.1;
+
+  readSensor();
+  float gravityMagnitude = 9;
   float gravityX = -ay * gravityMagnitude;
   float gravityY = -ax * gravityMagnitude;
+
+  world.gravity.Set(gravityX, gravityY);
+  world.Step(1);
+  Serial.println("Gravity: " + String(world.gravity.x) + ", " +
+                 String(world.gravity.y));
+
   for (int i = 0; i < motionNumObjects; i++) {
-    if (gravityEnabled) {
-      motionObjects[i].vx = gravityX;
-      motionObjects[i].vy = gravityY;
-    } else {
-      motionObjects[i].vx += -gx * scale;
-      motionObjects[i].vy += gy * scale;
-      motionObjects[i].vx *= energyLossFactor;
-      motionObjects[i].vy *= energyLossFactor;
-    }
-
-    Serial.println("x: " + String(motionObjects[i].body->position.x) +
-                   ", y: " + String(motionObjects[i].body->position.y));
-
-    motionObjects[i].x =
-        constrain(motionObjects[i].x += motionObjects[i].vx, 0, maxX - 1);
-    motionObjects[i].y =
-        constrain(motionObjects[i].y += motionObjects[i].vy, 0, maxY - 1);
+    motionObjects[i].body->position.x =
+        constrain(motionObjects[i].body->position.x, 0.0f, float(maxX - 1));
+    motionObjects[i].body->position.y =
+        constrain(motionObjects[i].body->position.y, 0.0f, float(maxY - 1));
   }
 }
 #endif  // MOTION_H

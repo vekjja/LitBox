@@ -64,7 +64,8 @@ void loop() {
   } else if (visualization == "circles") {
     drawCircles();
   } else if (visualization == "motion") {
-    drawMotion();
+    // drawMotion();
+    runAtFrameRate(drawMotion, frameRate);
   } else if (visualization == "text") {
     displayOrScrollText(&matrix, text, &wifi);
   } else if (visualization == "birds") {
@@ -89,11 +90,11 @@ void drawTemperature() {
 void drawMatrixAnimation() { matrixAnimation(&matrix, LEDWidth, LEDHeight); }
 
 void drawMotion() {
-  motionAnimation(LEDWidth, LEDHeight);
+  motionAnimation(LEDWidth, LEDHeight, frameRate);
   matrix.fillScreen(0);
   for (int i = 0; i < motionNumObjects; i++) {
-    matrix.drawPixel(motionObjects[i].x, motionObjects[i].y,
-                     motionObjects[i].color);
+    matrix.drawPixel(motionObjects[i].body->position.x,
+                     motionObjects[i].body->position.y, motionObjects[i].color);
   }
   matrix.show();
 }
