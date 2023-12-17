@@ -24,10 +24,10 @@
 #define PEACH 0xFEA6
 
 struct Pixel {
-  float x, y;
-  float vx, vy;
-  byte intensity;
-  uint32_t color;
+  float x = 0, y = 0;
+  float vx = 0, vy = 0;
+  byte intensity = 0;
+  uint32_t color = 0;
 };
 
 const int palletSize = 4;

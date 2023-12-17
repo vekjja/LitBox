@@ -35,6 +35,7 @@
                 "/Users/kjj/Library/Arduino15/packages/esp8266/hardware/esp8266/3.1.2/libraries/LittleFS/src",
                 "/Users/kjj/Documents/Arduino/libraries/arduinoFFT/src",
                 "/Users/kjj/Documents/Arduino/libraries/BMI160-Arduino",
+                "/Users/kjj/Documents/Arduino/libraries/box2d-lite",
                 "/Users/kjj/Documents/Arduino/libraries/IOPin",
                 "/Users/kjj/Library/Arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/xtensa-lx106-elf/include/c++/10.3.0",
                 "/Users/kjj/Library/Arduino15/packages/esp8266/tools/xtensa-lx106-elf-gcc/3.1.0-gcc10.3-e5f9fec/xtensa-lx106-elf/include/c++/10.3.0/xtensa-lx106-elf",

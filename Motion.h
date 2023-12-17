@@ -1,31 +1,47 @@
 #ifndef MOTION_H
 #define MOTION_H
 
+#define PHYSAC_IMPLEMENTATION
 #include <BMI160Gen.h>
+#include <Body.h>
+#include <World.h>
 
 #include "Colors.h"
-#include "Vector2D.h"
+#include "Utils.h"
 
 // SDA/D2
 // SCL/D1
+
+struct MotionObject : public Pixel {
+  Body* body;
+};
+
 int motionNumObjects = 3;
 bool gravityEnabled = true;
 float energyLossFactor = 0.99;
 float gx = 0, gy = 0, gz = 0;
 float ax = 0, ay = 0, az = 0;
 bool BMI160Initialized = false;
-Pixel* motionObjects = nullptr;
+MotionObject* motionObjects = nullptr;
 const int motion_i2c_addr = 0x69;
 const float rawDataConversion = 32768.0;
 
+// Physics
+float timeStep = 1.0f / 60.0f;
+Vec2 gravity(0.0f, -10.0f);
+int iterations = 10;
+World world(gravity, iterations);
+
 void generateMotionObjects(int maxX, int maxY) {
-  motionObjects = new Pixel[motionNumObjects];
+  motionObjects = new MotionObject[motionNumObjects];
   for (int i = 0; i < motionNumObjects; i++) {
     motionObjects[i].color = colorPallet[random(0, palletSize)];
     motionObjects[i].x = random(1, maxX - 1);
     motionObjects[i].y = random(1, maxY - 1);
     motionObjects[i].vx = 0;
     motionObjects[i].vy = 0;
+    world.Add(motionObjects[i].body = new Body());
+    motionObjects[i].body->position.Set(motionObjects[i].x, motionObjects[i].y);
   }
 }
 
@@ -53,9 +69,7 @@ void initializeMotion(int maxX, int maxY) {
 }
 
 float getTemperature(String unit) {
-  if (!BMI160Initialized) {
-    return 0;  // or some default value or error code
-  }
+  if (!BMI160Initialized) return 0;
   int16_t rawTemp = BMI160.getTemperature();  // returns a 16-bit integer
   // The temperature data is a signed 16-bit value where 0x0000 corresponds to
   // 23°C, and each least significant bit (LSB) represents approximately
@@ -83,6 +97,7 @@ float convertRawAccel(int raw, int offset) {
 }
 
 void readSensors() {
+  if (!BMI160Initialized) return;
   int gxRaw, gyRaw, gzRaw;
   int axRaw, ayRaw, azRaw;
   BMI160.readGyro(gxRaw, gyRaw, gzRaw);
@@ -97,23 +112,14 @@ void readSensors() {
   az = convertRawAccel(azRaw, BMI160.getZAccelOffset());
 
   // Serial.println("g: " + String(gx) + ", " + String(gy) + ", " + String(gz));
-  Serial.println("a: " + String(ax) + ", " + String(ay) + ", " + String(az));
-}
-
-bool isCollision(Pixel& obj1, Pixel& obj2) {
-  // Check horizontal overlap
-  if (obj1.x + 1 < obj2.x || obj1.x > obj2.x + 1) return false;
-  // Check vertical overlap
-  if (obj1.y + 1 < obj2.y || obj1.y > obj2.y + 1) return false;
-  // Overlapping in both directions
-  return true;
+  // Serial.println("a: " + String(ax) + ", " + String(ay) + ", " + String(az));
 }
 
 void motionAnimation(int maxX, int maxY) {
   if (motionObjects == nullptr) {
     generateMotionObjects(maxX, maxY);
   }
-  if (!BMI160Initialized) return;
+  world.Step(timeStep);
   readSensors();
   float scale = 0.001;
   float gravityMagnitude = 1.1;
@@ -130,48 +136,13 @@ void motionAnimation(int maxX, int maxY) {
       motionObjects[i].vy *= energyLossFactor;
     }
 
-    for (int j = i + 1; j < motionNumObjects; j++) {
-      if (motionObjects[i].x == motionObjects[j].x &&
-          motionObjects[i].y == motionObjects[j].y) {
-        // Collision detected
+    Serial.println("x: " + String(motionObjects[i].body->position.x) +
+                   ", y: " + String(motionObjects[i].body->position.y));
 
-        // Convert velocities to vectors
-        Vector2D v1 = makeVector(motionObjects[i].vx, motionObjects[i].vy);
-        Vector2D v2 = makeVector(motionObjects[j].vx, motionObjects[j].vy);
-
-        // Calculate new velocities
-        // Simple bounce logic: swap velocities
-        motionObjects[i].vx = v2.x;
-        motionObjects[i].vy = v2.y;
-        motionObjects[j].vx = v1.x;
-        motionObjects[j].vy = v1.y;
-      }
-    }
-
-    // Update position based on velocity and constrain to screen
     motionObjects[i].x =
         constrain(motionObjects[i].x += motionObjects[i].vx, 0, maxX - 1);
     motionObjects[i].y =
         constrain(motionObjects[i].y += motionObjects[i].vy, 0, maxY - 1);
-
-    // for (int j = i + 1; j < motionNumObjects; j++) {
-    //   if (isCollision(motionObjects[i], motionObjects[j])) {
-    //     Vector2D pos1 = makeVector(motionObjects[i].x, motionObjects[i].y);
-    //     Vector2D pos2 = makeVector(motionObjects[j].x, motionObjects[j].y);
-    //     Vector2D vel1 = makeVector(motionObjects[i].vx, motionObjects[i].vy);
-    //     Vector2D vel2 = makeVector(motionObjects[j].vx, motionObjects[j].vy);
-
-    //     Vector2D collisionNormal = normalize(subtract(pos2, pos1));
-    //     float v1n = dotProduct(collisionNormal, vel1);
-    //     float v2n = dotProduct(collisionNormal, vel2);
-
-    //     // Swap the normal components of the velocities
-    //     motionObjects[i].vx += (v2n - v1n) * collisionNormal.x;
-    //     motionObjects[i].vy += (v2n - v1n) * collisionNormal.y;
-    //     motionObjects[j].vx += (v1n - v2n) * collisionNormal.x;
-    //     motionObjects[j].vy += (v1n - v2n) * collisionNormal.y;
-    //   }
-    // }
   }
 }
 #endif  // MOTION_H
