@@ -31,7 +31,7 @@ Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(
 // Brightness and Color Config
 const int maxBrightness = 255;
 const int minBrightness = 1;
-int brightness = 6;
+int brightness = 9;
 
 // Visualization Config
 const int maxFrameRate = 120;
@@ -93,8 +93,11 @@ void drawMotion() {
   motionAnimation(LEDWidth, LEDHeight, frameRate);
   matrix.fillScreen(0);
   for (int i = 0; i < motionNumObjects; i++) {
-    matrix.drawPixel(motionObjects[i].body->position.x,
-                     motionObjects[i].body->position.y, motionObjects[i].color);
+    Body* b = motionObjects[i].body;
+    // matrix.drawPixel(round(b->position.x), round(b->position.y),
+    //                  motionObjects[i].color);
+    matrix.drawRect(b->position.x, b->position.y, b->width.x, b->width.y,
+                    motionObjects[i].color);
   }
   matrix.show();
 }
