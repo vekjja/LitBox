@@ -19,7 +19,7 @@ struct MotionObject {
 };
 
 // Motion Animation
-int motionNumObjects = 9;
+int motionNumObjects = 6;
 MotionObject* motionObjects = nullptr;
 
 // BMI160 sensor
