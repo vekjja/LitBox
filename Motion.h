@@ -19,7 +19,7 @@ struct MotionObject {
 };
 
 // Motion Animation
-int motionNumObjects = 9;
+int motionNumObjects = 3;
 MotionObject* motionObjects = nullptr;
 
 // BMI160 sensor
@@ -29,8 +29,8 @@ bool BMI160Initialized = false;
 const float rawDataConversion = 32768.0;
 
 // Physics
-bool gravityEnabled = false;
-World world(Vec2{0.0, 0.0}, 3);
+bool gravityEnabled = true;
+World world(Vec2{0.0, 0.0}, 1);
 
 void generateMotionObjects(int maxX, int maxY) {
   world.Clear();
@@ -64,8 +64,8 @@ void generateMotionObjects(int maxX, int maxY) {
   for (int i = 0; i < motionNumObjects; i++) {
     motionObjects[i].color = colorPallet[random(0, palletSize)];
     Body* b = new Body();
-    int w = 3;
-    b->Set(Vec2{w, w}, w);
+    int w = 1;
+    b->Set(Vec2{w, w}, 10);
     b->position.Set(random(0, maxX), random(0, maxY));
     b->friction = 0.3f;
     world.Add(motionObjects[i].body = b);
@@ -154,7 +154,7 @@ void motionAnimation(int maxX, int maxY, float frameRate) {
   Serial.println("g: " + String(gravityX) + ", " + String(gravityY));
 
   world.gravity.Set(gravityX, gravityY);
-  float timeStep = 0.98f;
+  float timeStep = 1.0f;
   world.Step(timeStep);
 
   for (int i = 0; i < motionNumObjects; i++) {
