@@ -18,25 +18,49 @@ struct MotionObject {
   uint32_t color;
 };
 
-int motionNumObjects = 3;
-bool gravityEnabled = true;
-float energyLossFactor = 0.99;
+// Motion Animation
+int motionNumObjects = 9;
+MotionObject* motionObjects = nullptr;
+
+// BMI160 sensor
 float gx = 0.0, gy = 0.0, gz = 0.0;
 float ax = 0.0, ay = 0.0, az = 0.0;
 bool BMI160Initialized = false;
-MotionObject* motionObjects = nullptr;
 const float rawDataConversion = 32768.0;
 
 // Physics
-World world(Vec2{0.0, 0.0}, 10);
+bool gravityEnabled = true;
+World world(Vec2{0.0, 0.0}, 12);
 
 void generateMotionObjects(int maxX, int maxY) {
   world.Clear();
+
+  Body* ground = new Body();
+  ground->Set(Vec2{maxX + 3, 3.0f}, FLT_MAX);
+  ground->position.Set(maxX / 2.0f, maxY + 1);
+  world.Add(ground);
+
+  Body* ceiling = new Body();
+  ceiling->Set(Vec2{maxX + 3, 3.0f}, FLT_MAX);
+  ceiling->position.Set(maxX / 2.0f, -1);
+  world.Add(ceiling);
+
+  Body* leftWall = new Body();
+  leftWall->Set(Vec2{3.0f, maxY + 3}, FLT_MAX);
+  leftWall->position.Set(-1, maxY / 2.0f);
+  world.Add(leftWall);
+
+  Body* rightWall = new Body();
+  rightWall->Set(Vec2{3.0f, maxY + 3}, FLT_MAX);
+  rightWall->position.Set(maxX + 1, maxY / 2.0f);
+  world.Add(rightWall);
+
   motionObjects = new MotionObject[motionNumObjects];
   for (int i = 0; i < motionNumObjects; i++) {
     motionObjects[i].body = new Body();
     motionObjects[i].body->Set(Vec2{1.0f, 1.0f}, 1.0f);
-    motionObjects[i].body->position.Set(random(0, maxX), random(0, maxY));
+    motionObjects[i].body->position.Set(random(1, maxX - 1),
+                                        random(1, maxY - 1));
     world.Add(motionObjects[i].body);
     motionObjects[i].color = colorPallet[random(0, palletSize)];
   }
@@ -116,22 +140,42 @@ void motionAnimation(int maxX, int maxY, float frameRate) {
   if (motionObjects == nullptr) {
     generateMotionObjects(maxX, maxY);
   }
-
   readSensor();
-  float gravityMagnitude = 9;
+  const float gravityMagnitude = 1.0f;
   float gravityX = -ay * gravityMagnitude;
   float gravityY = -ax * gravityMagnitude;
-
+  Serial.println("g: " + String(gravityX) + ", " + String(gravityY));
   world.gravity.Set(gravityX, gravityY);
   world.Step(1);
-  Serial.println("Gravity: " + String(world.gravity.x) + ", " +
-                 String(world.gravity.y));
 
   for (int i = 0; i < motionNumObjects; i++) {
-    motionObjects[i].body->position.x =
-        constrain(motionObjects[i].body->position.x, 0.0f, float(maxX - 1));
-    motionObjects[i].body->position.y =
-        constrain(motionObjects[i].body->position.y, 0.0f, float(maxY - 1));
+    Body* b = motionObjects[i].body;
+    b->position.x = constrain(b->position.x, 0, maxX);
+    b->position.y = constrain(b->position.y, 0, maxY);
   }
+
+  // for (int i = 0; i < motionNumObjects; i++) {
+  //   Body* b = motionObjects[i].body;
+  //   if (b->position.x < 0) {
+  //     b->position.x = 0;
+  //     // b->velocity.x *= -1;
+  //     b->velocity.x = 0;
+  //   }
+  //   if (b->position.x >= maxX) {
+  //     b->position.x = maxX - 1;
+  //     // b->velocity.x *= -1;
+  //     b->velocity.x = 0;
+  //   }
+  //   if (b->position.y < 0) {
+  //     b->position.y = 0;
+  //     // b->velocity.y *= -1;
+  //     b->velocity.y = 0;
+  //   }
+  //   if (b->position.y >= maxY) {
+  //     b->position.y = maxY - 1;
+  //     // b->velocity.y *= -1;
+  //     b->velocity.y = 0;
+  //   }
+  // }
 }
 #endif  // MOTION_H
