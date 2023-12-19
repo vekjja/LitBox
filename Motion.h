@@ -148,7 +148,7 @@ void motionAnimation(int maxX, int maxY, float frameRate) {
   }
   readSensor();
 
-  const float gravityMagnitude = 1.0f;
+  const float gravityMagnitude = 0.8f;
   float gravityX = -ay * gravityMagnitude;
   float gravityY = -ax * gravityMagnitude;
   Serial.println("g: " + String(gravityX) + ", " + String(gravityY));
