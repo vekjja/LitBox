@@ -4,11 +4,12 @@
 #include <BMI160Gen.h>
 
 #include "Colors.h"
+#include "Utils.h"
 #include "Vector2D.h"
 
 // SDA/D2
 // SCL/D1
-int motionNumObjects = 3;
+int motionNumObjects = 9;
 bool gravityEnabled = true;
 float energyLossFactor = 0.99;
 float gx = 0, gy = 0, gz = 0;
@@ -131,20 +132,21 @@ void motionAnimation(int maxX, int maxY) {
     }
 
     for (int j = i + 1; j < motionNumObjects; j++) {
-      if (motionObjects[i].x == motionObjects[j].x &&
-          motionObjects[i].y == motionObjects[j].y) {
-        // Collision detected
+      if (isCollision(motionObjects[i], motionObjects[j])) {
+        Vector2D pos1 = makeVector(motionObjects[i].x, motionObjects[i].y);
+        Vector2D pos2 = makeVector(motionObjects[j].x, motionObjects[j].y);
+        Vector2D vel1 = makeVector(motionObjects[i].vx, motionObjects[i].vy);
+        Vector2D vel2 = makeVector(motionObjects[j].vx, motionObjects[j].vy);
 
-        // Convert velocities to vectors
-        Vector2D v1 = makeVector(motionObjects[i].vx, motionObjects[i].vy);
-        Vector2D v2 = makeVector(motionObjects[j].vx, motionObjects[j].vy);
+        Vector2D collisionNormal = normalize(subtract(pos2, pos1));
+        float v1n = dotProduct(collisionNormal, vel1);
+        float v2n = dotProduct(collisionNormal, vel2);
 
-        // Calculate new velocities
-        // Simple bounce logic: swap velocities
-        motionObjects[i].vx = v2.x;
-        motionObjects[i].vy = v2.y;
-        motionObjects[j].vx = v1.x;
-        motionObjects[j].vy = v1.y;
+        // Swap the normal components of the velocities
+        motionObjects[i].vx += (v2n - v1n) * collisionNormal.x;
+        motionObjects[i].vy += (v2n - v1n) * collisionNormal.y;
+        motionObjects[j].vx += (v1n - v2n) * collisionNormal.x;
+        motionObjects[j].vy += (v1n - v2n) * collisionNormal.y;
       }
     }
 
@@ -153,25 +155,6 @@ void motionAnimation(int maxX, int maxY) {
         constrain(motionObjects[i].x += motionObjects[i].vx, 0, maxX - 1);
     motionObjects[i].y =
         constrain(motionObjects[i].y += motionObjects[i].vy, 0, maxY - 1);
-
-    // for (int j = i + 1; j < motionNumObjects; j++) {
-    //   if (isCollision(motionObjects[i], motionObjects[j])) {
-    //     Vector2D pos1 = makeVector(motionObjects[i].x, motionObjects[i].y);
-    //     Vector2D pos2 = makeVector(motionObjects[j].x, motionObjects[j].y);
-    //     Vector2D vel1 = makeVector(motionObjects[i].vx, motionObjects[i].vy);
-    //     Vector2D vel2 = makeVector(motionObjects[j].vx, motionObjects[j].vy);
-
-    //     Vector2D collisionNormal = normalize(subtract(pos2, pos1));
-    //     float v1n = dotProduct(collisionNormal, vel1);
-    //     float v2n = dotProduct(collisionNormal, vel2);
-
-    //     // Swap the normal components of the velocities
-    //     motionObjects[i].vx += (v2n - v1n) * collisionNormal.x;
-    //     motionObjects[i].vy += (v2n - v1n) * collisionNormal.y;
-    //     motionObjects[j].vx += (v1n - v2n) * collisionNormal.x;
-    //     motionObjects[j].vy += (v1n - v2n) * collisionNormal.y;
-    //   }
-    // }
   }
 }
 #endif  // MOTION_H

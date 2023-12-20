@@ -54,11 +54,11 @@ void setup() {
   randomSeed(analogRead(A0));
   testMatrix(&matrix, LEDWidth, LEDHeight);
   initializeMotion(LEDWidth, LEDHeight);
-  initializeWebServer();
+  // initializeWebServer();
 }
 
 void loop() {
-  wifi.handleClient();
+  // wifi.handleClient();
   if (visualization == "waveform") {
     drawWaveform();
   } else if (visualization == "circles") {
