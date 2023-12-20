@@ -19,7 +19,7 @@ struct MotionObject {
 };
 
 // Motion Animation
-int motionNumObjects = 3;
+int motionNumObjects = 9;
 MotionObject* motionObjects = nullptr;
 
 // BMI160 sensor
@@ -30,7 +30,7 @@ const float rawDataConversion = 32768.0;
 
 // Physics
 bool gravityEnabled = true;
-World world(Vec2{0.0, 0.0}, 1);
+World world(Vec2{0.0, 0.0}, 6);
 
 void generateMotionObjects(int maxX, int maxY) {
   world.Clear();
@@ -148,19 +148,16 @@ void motionAnimation(int maxX, int maxY, float frameRate) {
   }
   readSensor();
 
-  const float gravityMagnitude = 0.8f;
+  const float gravityMagnitude = 1.0f;
   float gravityX = -ay * gravityMagnitude;
   float gravityY = -ax * gravityMagnitude;
   Serial.println("g: " + String(gravityX) + ", " + String(gravityY));
-
   world.gravity.Set(gravityX, gravityY);
-  float timeStep = 1.0f;
+  float timeStep = 0.8f;
   world.Step(timeStep);
 
   for (int i = 0; i < motionNumObjects; i++) {
     Body* b = motionObjects[i].body;
-    b->position.x = round(b->position.x);
-    b->position.y = round(b->position.y);
     b->position.x = constrain(b->position.x, 0, maxX - 1);
     b->position.y = constrain(b->position.y, 0, maxY - 1);
     b->rotation = 0.0f;

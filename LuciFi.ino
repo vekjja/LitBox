@@ -94,8 +94,8 @@ void drawMotion() {
   matrix.fillScreen(0);
   for (int i = 0; i < motionNumObjects; i++) {
     Body* b = motionObjects[i].body;
-    matrix.drawRect(b->position.x, b->position.y, b->width.x, b->width.y,
-                    motionObjects[i].color);
+    matrix.drawRect(round(b->position.x), round(b->position.y), b->width.x,
+                    b->width.y, motionObjects[i].color);
   }
   matrix.show();
 }
