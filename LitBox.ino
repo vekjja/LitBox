@@ -42,7 +42,7 @@ String visualization = "bars";
 String temperatureUnit = "C";
 
 // Web Server Config
-ESPWiFi wifi = ESPWiFi("Luci-Fi", "abcd1234");
+ESPWiFi wifi = ESPWiFi("Lit Box", "abcd1234");
 
 void setup() {
   matrix.begin();
@@ -409,6 +409,6 @@ void initializeWebServer() {
   });
 
   wifi.setConnectSubroutine([]() { testMatrix(&matrix, LEDWidth, LEDHeight); });
-  wifi.enableMDNS("luci-fi");
+  wifi.enableMDNS("litbox");
   wifi.start();
 }

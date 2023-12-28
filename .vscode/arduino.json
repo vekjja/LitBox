@@ -1,6 +1,6 @@
 {
     "port": "/dev/tty.usbserial-14130",
     "board": "esp8266:esp8266:nodemcuv2",
-    "output": ".arduino/output",
-    "sketch": "LuciFi/LuciFi.ino"
+    "sketch": "LitBox/LitBox.ino",
+    "output": ".arduino/output"
 }
