@@ -31,7 +31,8 @@ struct Pixel {
 };
 
 const int palletSize = 4;
-uint32_t pixelColor = WHITE;  // Default color
+uint32_t pixelColor = WHITE;    // Default color
+uint32_t pixelBgColor = BLACK;  // Default background color
 uint32_t colorPallet[palletSize] = {BLUE, CYAN, VIOLET, WHITE};
 
 String colorToHex(uint16_t rgb565) {

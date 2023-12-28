@@ -134,6 +134,9 @@ function fetchColorSettings() {
                     case 'pixelColor':
                         document.getElementById('pixelColor').value = value;
                         break;
+                    case 'pixelBgColor':
+                        document.getElementById('pixelBgColor').value = value;
+                        break;
                 }
             });
         })

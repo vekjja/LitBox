@@ -123,22 +123,23 @@ float convertRawAccel(int raw, int offset) {
   return (raw - offset) / (rawDataConversion / BMI160.getAccelerometerRange());
 }
 
-void readSensor() {
+void readGyro() {
   if (!BMI160Initialized) return;
   int gxRaw, gyRaw, gzRaw;
-  int axRaw, ayRaw, azRaw;
   BMI160.readGyro(gxRaw, gyRaw, gzRaw);
-  BMI160.readAccelerometer(axRaw, ayRaw, azRaw);
-
   gx = convertRawGyro(gxRaw);
   gy = convertRawGyro(gyRaw);
   gz = convertRawGyro(gzRaw);
+  // Serial.println("g: " + String(gx) + ", " + String(gy) + ", " + String(gz));
+}
 
+void readAccelerometer() {
+  if (!BMI160Initialized) return;
+  int axRaw, ayRaw, azRaw;
+  BMI160.readAccelerometer(axRaw, ayRaw, azRaw);
   ax = convertRawAccel(axRaw, BMI160.getXAccelOffset());
   ay = convertRawAccel(ayRaw, BMI160.getYAccelOffset());
   az = convertRawAccel(azRaw, BMI160.getZAccelOffset());
-
-  // Serial.println("g: " + String(gx) + ", " + String(gy) + ", " + String(gz));
   // Serial.println("a: " + String(ax) + ", " + String(ay) + ", " + String(az));
 }
 
@@ -146,7 +147,7 @@ void motionAnimation(int maxX, int maxY, float frameRate) {
   if (motionObjects == nullptr) {
     generateMotionObjects(maxX, maxY);
   }
-  readSensor();
+  readAccelerometer();
 
   const float gravityMagnitude = 1.0f;
   float gravityX = -ay * gravityMagnitude;

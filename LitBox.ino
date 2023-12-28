@@ -49,12 +49,17 @@ void setup() {
   Serial.begin(115200);
   while (!Serial) {
   };
-  matrix.setTextWrap(false);
-  matrix.setBrightness(brightness);
+  Serial.print("Lit Box starting up...");
   randomSeed(analogRead(A0));
-  testMatrix(&matrix, LEDWidth, LEDHeight);
+  initializeMatrix();
   initializeMotion(LEDWidth, LEDHeight);
   initializeWebServer();
+}
+
+void initializeMatrix() {
+  matrix.setTextWrap(false);
+  matrix.setBrightness(brightness);
+  testMatrix(&matrix, LEDWidth, LEDHeight);
 }
 
 void loop() {
@@ -312,28 +317,27 @@ void initializeWebServer() {
                             "color2=" + colorToHex(colorPallet[1]) + "\n" +
                             "color3=" + colorToHex(colorPallet[2]) + "\n" +
                             "color4=" + colorToHex(colorPallet[3]) + "\n" +
-                            "pixelColor=" + colorToHex(pixelColor) + "\n");
+                            "pixelColor=" + colorToHex(pixelColor) + "\n" +
+                            "pixelBgColor=" + colorToHex(pixelBgColor) + "\n");
   });
   wifi.webServer.on("/colors", HTTP_POST, []() {
     if (wifi.webServer.hasArg("color1")) {
-      String color = wifi.webServer.arg("color1");
       colorPallet[0] = hexToColor(wifi.webServer.arg("color1"));
     }
     if (wifi.webServer.hasArg("color2")) {
-      String color = wifi.webServer.arg("color2");
       colorPallet[1] = hexToColor(wifi.webServer.arg("color2"));
     }
     if (wifi.webServer.hasArg("color3")) {
-      String color = wifi.webServer.arg("color3");
       colorPallet[2] = hexToColor(wifi.webServer.arg("color3"));
     }
     if (wifi.webServer.hasArg("color4")) {
-      String color = wifi.webServer.arg("color4");
       colorPallet[3] = hexToColor(wifi.webServer.arg("color4"));
     }
     if (wifi.webServer.hasArg("pixelColor")) {
-      String color = wifi.webServer.arg("pixelColor");
       pixelColor = hexToColor(wifi.webServer.arg("pixelColor"));
+    }
+    if (wifi.webServer.hasArg("pixelBgColor")) {
+      pixelBgColor = hexToColor(wifi.webServer.arg("pixelBgColor"));
     }
     wifi.webServer.send(200, "text/plain",
                         "Color Pallet set to: " + String(colorPallet[0]) +
@@ -345,12 +349,16 @@ void initializeWebServer() {
   wifi.webServer.on("/text", HTTP_GET, []() {
     wifi.webServer.send(
         200, "text/plain",
-        "text=" + text + "\n" + "textSpeed=" + String(textSpeed) + "\n");
+        "text=" + text + "\n" + "textSpeed=" + String(textSpeed) + "\n" +
+            "textColor=" + colorToHex(pixelColor) + "\n" + "textBgColor=" +
+            colorToHex(pixelBgColor) + "\n" + "textAnimation=scroll\n");
   });
   wifi.webServer.on("/text", HTTP_POST, []() {
     if (wifi.webServer.hasArg("textColor")) {
-      String color = wifi.webServer.arg("textColor");
-      pixelColor = hexToColor(color);
+      pixelColor = hexToColor(wifi.webServer.arg("textColor"));
+    }
+    if (wifi.webServer.hasArg("textBgColor")) {
+      pixelBgColor = hexToColor(wifi.webServer.arg("textBgColor"));
     }
     if (wifi.webServer.hasArg("textSpeed")) {
       textSpeed = wifi.webServer.arg("textSpeed").toInt();
