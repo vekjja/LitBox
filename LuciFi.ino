@@ -36,7 +36,7 @@ int brightness = 6;
 // Visualization Config
 const int maxFrameRate = 120;
 unsigned int frameRate = 30;
-String visualization = "motion";
+String visualization = "bars";
 
 // temperature Config
 String temperatureUnit = "C";
@@ -54,11 +54,11 @@ void setup() {
   randomSeed(analogRead(A0));
   testMatrix(&matrix, LEDWidth, LEDHeight);
   initializeMotion(LEDWidth, LEDHeight);
-  // initializeWebServer();
+  initializeWebServer();
 }
 
 void loop() {
-  // wifi.handleClient();
+  wifi.handleClient();
   if (visualization == "waveform") {
     drawWaveform();
   } else if (visualization == "circles") {
