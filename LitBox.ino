@@ -147,7 +147,7 @@ void drawCircles() {
 
 void drawGameOfLife() {
   updateGameOfLife(LEDWidth, LEDHeight, 231);
-  matrix.fillScreen(0);
+  matrix.fillScreen(pixelBgColor);
   for (int x = 0; x < LEDWidth; x++) {
     for (int y = 0; y < LEDHeight; y++) {
       if (gol_Cells[x][y] == 1) {
