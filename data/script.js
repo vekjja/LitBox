@@ -314,7 +314,7 @@ visualizationSelect.addEventListener('change', function () {
             break;
         case 'text':
             textSettings.style.display = 'block';
-            colorsSettings.style.display = 'block';
+            colorSettings.style.display = 'block';
             break;
         case 'temperature':
             temperatureSettings.style.display = 'block';
