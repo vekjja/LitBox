@@ -339,11 +339,13 @@ void initializeWebServer() {
     if (wifi.webServer.hasArg("pixelBgColor")) {
       pixelBgColor = hexToColor(wifi.webServer.arg("pixelBgColor"));
     }
-    wifi.webServer.send(200, "text/plain",
-                        "Color Pallet set to: " + String(colorPallet[0]) +
-                            ", " + String(colorPallet[1]) + ", " +
-                            String(colorPallet[2]) + ", " +
-                            String(colorPallet[3]) + ", " + String(pixelColor));
+    wifi.webServer.send(
+        200, "text/plain",
+        "Color Pallet set to:\n  Color 1:" + String(colorPallet[0]) +
+            ", Color 2:" + String(colorPallet[1]) + ", Color 3:" +
+            String(colorPallet[2]) + ", Color 4:" + String(colorPallet[3]) +
+            ", Pixel Color:" + String(pixelColor) +
+            ", Pixel BG Color:" + String(pixelBgColor));
   });
 
   wifi.webServer.on("/text", HTTP_GET, []() {

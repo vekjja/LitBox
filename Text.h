@@ -6,7 +6,7 @@
 #include "Colors.h"
 
 int textSize = 1;                   // Default text size
-int textSpeed = 60;                 // Default speed
+int textSpeed = 75;                 // Default speed
 int textPixelSize = 6;              // Number of pixels per character
 String text = "*.*. Lit Box .*.*";  // Default text
 

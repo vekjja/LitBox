@@ -448,10 +448,10 @@ document.querySelectorAll('.color-picker').forEach(function (colorPicker) {
         var color4 = document.getElementById('color4').value;
         var pixelColor = document.getElementById('pixelColor').value;
         var pixelBgColor = document.getElementById('pixelBgColor').value;
-        updateColor(color1, color2, color3, color4, pixelColor);
+        updateColor(color1, color2, color3, color4, pixelColor, pixelBgColor);
     });
 });
-function updateColor(color1, color2, color3, color4, pixelColor) {
+function updateColor(color1, color2, color3, color4, pixelColor, pixelBgColor) {
 
     fetch('/colors', {
         method: 'POST',
