@@ -42,6 +42,7 @@ String visualization = "bars";
 String temperatureUnit = "C";
 
 // Web Server Config
+const String webServerName = "LitBox";
 ESPWiFi wifi = ESPWiFi("Lit Box", "abcd1234");
 
 void setup() {
@@ -419,6 +420,6 @@ void initializeWebServer() {
   });
 
   wifi.setConnectSubroutine([]() { testMatrix(&matrix, LEDWidth, LEDHeight); });
-  wifi.enableMDNS("litbox");
+  wifi.enableMDNS(webServerName);
   wifi.start();
 }
