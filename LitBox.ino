@@ -72,7 +72,11 @@ void loop() {
     drawCircles();
   } else if (visualization == "motion") {
     drawMotion();
-    // runAtFrameRate(drawMotion, frameRate);
+  } else if (visualization == "starField") {
+    // the star field will be a 3D visualization
+    // the stars are position locked and the movement of the board will
+    // change the perspective of the stars, farther stars brightness will be dim
+    // and closer stars will be brighter
   } else if (visualization == "text") {
     displayOrScrollText(&matrix, text, &wifi);
   } else if (visualization == "birds") {
