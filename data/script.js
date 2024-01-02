@@ -282,6 +282,9 @@ visualizationSelect.addEventListener('change', function () {
     var wifiSettings = document.getElementById('wifi-settings');
     wifiSettings.style.display = 'none';
 
+    var aboutSettings = document.getElementById('about-settings');
+    aboutSettings.style.display = 'none';
+
     switch (visualization) {
         case 'bars':
             audioSettings.style.display = 'block';
@@ -329,9 +332,13 @@ visualizationSelect.addEventListener('change', function () {
             wifiSettings.style.display = 'block';
             brightnessSettings.style.display = 'none';
             break;
+        case 'about':
+            aboutSettings.style.display = 'block';
+            brightnessSettings.style.display = 'none';
+            break;
     }
 
-    if (visualization !== 'wifi' && visualization !== 'text') {
+    if (visualization !== 'wifi' && visualization !== 'text' && visualization !== 'about') {
         setVisualization(visualization);
     }
 });
