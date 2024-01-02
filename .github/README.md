@@ -29,11 +29,11 @@ LitBox is an Arduino-based project for driving an LED matrix display. It feature
 
 ## Software Requirements
 
-- **Arduino IDE**: For compiling and uploading the firmware.
-- **Adafruit NeoPixel Library**: For controlling the LED matrix.
-- **Adafruit GFX Library**: For graphics functions.
-- **ESPWiFi Library**: For handling WiFi and web server functionalities.
-- **ArduinoFFT Library**: For Fourier Transform operations in spectral analysis.
+- [**Arduino IDE**](https://www.arduino.cc/en/software): For compiling and uploading the firmware.
+- [**Adafruit NeoPixel Library**](https://github.com/adafruit/Adafruit_NeoPixel): For controlling the LED matrix.
+- [**Adafruit GFX Library**](https://github.com/adafruit/Adafruit-GFX-Library): For graphics functions.
+- [**ESPWiFi Library**](https://github.com/seemywingz/ESPWiFi): For handling WiFi and web server functionalities.
+- [**ArduinoFFT Library**](https://github.com/kosme/arduinoFFT): For Fourier Transform operations in spectral analysis.
 
 ## Features
 
