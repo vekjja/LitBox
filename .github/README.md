@@ -1,30 +1,12 @@
 ```
 
-                                                                                                                     
-                                                                                                                     
-LLLLLLLLLLL             IIIIIIIIIITTTTTTTTTTTTTTTTTTTTTTT     BBBBBBBBBBBBBBBBB                                      
-L:::::::::L             I::::::::IT:::::::::::::::::::::T     B::::::::::::::::B                                     
-L:::::::::L             I::::::::IT:::::::::::::::::::::T     B::::::BBBBBB:::::B                                    
-LL:::::::LL             II::::::IIT:::::TT:::::::TT:::::T     BB:::::B     B:::::B                                   
-  L:::::L                 I::::I  TTTTTT  T:::::T  TTTTTT       B::::B     B:::::B   ooooooooooo xxxxxxx      xxxxxxx
-  L:::::L                 I::::I          T:::::T               B::::B     B:::::B oo:::::::::::oox:::::x    x:::::x 
-  L:::::L                 I::::I          T:::::T               B::::BBBBBB:::::B o:::::::::::::::ox:::::x  x:::::x  
-  L:::::L                 I::::I          T:::::T               B:::::::::::::BB  o:::::ooooo:::::o x:::::xx:::::x   
-  L:::::L                 I::::I          T:::::T               B::::BBBBBB:::::B o::::o     o::::o  x::::::::::x    
-  L:::::L                 I::::I          T:::::T               B::::B     B:::::Bo::::o     o::::o   x::::::::x     
-  L:::::L                 I::::I          T:::::T               B::::B     B:::::Bo::::o     o::::o   x::::::::x     
-  L:::::L         LLLLLL  I::::I          T:::::T               B::::B     B:::::Bo::::o     o::::o  x::::::::::x    
-LL:::::::LLLLLLLLL:::::LII::::::II      TT:::::::TT           BB:::::BBBBBB::::::Bo:::::ooooo:::::o x:::::xx:::::x   
-L::::::::::::::::::::::LI::::::::I      T:::::::::T           B:::::::::::::::::B o:::::::::::::::ox:::::x  x:::::x  
-L::::::::::::::::::::::LI::::::::I      T:::::::::T           B::::::::::::::::B   oo:::::::::::oox:::::x    x:::::x 
-LLLLLLLLLLLLLLLLLLLLLLLLIIIIIIIIII      TTTTTTTTTTT           BBBBBBBBBBBBBBBBB      ooooooooooo xxxxxxx      xxxxxxx
-                                                                                                                     
-                                                                                                                     
-                                                                                                                     
-                                                                                                                     
-                                                                                                                     
-                                                                                                                     
-                                                                                                                     
+888     888 88P'888'Y88   888 88b,                    
+888     888 P'  888  'Y   888 88P'  e88 88e   Y8b Y8Y 
+888     888     888       888 8K   d888 888b   Y8b Y  
+888  ,d 888     888       888 88b, Y888 888P  e Y8b   
+888,d88 888     888       888 88P'  "88 88"  d8b Y8b  
+                                                      
+                                                      
 
 ```
 ------
