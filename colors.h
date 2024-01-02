@@ -24,14 +24,15 @@
 #define PEACH 0xFEA6
 
 struct Pixel {
-  float x, y;
-  float vx, vy;
-  byte intensity;
-  uint32_t color;
+  float x = 0, y = 0;
+  float vx = 0, vy = 0;
+  byte intensity = 0;
+  uint32_t color = 0;
 };
 
 const int palletSize = 4;
-uint32_t pixelColor = WHITE;  // Default color
+uint32_t pixelColor = WHITE;    // Default color
+uint32_t pixelBgColor = BLACK;  // Default background color
 uint32_t colorPallet[palletSize] = {BLUE, CYAN, VIOLET, WHITE};
 
 String colorToHex(uint16_t rgb565) {

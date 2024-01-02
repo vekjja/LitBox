@@ -134,6 +134,9 @@ function fetchColorSettings() {
                     case 'pixelColor':
                         document.getElementById('pixelColor').value = value;
                         break;
+                    case 'pixelBgColor':
+                        document.getElementById('pixelBgColor').value = value;
+                        break;
                 }
             });
         })
@@ -311,7 +314,7 @@ visualizationSelect.addEventListener('change', function () {
             break;
         case 'text':
             textSettings.style.display = 'block';
-            colorsSettings.style.display = 'block';
+            colorSettings.style.display = 'block';
             break;
         case 'temperature':
             temperatureSettings.style.display = 'block';
@@ -444,10 +447,11 @@ document.querySelectorAll('.color-picker').forEach(function (colorPicker) {
         var color3 = document.getElementById('color3').value;
         var color4 = document.getElementById('color4').value;
         var pixelColor = document.getElementById('pixelColor').value;
-        updateColor(color1, color2, color3, color4, pixelColor);
+        var pixelBgColor = document.getElementById('pixelBgColor').value;
+        updateColor(color1, color2, color3, color4, pixelColor, pixelBgColor);
     });
 });
-function updateColor(color1, color2, color3, color4, pixelColor) {
+function updateColor(color1, color2, color3, color4, pixelColor, pixelBgColor) {
 
     fetch('/colors', {
         method: 'POST',
@@ -459,6 +463,7 @@ function updateColor(color1, color2, color3, color4, pixelColor) {
             + '&color3=' + color3
             + '&color4=' + color4
             + '&pixelColor=' + pixelColor
+            + '&pixelBgColor=' + pixelBgColor
     })
         .then(response => response.text())
         .then(data => console.log(data))
