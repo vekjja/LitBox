@@ -55,6 +55,7 @@ void setup() {
   initializeMatrix();
   initializeMotion(LEDWidth, LEDHeight);
   initializeWebServer();
+  loadColors();
 }
 
 void initializeMatrix() {
@@ -340,6 +341,7 @@ void initializeWebServer() {
     if (wifi.webServer.hasArg("pixelBgColor")) {
       pixelBgColor = hexToColor(wifi.webServer.arg("pixelBgColor"));
     }
+    saveColors();
     wifi.webServer.send(
         200, "text/plain",
         "Color Pallet set to:\n  Color 1:" + String(colorPallet[0]) +
