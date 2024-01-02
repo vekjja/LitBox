@@ -71,7 +71,6 @@ void loop() {
     drawCircles();
   } else if (visualization == "motion") {
     drawMotion();
-    // runAtFrameRate(drawMotion, frameRate);
   } else if (visualization == "text") {
     displayOrScrollText(&matrix, text, &wifi);
   } else if (visualization == "birds") {
