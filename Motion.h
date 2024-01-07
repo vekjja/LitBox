@@ -147,15 +147,12 @@ void motionAnimation(int maxX, int maxY, float frameRate) {
   if (motionObjects == nullptr) {
     generateMotionObjects(maxX, maxY);
   }
+
   readAccelerometer();
 
-  const float gravityMagnitude = 1.0f;
-  float gravityX = -ay * gravityMagnitude;
-  float gravityY = -ax * gravityMagnitude;
-  Serial.println("g: " + String(gravityX) + ", " + String(gravityY));
-  world.gravity.Set(gravityX, gravityY);
-  float timeStep = 0.8f;
-  world.Step(timeStep);
+  Serial.println("g: " + String(-ay) + ", " + String(-ax));
+  world.gravity.Set(-ay, -ax);
+  world.Step(0.8f);
 
   for (int i = 0; i < motionNumObjects; i++) {
     Body* b = motionObjects[i].body;
