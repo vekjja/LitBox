@@ -65,7 +65,6 @@ void initializeMatrix() {
 
 void loop() {
   wifi.handleClient();
-  // testMatrix(&matrix, LEDWidth, LEDHeight);
   if (visualization == "waveform") {
     drawWaveform();
   } else if (visualization == "circles") {
