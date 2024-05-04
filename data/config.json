@@ -1,0 +1,17 @@
+{
+    "mode": "client",
+    "mdns":"litbox",
+    "client": {
+        "ssid": "connectedness",
+        "password": "ReallyLongPassword123!@#"
+    },
+    "ap": {
+        "ssid": "LitBox-AP",
+        "password": "abcd1234"
+    },
+    "openAI": {
+        "apiKey" : "",
+        "voice": "onyx",
+        "system_message": "You are a helpful assistant."
+    }
+}

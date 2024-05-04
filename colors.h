@@ -2,6 +2,7 @@
 #define COLORS_H
 
 #include <ArduinoJson.h>
+#include <LittleFS.h>
 
 // Color definitions
 #define BLACK 0x0000
@@ -73,10 +74,12 @@ void loadColors() {
   }
 
   // Deserialize JSON document
-  StaticJsonDocument<256> doc;
+  JsonDocument doc;
   DeserializationError error = deserializeJson(doc, file);
+  file.close();
   if (error) {
     Serial.print("Failed to read file, using default configuration");
+    return;
   }
 
   // Read data from document
@@ -86,8 +89,6 @@ void loadColors() {
   }
   pixelColor = doc["pixelColor"];
   pixelBgColor = doc["pixelBgColor"];
-
-  file.close();
 }
 
 String colorToHex(uint16_t rgb565) {

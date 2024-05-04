@@ -7,17 +7,19 @@
 #define SAMPLE_RATE 40000  // sampling rate
 
 // Audio Config
-IOPin audio(A0, INPUT);  // MIC Pin A0
-arduinoFFT FFT = arduinoFFT();
+IOPin audio(2, INPUT);  // MIC Pin A0
 const int maxInput = 1023;
 const int minSensitivity = 1;
 const int maxSensitivity = 100;
-const uint16_t audioSamples = 128;
+const uint16_t audioSamples = 128;     // This value MUST ALWAYS be a power of 2
+const double samplingFrequency = 100;  // Hz, must be less than 10000 due to ADC
 const int usableSamples = (audioSamples / 2);
 int* spectralData = nullptr;
 bool scaling = true;
 double vReal[audioSamples];
 double vImage[audioSamples];
+ArduinoFFT<double> FFT =
+    ArduinoFFT<double>(vReal, vImage, audioSamples, samplingFrequency);
 int sensitivity = 6;
 
 void logarithmicScaling(int* spectralData, int maxWidth, int maxHeight) {
@@ -49,8 +51,6 @@ void peakDetection(int* peakData, int maxWidth, int maxHeight) {
     // Map the peak value to a row on the LED matrix
     peakData[i - 1] = map(peak, 0, maxInput, 0, maxHeight);
   }
-
-  // if (scaling) logarithmicScaling(peakData, maxWidth, maxHeight);
 }
 
 void spectralAnalyzer(int maxWidth, int maxHeight) {
@@ -60,9 +60,9 @@ void spectralAnalyzer(int maxWidth, int maxHeight) {
     vImage[i] = 0;
   }
 
-  FFT.Windowing(vReal, audioSamples, FFT_WIN_TYP_HAMMING, FFT_FORWARD);
-  FFT.Compute(vReal, vImage, audioSamples, FFT_FORWARD);
-  FFT.ComplexToMagnitude(vReal, vImage, audioSamples);
+  FFT.windowing(FFTWindow::Hamming, FFTDirection::Forward); /* Weigh data */
+  FFT.compute(FFTDirection::Forward);                       /* Compute FFT */
+  FFT.complexToMagnitude(); /* Compute magnitudes */
 
   if (spectralData == nullptr) {
     spectralData = new int[maxWidth];
