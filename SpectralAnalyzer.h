@@ -4,34 +4,22 @@
 #include <IOPin.h>
 #include <arduinoFFT.h>
 
-#define SAMPLE_RATE 40000  // sampling rate
-
 // Audio Config
-IOPin audio(2, INPUT);  // MIC Pin A0
-const int maxInput = 1023;
+// IOPin audio(A0, INPUT);  // MIC Pin GPIO 2
+#define CHANNEL A0
+const int maxInput = 4095;
 const int minSensitivity = 1;
 const int maxSensitivity = 100;
-const uint16_t audioSamples = 128;     // This value MUST ALWAYS be a power of 2
-const double samplingFrequency = 100;  // Hz, must be less than 10000 due to ADC
+const uint16_t audioSamples = 128;  // This value MUST ALWAYS be a power of 2
+const double samplingFrequency =
+    1000;  // Hz, must be less than 10000 due to ADC
 const int usableSamples = (audioSamples / 2);
 int* spectralData = nullptr;
-bool scaling = true;
 double vReal[audioSamples];
 double vImage[audioSamples];
 ArduinoFFT<double> FFT =
     ArduinoFFT<double>(vReal, vImage, audioSamples, samplingFrequency);
 int sensitivity = 6;
-
-void logarithmicScaling(int* spectralData, int maxWidth, int maxHeight) {
-  for (int i = 0; i < maxWidth; i++) {
-    if (spectralData[i] > 0) {
-      // Adjust the scaling factor and add an offset
-      float scaledValue =
-          log10(spectralData[i] + 1) * (maxHeight / log10(maxInput + 1));
-      spectralData[i] = static_cast<int>(scaledValue);
-    }
-  }
-}
 
 void peakDetection(int* peakData, int maxWidth, int maxHeight) {
   int avgRange = (usableSamples - 1) /
@@ -56,7 +44,8 @@ void peakDetection(int* peakData, int maxWidth, int maxHeight) {
 void spectralAnalyzer(int maxWidth, int maxHeight) {
   for (int i = 0; i < audioSamples; i++) {
     // Scale the audio input according to sensitivity
-    vReal[i] = audio.readA() * (sensitivity / 10.0);
+    // vReal[i] = audio.readA() * (sensitivity / 10.0);
+    vReal[i] = analogRead(CHANNEL) * (sensitivity / 10.0);
     vImage[i] = 0;
   }
 

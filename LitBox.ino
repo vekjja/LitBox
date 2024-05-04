@@ -38,7 +38,7 @@ int brightness = 18;
 // Visualization Config
 const int maxFrameRate = 120;
 unsigned int frameRate = 60;
-String visualization = "waveform";
+String visualization = "bars";
 
 // temperature Config
 String temperatureUnit = "C";
@@ -65,32 +65,33 @@ void initializeMatrix() {
 
 void loop() {
   wifi.handleClient();
+  // testMatrix(&matrix, LEDWidth, LEDHeight);
   if (visualization == "waveform") {
     drawWaveform();
-    // } else if (visualization == "circles") {
-    //   drawCircles();
-    // } else if (visualization == "motion") {
-    //   drawMotion();
-    // } else if (visualization == "starField") {
-    //   // the star field will be a 3D visualization
-    //   // the stars are position locked and the movement of the board will
-    //   // change the perspective of the stars, farther stars brightness will
-    //   be dim
-    //   // and closer stars will be brighter
-    // } else if (visualization == "text") {
-    //   // displayOrScrollText(&matrix, text, &wifi);
-    // } else if (visualization == "birds") {
-    //   runAtFrameRate(drawBirds, frameRate);
-    // } else if (visualization == "gameOfLife") {
-    //   runAtFrameRate(drawGameOfLife, frameRate);
-    // } else if (visualization == "temperature") {
-    //   runAtFrameRate(drawTemperature, frameRate);
-    // } else if (visualization == "matrix") {
-    //   runAtFrameRate(drawMatrixAnimation, frameRate);
-    // } else if (visualization == "starPulse") {
-    //   drawStarPulse();
-    // } else {
-    //   drawBars();
+  } else if (visualization == "circles") {
+    drawCircles();
+  } else if (visualization == "motion") {
+    // drawMotion();
+  } else if (visualization == "starField") {
+    // the star field will be a 3D visualization
+    // the stars are position locked and the movement of the board will
+    // change the perspective of the stars, farther stars brightness will
+    // be dim
+    // and closer stars will be brighter
+  } else if (visualization == "text") {
+    // displayOrScrollText(&matrix, text, &wifi);
+  } else if (visualization == "birds") {
+    // runAtFrameRate(drawBirds, frameRate);
+  } else if (visualization == "gameOfLife") {
+    // runAtFrameRate(drawGameOfLife, frameRate);
+  } else if (visualization == "temperature") {
+    // runAtFrameRate(drawTemperature, frameRate);
+  } else if (visualization == "matrix") {
+    // runAtFrameRate(drawMatrixAnimation, frameRate);
+  } else if (visualization == "starPulse") {
+    // drawStarPulse();
+  } else {
+    drawBars();
   }
 }
 
@@ -112,20 +113,20 @@ void loop() {
 //   matrix.show();
 // }
 
-// void drawBars() {
-//   spectralAnalyzer(LEDWidth, LEDHeight);
-//   matrix.fillScreen(0);
-//   for (int x = 0; x < LEDWidth; x++) {
-//     for (int y = 0; y < spectralData[x]; y++) {
-//       uint32_t pixelColor = colorPallet[0];
-//       pixelColor = (y > 1) ? colorPallet[1] : pixelColor;
-//       pixelColor = (y > 3) ? colorPallet[2] : pixelColor;
-//       pixelColor = (y > 6) ? colorPallet[3] : pixelColor;
-//       matrix.drawPixel(x, LEDHeight - 1 - y, pixelColor);
-//     }
-//   }
-//   matrix.show();
-// }
+void drawBars() {
+  spectralAnalyzer(LEDWidth, LEDHeight);
+  matrix.fillScreen(0);
+  for (int x = 0; x < LEDWidth; x++) {
+    for (int y = 0; y < spectralData[x]; y++) {
+      uint32_t pixelColor = colorPallet[0];
+      pixelColor = (y > 1) ? colorPallet[1] : pixelColor;
+      pixelColor = (y > 3) ? colorPallet[2] : pixelColor;
+      pixelColor = (y > 6) ? colorPallet[3] : pixelColor;
+      matrix.drawPixel(x, LEDHeight - 1 - y, pixelColor);
+    }
+  }
+  matrix.show();
+}
 
 // void drawBirds() {
 //   updateFlock(LEDWidth, LEDHeight);
@@ -136,21 +137,21 @@ void loop() {
 //   matrix.show();
 // }
 
-// void drawCircles() {
-//   spectralAnalyzer(LEDWidth, LEDHeight);
-//   matrix.fillScreen(0);
-//   for (int x = 0; x < LEDWidth; x++) {
-//     int circleRadius = spectralData[x] / 2;
-//     int circleColor = colorPallet[0];
-//     circleColor = (circleRadius > 2) ? colorPallet[1] : circleColor;
-//     circleColor = (circleRadius > 3) ? colorPallet[2] : circleColor;
-//     circleColor = (circleRadius >= 4) ? colorPallet[3] : circleColor;
-//     if (circleRadius > 0) {
-//       matrix.drawCircle(x, 4, circleRadius, circleColor);
-//     }
-//   }
-//   matrix.show();
-// }
+void drawCircles() {
+  spectralAnalyzer(LEDWidth, LEDHeight);
+  matrix.fillScreen(0);
+  for (int x = 0; x < LEDWidth; x++) {
+    int circleRadius = spectralData[x] / 2;
+    int circleColor = colorPallet[0];
+    circleColor = (circleRadius > 2) ? colorPallet[1] : circleColor;
+    circleColor = (circleRadius > 3) ? colorPallet[2] : circleColor;
+    circleColor = (circleRadius >= 4) ? colorPallet[3] : circleColor;
+    if (circleRadius > 0) {
+      matrix.drawCircle(x, 4, circleRadius, circleColor);
+    }
+  }
+  matrix.show();
+}
 
 // void drawGameOfLife() {
 //   updateGameOfLife(LEDWidth, LEDHeight, 231);
