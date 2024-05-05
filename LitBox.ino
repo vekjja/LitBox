@@ -52,7 +52,7 @@ void setup() {
   // initializeMotion(LEDWidth, LEDHeight);
   // loadColors();
   randomSeed(analogRead(A0));
-  Serial.print("Lit Box Initialized");
+  Serial.println("Lit Box Initialized");
 }
 
 void initializeMatrix() {

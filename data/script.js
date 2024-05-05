@@ -29,8 +29,8 @@ function fetchSliderSettings() {
     fetch('/visualization', { method: 'GET' })
         .then(response => response.text())
         .then(data => {
-            document.getElementById('visualizationSelect').value = data;
-            visualizationSelect.dispatchEvent(new Event('change'));
+            document.getElementById('settingSelect').value = data;
+            settingSelect.dispatchEvent(new Event('change'));
         })
         .catch(error => {
             console.error('Error fetching initial visualization:', error);
@@ -245,9 +245,9 @@ temperatureSelect.addEventListener('change', function () {
     fetchTemperatureSettings();
 });
 
-var visualizationSelect = document.getElementById('visualizationSelect');
-visualizationSelect.addEventListener('change', function () {
-    var visualization = visualizationSelect.value;
+var settingSelect = document.getElementById('settingSelect');
+settingSelect.addEventListener('change', function () {
+    var setting = settingSelect.value;
 
     var brightnessSettings = document.getElementById('brightness-settings');
     brightnessSettings.style.display = 'block';
@@ -285,7 +285,22 @@ visualizationSelect.addEventListener('change', function () {
     var aboutSettings = document.getElementById('about-settings');
     aboutSettings.style.display = 'none';
 
-    switch (visualization) {
+    var apSettings = document.getElementById('ap-settings');
+    apSettings.style.display = 'none';
+
+    var saveSettings = document.getElementById('save-settings');
+    saveSettings.style.display = 'none';
+
+    var apModeSettings = document.getElementById('ap-mode-settings');
+    apModeSettings.style.display = 'none';
+
+    var clientModeSettings = document.getElementById('client-mode-settings');
+    clientModeSettings.style.display = 'none';
+
+    var filesSettings = document.getElementById('files-settings');
+    filesSettings.style.display = 'none';
+
+    switch (setting) {
         case 'bars':
             audioSettings.style.display = 'block';
             colorsSettings.style.display = 'block';
@@ -330,6 +345,18 @@ visualizationSelect.addEventListener('change', function () {
             break;
         case 'wifi':
             wifiSettings.style.display = 'block';
+            saveSettings.style.display = 'block';
+            clientModeSettings.style.display = 'block';
+            brightnessSettings.style.display = 'none';
+            break;
+        case 'ap':
+            apSettings.style.display = 'block';
+            saveSettings.style.display = 'block';
+            apModeSettings.style.display = 'block';
+            brightnessSettings.style.display = 'none';
+            break;
+        case 'files':
+            filesSettings.style.display = 'block';
             brightnessSettings.style.display = 'none';
             break;
         case 'about':
@@ -338,8 +365,8 @@ visualizationSelect.addEventListener('change', function () {
             break;
     }
 
-    if (visualization !== 'wifi' && visualization !== 'text' && visualization !== 'about') {
-        setVisualization(visualization);
+    if (setting !== 'wifi' && setting !== 'text' && setting !== 'about') {
+        // setVisualization(visualization);
     }
 });
 
@@ -436,14 +463,6 @@ document.getElementById('updateBirds').addEventListener('click', function () {
         .then(response => response.text())
         .then(data => console.log(data))
         .catch(error => console.error('Error:', error));
-});
-
-document.getElementById('wifiSetup').addEventListener('click', function () {
-    window.location.href = '/setup';
-});
-
-document.getElementById('wifiErase').addEventListener('click', function () {
-    window.location.href = '/erase';
 });
 
 // for each color picker input field add an event listener to update the color

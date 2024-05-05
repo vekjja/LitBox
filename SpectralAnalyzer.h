@@ -6,7 +6,7 @@
 
 // Audio Config
 IOPin audioPin(A0, INPUT);
-const int maxInput = 1024;
+const int maxInput = 1023;
 const int minSensitivity = 1;
 const int maxSensitivity = 100;
 const uint16_t audioSamples = 128;  // This value MUST ALWAYS be a power of 2
