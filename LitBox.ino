@@ -49,7 +49,7 @@ ESPWiFi wifi;
 void setup() {
   initializeMatrix();
   initializeWebServer();
-  // initializeMotion(LEDWidth, LEDHeight);
+  initializeMotion(LEDWidth, LEDHeight);
   randomSeed(analogRead(A0));
   loadColors();
   Serial.println("Lit Box Initialized");
