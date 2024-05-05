@@ -4,14 +4,14 @@
 #include <ESPWiFi.h>
 #include <arduinoFFT.h>
 
-// #include "Birds.h"
+#include "Birds.h"
 #include "Colors.h"
-// #include "GameofLife.h"
-// #include "MatrixAnimation.h"
-// #include "Motion.h"
+#include "GameofLife.h"
+#include "MatrixAnimation.h"
+#include "Motion.h"
 #include "SpectralAnalyzer.h"
-// #include "Stars.h"
-// #include "Text.h"
+#include "Stars.h"
+#include "Text.h"
 #include "Utils.h"
 #define LED_BUILTIN 8
 
@@ -51,7 +51,7 @@ void setup() {
   initializeWebServer();
   // initializeMotion(LEDWidth, LEDHeight);
   randomSeed(analogRead(A0));
-  // loadColors();
+  loadColors();
   Serial.println("Lit Box Initialized");
 }
 
@@ -69,7 +69,7 @@ void loop() {
   } else if (visualization == "circles") {
     drawCircles();
   } else if (visualization == "motion") {
-    // drawMotion();
+    drawMotion();
   } else if (visualization == "starField") {
     // the star field will be a 3D visualization
     // the stars are position locked and the movement of the board will
@@ -77,39 +77,38 @@ void loop() {
     // be dim
     // and closer stars will be brighter
   } else if (visualization == "text") {
-    // displayOrScrollText(&matrix, text, &wifi);
+    displayOrScrollText(&matrix, text, &wifi);
   } else if (visualization == "birds") {
-    // runAtFrameRate(drawBirds, frameRate);
+    runAtFrameRate(drawBirds, frameRate);
   } else if (visualization == "gameOfLife") {
-    // runAtFrameRate(drawGameOfLife, frameRate);
+    runAtFrameRate(drawGameOfLife, frameRate);
   } else if (visualization == "temperature") {
-    // runAtFrameRate(drawTemperature, frameRate);
+    runAtFrameRate(drawTemperature, frameRate);
   } else if (visualization == "matrix") {
-    // runAtFrameRate(drawMatrixAnimation, frameRate);
+    runAtFrameRate(drawMatrixAnimation, frameRate);
   } else if (visualization == "starPulse") {
-    // drawStarPulse();
+    drawStarPulse();
   } else {
     drawBars();
   }
 }
 
-// void drawTemperature() {
-//   staticText(&matrix, String(getTemperature(temperatureUnit)));
-// }
+void drawTemperature() {
+  staticText(&matrix, String(getTemperature(temperatureUnit)));
+}
 
-// void drawMatrixAnimation() { matrixAnimation(&matrix, LEDWidth, LEDHeight);
-// }
+void drawMatrixAnimation() { matrixAnimation(&matrix, LEDWidth, LEDHeight); }
 
-// void drawMotion() {
-//   motionAnimation(LEDWidth, LEDHeight, frameRate);
-//   matrix.fillScreen(0);
-//   for (int i = 0; i < motionNumObjects; i++) {
-//     Body* b = motionObjects[i].body;
-//     matrix.drawRect(round(b->position.x), round(b->position.y), b->width.x,
-//                     b->width.y, motionObjects[i].color);
-//   }
-//   matrix.show();
-// }
+void drawMotion() {
+  motionAnimation(LEDWidth, LEDHeight, frameRate);
+  matrix.fillScreen(0);
+  for (int i = 0; i < motionNumObjects; i++) {
+    Body* b = motionObjects[i].body;
+    matrix.drawRect(round(b->position.x), round(b->position.y), b->width.x,
+                    b->width.y, motionObjects[i].color);
+  }
+  matrix.show();
+}
 
 void drawBars() {
   spectralAnalyzer(LEDWidth, LEDHeight);
@@ -126,14 +125,14 @@ void drawBars() {
   matrix.show();
 }
 
-// void drawBirds() {
-//   updateFlock(LEDWidth, LEDHeight);
-//   matrix.fillScreen(0);
-//   for (int i = 0; i < birdCount; i++) {
-//     matrix.drawPixel(birds[i].x, birds[i].y, birds[i].color);
-//   }
-//   matrix.show();
-// }
+void drawBirds() {
+  updateFlock(LEDWidth, LEDHeight);
+  matrix.fillScreen(0);
+  for (int i = 0; i < birdCount; i++) {
+    matrix.drawPixel(birds[i].x, birds[i].y, birds[i].color);
+  }
+  matrix.show();
+}
 
 void drawCircles() {
   spectralAnalyzer(LEDWidth, LEDHeight);
@@ -151,28 +150,28 @@ void drawCircles() {
   matrix.show();
 }
 
-// void drawGameOfLife() {
-//   updateGameOfLife(LEDWidth, LEDHeight, 231);
-//   matrix.fillScreen(pixelBgColor);
-//   for (int x = 0; x < LEDWidth; x++) {
-//     for (int y = 0; y < LEDHeight; y++) {
-//       if (gol_Cells[x][y] == 1) {
-//         matrix.drawPixel(x, y, pixelColor);
-//       }
-//     }
-//   }
-//   matrix.show();
-// }
+void drawGameOfLife() {
+  updateGameOfLife(LEDWidth, LEDHeight, 231);
+  matrix.fillScreen(pixelBgColor);
+  for (int x = 0; x < LEDWidth; x++) {
+    for (int y = 0; y < LEDHeight; y++) {
+      if (gol_Cells[x][y] == 1) {
+        matrix.drawPixel(x, y, pixelColor);
+      }
+    }
+  }
+  matrix.show();
+}
 
-// void drawStarPulse() {
-//   spectralAnalyzer(LEDWidth, LEDHeight);
-//   updateStartPulse(LEDWidth, LEDHeight);
-//   matrix.fillScreen(0);
-//   for (int i = 0; i < starCount; i++) {
-//     matrix.drawPixel(stars[i].x, stars[i].y, stars[i].color);
-//   }
-//   matrix.show();
-// }
+void drawStarPulse() {
+  spectralAnalyzer(LEDWidth, LEDHeight);
+  updateStartPulse(LEDWidth, LEDHeight);
+  matrix.fillScreen(0);
+  for (int i = 0; i < starCount; i++) {
+    matrix.drawPixel(stars[i].x, stars[i].y, stars[i].color);
+  }
+  matrix.show();
+}
 
 void drawWaveform() {
   spectralAnalyzer(LEDWidth, LEDHeight);
@@ -249,63 +248,60 @@ void initializeWebServer() {
     }
   });
 
-  // wifi.webServer.on("/temperature", HTTP_GET, []() {
-  //   wifi.webServer.send(
-  //       200, "text/plain",
-  //       "temperatureUnit=" + temperatureUnit + "\n" +
-  //           "temperature=" + String(getTemperature(temperatureUnit)) +
-  //           "\n");
-  // });
-  // wifi.webServer.on("/temperature", HTTP_POST, []() {
-  //   if (wifi.webServer.hasArg("temperatureUnit")) {
-  //     temperatureUnit = wifi.webServer.arg("temperatureUnit");
-  //   }
-  //   wifi.webServer.send(200, "text/plain", "Temperature settings updated");
-  // });
+  wifi.webServer.on("/temperature", HTTP_GET, []() {
+    wifi.webServer.send(
+        200, "text/plain",
+        "temperatureUnit=" + temperatureUnit + "\n" +
+            "temperature=" + String(getTemperature(temperatureUnit)) + "\n");
+  });
+  wifi.webServer.on("/temperature", HTTP_POST, []() {
+    if (wifi.webServer.hasArg("temperatureUnit")) {
+      temperatureUnit = wifi.webServer.arg("temperatureUnit");
+    }
+    wifi.webServer.send(200, "text/plain", "Temperature settings updated");
+  });
 
-  // wifi.webServer.on("/motion", HTTP_GET, []() {
-  //   wifi.webServer.send(200, "text/plain",
-  //                       "motionNumObjects=" + String(motionNumObjects) +
-  //                       "\n");
-  // });
-  // wifi.webServer.on("/motion", HTTP_POST, []() {
-  //   if (wifi.webServer.hasArg("motionNumObjects")) {
-  //     motionNumObjects = wifi.webServer.arg("motionNumObjects").toInt();
-  //   }
-  //   if (wifi.webServer.hasArg("gravityEnabled")) {
-  //     gravityEnabled =
-  //         wifi.webServer.arg("gravityEnabled").compareTo("true") == 0;
-  //   }
-  //   generateMotionObjects(LEDWidth, LEDHeight);
-  //   wifi.webServer.send(200, "text/plain", "Motion settings updated");
-  // });
+  wifi.webServer.on("/motion", HTTP_GET, []() {
+    wifi.webServer.send(200, "text/plain",
+                        "motionNumObjects=" + String(motionNumObjects) + "\n");
+  });
+  wifi.webServer.on("/motion", HTTP_POST, []() {
+    if (wifi.webServer.hasArg("motionNumObjects")) {
+      motionNumObjects = wifi.webServer.arg("motionNumObjects").toInt();
+    }
+    if (wifi.webServer.hasArg("gravityEnabled")) {
+      gravityEnabled =
+          wifi.webServer.arg("gravityEnabled").compareTo("true") == 0;
+    }
+    generateMotionObjects(LEDWidth, LEDHeight);
+    wifi.webServer.send(200, "text/plain", "Motion settings updated");
+  });
 
-  // wifi.webServer.on("/starPulse", HTTP_GET, []() {
-  //   wifi.webServer.send(200, "text/plain",
-  //                       "starCount=" + String(starCount) + "\n");
-  // });
-  // wifi.webServer.on("/starPulse", HTTP_POST, []() {
-  //   if (wifi.webServer.hasArg("starCount")) {
-  //     starCount = wifi.webServer.arg("starCount").toInt();
-  //   }
-  //   initializeStars(LEDWidth, LEDHeight);
-  //   wifi.webServer.send(200, "text/plain", "Star Pulse settings updated");
-  // });
+  wifi.webServer.on("/starPulse", HTTP_GET, []() {
+    wifi.webServer.send(200, "text/plain",
+                        "starCount=" + String(starCount) + "\n");
+  });
+  wifi.webServer.on("/starPulse", HTTP_POST, []() {
+    if (wifi.webServer.hasArg("starCount")) {
+      starCount = wifi.webServer.arg("starCount").toInt();
+    }
+    initializeStars(LEDWidth, LEDHeight);
+    wifi.webServer.send(200, "text/plain", "Star Pulse settings updated");
+  });
 
-  // wifi.webServer.on("/frameRate", HTTP_GET, []() {
-  //   wifi.webServer.send(200, "text/plain", String(frameRate));
-  // });
-  // wifi.webServer.on("/frameRate", HTTP_POST, []() {
-  //   if (wifi.webServer.hasArg("frameRate")) {
-  //     unsigned int newFrameRate = wifi.webServer.arg("frameRate").toInt();
-  //     setFramerate(newFrameRate);  // Update the global framerate
-  //     wifi.webServer.send(200, "text/plain",
-  //                         "Frame Rate updated: " + String(frameRate) + "
-  //                         fps");
-  //   } else {
-  //     wifi.webServer.send(400, "text/plain", "Missing Frame Rate value");
-  //   }
-  // });
+  wifi.webServer.on("/frameRate", HTTP_GET, []() {
+    wifi.webServer.send(200, "text/plain", String(frameRate));
+  });
+  wifi.webServer.on("/frameRate", HTTP_POST, []() {
+    if (wifi.webServer.hasArg("frameRate")) {
+      unsigned int newFrameRate = wifi.webServer.arg("frameRate").toInt();
+      setFramerate(newFrameRate);  // Update the global framerate
+      wifi.webServer.send(200, "text/plain",
+                          "Frame Rate updated: " + String(frameRate) + "fps");
+    } else {
+      wifi.webServer.send(400, "text/plain", "Missing Frame Rate value");
+    }
+  });
 
   wifi.webServer.on("/visualization", HTTP_GET, []() {
     wifi.webServer.send(200, "text/plain", visualization);
@@ -358,76 +354,75 @@ void initializeWebServer() {
             ", Pixel BG Color:" + String(pixelBgColor));
   });
 
-  // wifi.webServer.on("/text", HTTP_GET, []() {
-  //   wifi.webServer.send(
-  //       200, "text/plain",
-  //       "text=" + text + "\n" + "textSpeed=" + String(textSpeed) + "\n" +
-  //           "textColor=" + colorToHex(pixelColor) + "\n" + "textBgColor=" +
-  //           colorToHex(pixelBgColor) + "\n" + "textAnimation=scroll\n");
-  // });
-  // wifi.webServer.on("/text", HTTP_POST, []() {
-  //   if (wifi.webServer.hasArg("textColor")) {
-  //     pixelColor = hexToColor(wifi.webServer.arg("textColor"));
-  //   }
-  //   if (wifi.webServer.hasArg("textBgColor")) {
-  //     pixelBgColor = hexToColor(wifi.webServer.arg("textBgColor"));
-  //   }
-  //   if (wifi.webServer.hasArg("textSpeed")) {
-  //     textSpeed = wifi.webServer.arg("textSpeed").toInt();
-  //     wifi.webServer.send(200, "text/plain", "Speed updated");
-  //   }
-  //   if (wifi.webServer.hasArg("text")) {
-  //     text = wifi.webServer.arg("text");
-  //   }
-  //   if (wifi.webServer.hasArg("textAnimation")) {
-  //     String textAnimation = wifi.webServer.arg("textAnimation");
-  //     if (textAnimation == "scroll") {
-  //       scrollText(&matrix, text, &wifi);
-  //     } else if (textAnimation == "wave") {
-  //       waveText(&matrix, text);
-  //     } else if (textAnimation == "display") {
-  //       visualization = "text";
-  //     }
-  //   }
-  //   wifi.webServer.send(200, "text/plain", "Text updated");
-  // });
+  wifi.webServer.on("/text", HTTP_GET, []() {
+    wifi.webServer.send(
+        200, "text/plain",
+        "text=" + text + "\n" + "textSpeed=" + String(textSpeed) + "\n" +
+            "textColor=" + colorToHex(pixelColor) + "\n" + "textBgColor=" +
+            colorToHex(pixelBgColor) + "\n" + "textAnimation=scroll\n");
+  });
+  wifi.webServer.on("/text", HTTP_POST, []() {
+    if (wifi.webServer.hasArg("textColor")) {
+      pixelColor = hexToColor(wifi.webServer.arg("textColor"));
+    }
+    if (wifi.webServer.hasArg("textBgColor")) {
+      pixelBgColor = hexToColor(wifi.webServer.arg("textBgColor"));
+    }
+    if (wifi.webServer.hasArg("textSpeed")) {
+      textSpeed = wifi.webServer.arg("textSpeed").toInt();
+      wifi.webServer.send(200, "text/plain", "Speed updated");
+    }
+    if (wifi.webServer.hasArg("text")) {
+      text = wifi.webServer.arg("text");
+    }
+    if (wifi.webServer.hasArg("textAnimation")) {
+      String textAnimation = wifi.webServer.arg("textAnimation");
+      if (textAnimation == "scroll") {
+        scrollText(&matrix, text, &wifi);
+      } else if (textAnimation == "wave") {
+        waveText(&matrix, text);
+      } else if (textAnimation == "display") {
+        visualization = "text";
+      }
+    }
+    wifi.webServer.send(200, "text/plain", "Text updated");
+  });
 
-  // wifi.webServer.on("/birds", HTTP_GET, []() {
-  //   String response = "";
-  //   response += "birdCount=" + String(birdCount) + "\n";
-  //   response += "birdAlignment=" + String(birdAlignment) + "\n";
-  //   response += "birdCohesion=" + String(birdCohesion) + "\n";
-  //   response += "birdSeparation=" + String(birdSeparation) + "\n";
-  //   response += "birdVerticalBounds=" + String(birdVerticalBounds) + "\n";
-  //   response += "birdHorizontalBounds=" + String(birdHorizontalBounds) +
-  //   "\n"; wifi.webServer.send(200, "text/plain", response);
-  // });
+  wifi.webServer.on("/birds", HTTP_GET, []() {
+    String response = "";
+    response += "birdCount=" + String(birdCount) + "\n";
+    response += "birdAlignment=" + String(birdAlignment) + "\n";
+    response += "birdCohesion=" + String(birdCohesion) + "\n";
+    response += "birdSeparation=" + String(birdSeparation) + "\n";
+    response += "birdVerticalBounds=" + String(birdVerticalBounds) + "\n";
+    response += "birdHorizontalBounds=" + String(birdHorizontalBounds) + "\n";
+    wifi.webServer.send(200, "text/plain", response);
+  });
 
-  // wifi.webServer.on("/birds", HTTP_POST, []() {
-  //   if (wifi.webServer.hasArg("birdCount")) {
-  //     birdCount = wifi.webServer.arg("birdCount").toInt();
-  //   }
-  //   if (wifi.webServer.hasArg("birdAlignment")) {
-  //     birdAlignment = wifi.webServer.arg("birdAlignment").toFloat();
-  //   }
-  //   if (wifi.webServer.hasArg("birdCohesion")) {
-  //     birdCohesion = wifi.webServer.arg("birdCohesion").toFloat();
-  //   }
-  //   if (wifi.webServer.hasArg("birdSeparation")) {
-  //     birdSeparation = wifi.webServer.arg("birdSeparation").toFloat();
-  //   }
-  //   if (wifi.webServer.hasArg("birdVerticalBounds")) {
-  //     birdVerticalBounds =
-  //         wifi.webServer.arg("birdVerticalBounds").compareTo("true") == 0;
-  //   }
-  //   if (wifi.webServer.hasArg("birdHorizontalBounds")) {
-  //     birdHorizontalBounds =
-  //         wifi.webServer.arg("birdHorizontalBounds").compareTo("true") ==
-  //         0;
-  //   }
-  //   generateBirds(LEDWidth, LEDHeight);
-  //   wifi.webServer.send(200, "text/plain", "Bird settings updated");
-  // });
+  wifi.webServer.on("/birds", HTTP_POST, []() {
+    if (wifi.webServer.hasArg("birdCount")) {
+      birdCount = wifi.webServer.arg("birdCount").toInt();
+    }
+    if (wifi.webServer.hasArg("birdAlignment")) {
+      birdAlignment = wifi.webServer.arg("birdAlignment").toFloat();
+    }
+    if (wifi.webServer.hasArg("birdCohesion")) {
+      birdCohesion = wifi.webServer.arg("birdCohesion").toFloat();
+    }
+    if (wifi.webServer.hasArg("birdSeparation")) {
+      birdSeparation = wifi.webServer.arg("birdSeparation").toFloat();
+    }
+    if (wifi.webServer.hasArg("birdVerticalBounds")) {
+      birdVerticalBounds =
+          wifi.webServer.arg("birdVerticalBounds").compareTo("true") == 0;
+    }
+    if (wifi.webServer.hasArg("birdHorizontalBounds")) {
+      birdHorizontalBounds =
+          wifi.webServer.arg("birdHorizontalBounds").compareTo("true") == 0;
+    }
+    generateBirds(LEDWidth, LEDHeight);
+    wifi.webServer.send(200, "text/plain", "Bird settings updated");
+  });
 
   wifi.connectSubroutine = []() { testMatrix(&matrix, LEDWidth, LEDHeight); };
   wifi.start();

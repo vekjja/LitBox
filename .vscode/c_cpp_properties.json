@@ -38,6 +38,8 @@
                 "/Users/kjj/Library/Arduino15/packages/esp8266/hardware/esp8266/3.1.2/libraries/ESP8266WebServer/src",
                 "/Users/kjj/Library/Arduino15/packages/esp8266/hardware/esp8266/3.1.2/libraries/ESP8266mDNS/src",
                 "/Users/kjj/Documents/Arduino/libraries/arduinoFFT/src",
+                "/Users/kjj/Documents/Arduino/libraries/BMI160-Arduino",
+                "/Users/kjj/Documents/Arduino/libraries/box2d-lite",
                 "/Users/kjj/Library/Arduino15/packages/esp8266/hardware/esp8266/3.1.2/libraries/SD/src",
                 "/Users/kjj/Library/Arduino15/packages/esp8266/hardware/esp8266/3.1.2/libraries/SDFS/src",
                 "/Users/kjj/Library/Arduino15/packages/esp8266/hardware/esp8266/3.1.2/libraries/ESP8266SdFat/src",
