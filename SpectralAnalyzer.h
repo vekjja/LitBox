@@ -5,14 +5,16 @@
 #include <arduinoFFT.h>
 
 // Audio Config
-IOPin audio(A0, INPUT);  // MIC Pin GPIO 2
-const int maxInput = 4095;
+IOPin audioPin(A0, INPUT);
+const int maxInput = 1024;
 const int minSensitivity = 1;
 const int maxSensitivity = 100;
-const uint16_t audioSamples = 128;     // This value MUST ALWAYS be a power of 2
-const double samplingFrequency = 100;  // Hz, must be less than 10000 due to ADC
+const uint16_t audioSamples = 128;  // This value MUST ALWAYS be a power of 2
 const int usableSamples = (audioSamples / 2);
 int* spectralData = nullptr;
+
+// must be less than 10000 due to ADC
+const double samplingFrequency = 8000;  // Hz
 double vReal[audioSamples];
 double vImage[audioSamples];
 ArduinoFFT<double> FFT =
@@ -41,7 +43,7 @@ void peakDetection(int* peakData, int maxWidth, int maxHeight) {
 void spectralAnalyzer(int maxWidth, int maxHeight) {
   for (int i = 0; i < audioSamples; i++) {
     // Scale the audio input according to sensitivity
-    vReal[i] = audio.readA() * (sensitivity / 10.0);
+    vReal[i] = audioPin.readA() * (sensitivity / 10.0);
     vImage[i] = 0;
   }
 

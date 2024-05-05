@@ -24,7 +24,7 @@
 // LED Matrix Config
 int LEDWidth = 32;
 int LEDHeight = 8;
-int ledDataPin = 9;
+int ledDataPin = 12;
 uint8_t matrixType =
     NEO_MATRIX_TOP + NEO_MATRIX_LEFT + NEO_MATRIX_COLUMNS + NEO_MATRIX_ZIGZAG;
 Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(
@@ -47,17 +47,16 @@ String temperatureUnit = "C";
 ESPWiFi wifi;
 
 void setup() {
-  matrix.begin();
-  wifi.start();
-  Serial.print("Lit Box starting up...");
-  randomSeed(analogRead(A0));
   initializeMatrix();
-  // initializeMotion(LEDWidth, LEDHeight);
   initializeWebServer();
+  // initializeMotion(LEDWidth, LEDHeight);
   // loadColors();
+  randomSeed(analogRead(A0));
+  Serial.print("Lit Box Initialized");
 }
 
 void initializeMatrix() {
+  matrix.begin();
   matrix.setTextWrap(false);
   matrix.setBrightness(brightness);
   testMatrix(&matrix, LEDWidth, LEDHeight);
