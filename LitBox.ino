@@ -220,19 +220,20 @@ void setFramerate(unsigned int fps) {
 }
 
 void initializeWebServer() {
-  wifi.webServer.on("/sensitivity", HTTP_GET, []() {
-    wifi.webServer.send(200, "text/plain", String(sensitivity));
-  });
-  wifi.webServer.on("/sensitivity", HTTP_POST, []() {
-    if (wifi.webServer.hasArg("sensitivity")) {
-      int newSensitivity = wifi.webServer.arg("sensitivity").toInt();
-      setSensitivity(newSensitivity);
-      wifi.webServer.send(200, "text/plain",
-                          "Sensitivity updated: " + String(sensitivity) + "%");
-    } else {
-      wifi.webServer.send(400, "text/plain", "Missing Sensitivity value");
-    }
-  });
+  // wifi.webServer.on("/sensitivity", HTTP_GET, []() {
+  //   wifi.webServer.send(200, "text/plain", String(sensitivity));
+  // });
+  // wifi.webServer.on("/sensitivity", HTTP_POST, []() {
+  //   if (wifi.webServer.hasArg("sensitivity")) {
+  //     int newSensitivity = wifi.webServer.arg("sensitivity").toInt();
+  //     setSensitivity(newSensitivity);
+  //     wifi.webServer.send(200, "text/plain",
+  //                         "Sensitivity updated: " + String(sensitivity) +
+  //                         "%");
+  //   } else {
+  //     wifi.webServer.send(400, "text/plain", "Missing Sensitivity value");
+  //   }
+  // });
 
   wifi.webServer.on("/brightness", HTTP_GET, []() {
     wifi.webServer.send(200, "text/plain", String(brightness));
@@ -248,73 +249,75 @@ void initializeWebServer() {
     }
   });
 
-  wifi.webServer.on("/temperature", HTTP_GET, []() {
-    wifi.webServer.send(
-        200, "text/plain",
-        "temperatureUnit=" + temperatureUnit + "\n" +
-            "temperature=" + String(getTemperature(temperatureUnit)) + "\n");
-  });
-  wifi.webServer.on("/temperature", HTTP_POST, []() {
-    if (wifi.webServer.hasArg("temperatureUnit")) {
-      temperatureUnit = wifi.webServer.arg("temperatureUnit");
-    }
-    wifi.webServer.send(200, "text/plain", "Temperature settings updated");
-  });
+  // wifi.webServer.on("/temperature", HTTP_GET, []() {
+  //   wifi.webServer.send(
+  //       200, "text/plain",
+  //       "temperatureUnit=" + temperatureUnit + "\n" +
+  //           "temperature=" + String(getTemperature(temperatureUnit)) + "\n");
+  // });
+  // wifi.webServer.on("/temperature", HTTP_POST, []() {
+  //   if (wifi.webServer.hasArg("temperatureUnit")) {
+  //     temperatureUnit = wifi.webServer.arg("temperatureUnit");
+  //   }
+  //   wifi.webServer.send(200, "text/plain", "Temperature settings updated");
+  // });
 
-  wifi.webServer.on("/motion", HTTP_GET, []() {
-    wifi.webServer.send(200, "text/plain",
-                        "motionNumObjects=" + String(motionNumObjects) + "\n");
-  });
-  wifi.webServer.on("/motion", HTTP_POST, []() {
-    if (wifi.webServer.hasArg("motionNumObjects")) {
-      motionNumObjects = wifi.webServer.arg("motionNumObjects").toInt();
-    }
-    if (wifi.webServer.hasArg("gravityEnabled")) {
-      gravityEnabled =
-          wifi.webServer.arg("gravityEnabled").compareTo("true") == 0;
-    }
-    generateMotionObjects(LEDWidth, LEDHeight);
-    wifi.webServer.send(200, "text/plain", "Motion settings updated");
-  });
+  // wifi.webServer.on("/motion", HTTP_GET, []() {
+  //   wifi.webServer.send(200, "text/plain",
+  //                       "motionNumObjects=" + String(motionNumObjects) +
+  //                       "\n");
+  // });
+  // wifi.webServer.on("/motion", HTTP_POST, []() {
+  //   if (wifi.webServer.hasArg("motionNumObjects")) {
+  //     motionNumObjects = wifi.webServer.arg("motionNumObjects").toInt();
+  //   }
+  //   if (wifi.webServer.hasArg("gravityEnabled")) {
+  //     gravityEnabled =
+  //         wifi.webServer.arg("gravityEnabled").compareTo("true") == 0;
+  //   }
+  //   generateMotionObjects(LEDWidth, LEDHeight);
+  //   wifi.webServer.send(200, "text/plain", "Motion settings updated");
+  // });
 
-  wifi.webServer.on("/starPulse", HTTP_GET, []() {
-    wifi.webServer.send(200, "text/plain",
-                        "starCount=" + String(starCount) + "\n");
-  });
-  wifi.webServer.on("/starPulse", HTTP_POST, []() {
-    if (wifi.webServer.hasArg("starCount")) {
-      starCount = wifi.webServer.arg("starCount").toInt();
-    }
-    initializeStars(LEDWidth, LEDHeight);
-    wifi.webServer.send(200, "text/plain", "Star Pulse settings updated");
-  });
+  // wifi.webServer.on("/starPulse", HTTP_GET, []() {
+  //   wifi.webServer.send(200, "text/plain",
+  //                       "starCount=" + String(starCount) + "\n");
+  // });
+  // wifi.webServer.on("/starPulse", HTTP_POST, []() {
+  //   if (wifi.webServer.hasArg("starCount")) {
+  //     starCount = wifi.webServer.arg("starCount").toInt();
+  //   }
+  //   initializeStars(LEDWidth, LEDHeight);
+  //   wifi.webServer.send(200, "text/plain", "Star Pulse settings updated");
+  // });
 
-  wifi.webServer.on("/frameRate", HTTP_GET, []() {
-    wifi.webServer.send(200, "text/plain", String(frameRate));
-  });
-  wifi.webServer.on("/frameRate", HTTP_POST, []() {
-    if (wifi.webServer.hasArg("frameRate")) {
-      unsigned int newFrameRate = wifi.webServer.arg("frameRate").toInt();
-      setFramerate(newFrameRate);  // Update the global framerate
-      wifi.webServer.send(200, "text/plain",
-                          "Frame Rate updated: " + String(frameRate) + "fps");
-    } else {
-      wifi.webServer.send(400, "text/plain", "Missing Frame Rate value");
-    }
-  });
+  // wifi.webServer.on("/frameRate", HTTP_GET, []() {
+  //   wifi.webServer.send(200, "text/plain", String(frameRate));
+  // });
+  // wifi.webServer.on("/frameRate", HTTP_POST, []() {
+  //   if (wifi.webServer.hasArg("frameRate")) {
+  //     unsigned int newFrameRate = wifi.webServer.arg("frameRate").toInt();
+  //     setFramerate(newFrameRate);  // Update the global framerate
+  //     wifi.webServer.send(200, "text/plain",
+  //                         "Frame Rate updated: " + String(frameRate) +
+  //                         "fps");
+  //   } else {
+  //     wifi.webServer.send(400, "text/plain", "Missing Frame Rate value");
+  //   }
+  // });
 
-  wifi.webServer.on("/visualization", HTTP_GET, []() {
-    wifi.webServer.send(200, "text/plain", visualization);
-  });
-  wifi.webServer.on("/visualization", HTTP_POST, []() {
-    if (wifi.webServer.hasArg("visualization")) {
-      visualization = wifi.webServer.arg("visualization");
-      wifi.webServer.send(200, "text/plain",
-                          "Visualization set to: " + visualization);
-    } else {
-      wifi.webServer.send(400, "text/plain", "Missing visualization mode");
-    }
-  });
+  // wifi.webServer.on("/visualization", HTTP_GET, []() {
+  //   wifi.webServer.send(200, "text/plain", visualization);
+  // });
+  // wifi.webServer.on("/visualization", HTTP_POST, []() {
+  //   if (wifi.webServer.hasArg("visualization")) {
+  //     visualization = wifi.webServer.arg("visualization");
+  //     wifi.webServer.send(200, "text/plain",
+  //                         "Visualization set to: " + visualization);
+  //   } else {
+  //     wifi.webServer.send(400, "text/plain", "Missing visualization mode");
+  //   }
+  // });
 
   wifi.webServer.on("/colors", HTTP_GET, []() {
     wifi.webServer.send(200, "text/plain",
@@ -388,41 +391,41 @@ void initializeWebServer() {
     wifi.webServer.send(200, "text/plain", "Text updated");
   });
 
-  wifi.webServer.on("/birds", HTTP_GET, []() {
-    String response = "";
-    response += "birdCount=" + String(birdCount) + "\n";
-    response += "birdAlignment=" + String(birdAlignment) + "\n";
-    response += "birdCohesion=" + String(birdCohesion) + "\n";
-    response += "birdSeparation=" + String(birdSeparation) + "\n";
-    response += "birdVerticalBounds=" + String(birdVerticalBounds) + "\n";
-    response += "birdHorizontalBounds=" + String(birdHorizontalBounds) + "\n";
-    wifi.webServer.send(200, "text/plain", response);
-  });
+  // wifi.webServer.on("/birds", HTTP_GET, []() {
+  //   String response = "";
+  //   response += "birdCount=" + String(birdCount) + "\n";
+  //   response += "birdAlignment=" + String(birdAlignment) + "\n";
+  //   response += "birdCohesion=" + String(birdCohesion) + "\n";
+  //   response += "birdSeparation=" + String(birdSeparation) + "\n";
+  //   response += "birdVerticalBounds=" + String(birdVerticalBounds) + "\n";
+  //   response += "birdHorizontalBounds=" + String(birdHorizontalBounds) +
+  //   "\n"; wifi.webServer.send(200, "text/plain", response);
+  // });
 
-  wifi.webServer.on("/birds", HTTP_POST, []() {
-    if (wifi.webServer.hasArg("birdCount")) {
-      birdCount = wifi.webServer.arg("birdCount").toInt();
-    }
-    if (wifi.webServer.hasArg("birdAlignment")) {
-      birdAlignment = wifi.webServer.arg("birdAlignment").toFloat();
-    }
-    if (wifi.webServer.hasArg("birdCohesion")) {
-      birdCohesion = wifi.webServer.arg("birdCohesion").toFloat();
-    }
-    if (wifi.webServer.hasArg("birdSeparation")) {
-      birdSeparation = wifi.webServer.arg("birdSeparation").toFloat();
-    }
-    if (wifi.webServer.hasArg("birdVerticalBounds")) {
-      birdVerticalBounds =
-          wifi.webServer.arg("birdVerticalBounds").compareTo("true") == 0;
-    }
-    if (wifi.webServer.hasArg("birdHorizontalBounds")) {
-      birdHorizontalBounds =
-          wifi.webServer.arg("birdHorizontalBounds").compareTo("true") == 0;
-    }
-    generateBirds(LEDWidth, LEDHeight);
-    wifi.webServer.send(200, "text/plain", "Bird settings updated");
-  });
+  // wifi.webServer.on("/birds", HTTP_POST, []() {
+  //   if (wifi.webServer.hasArg("birdCount")) {
+  //     birdCount = wifi.webServer.arg("birdCount").toInt();
+  //   }
+  //   if (wifi.webServer.hasArg("birdAlignment")) {
+  //     birdAlignment = wifi.webServer.arg("birdAlignment").toFloat();
+  //   }
+  //   if (wifi.webServer.hasArg("birdCohesion")) {
+  //     birdCohesion = wifi.webServer.arg("birdCohesion").toFloat();
+  //   }
+  //   if (wifi.webServer.hasArg("birdSeparation")) {
+  //     birdSeparation = wifi.webServer.arg("birdSeparation").toFloat();
+  //   }
+  //   if (wifi.webServer.hasArg("birdVerticalBounds")) {
+  //     birdVerticalBounds =
+  //         wifi.webServer.arg("birdVerticalBounds").compareTo("true") == 0;
+  //   }
+  //   if (wifi.webServer.hasArg("birdHorizontalBounds")) {
+  //     birdHorizontalBounds =
+  //         wifi.webServer.arg("birdHorizontalBounds").compareTo("true") == 0;
+  //   }
+  //   generateBirds(LEDWidth, LEDHeight);
+  //   wifi.webServer.send(200, "text/plain", "Bird settings updated");
+  // });
 
   wifi.connectSubroutine = []() { testMatrix(&matrix, LEDWidth, LEDHeight); };
   wifi.start();

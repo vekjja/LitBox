@@ -5,22 +5,20 @@ import FileSettings from './FileSettings';
 import BarsSettings from './BarsSettings';
 
 var defaultConfig = {
-  "version": "0.0.1",
-  "mode": "client",
-  "mdns": "ESPWiFi",
   "client": {
-    "ssid": "default-ssid",
-    "password": "default-password"
+    "ssid": "connectedness",
+    "password": "ReallyLongPassword123!@#"
   },
   "ap": {
-    "ssid": "ESPWiFi-AP",
-    "password": "default-abc123"
+    "ssid": "LitBox-AP",
+    "password": "abcd1234"
   },
-  "openAI": {
-    "apiKey": "",
-    "voice": "onyx",
-    "system_message": "You are a helpful assistant."
-  }
+  "mdns": "litbox",
+  "mode": "client",
+  "brightness": 18,
+  "pixelBgColor": 0,
+  "pixelColor": 65535,
+  "colorPallet": [31, 2047, 63514, 65535],
 };
 
 function App() {

@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
 import BrightnessSlider from './BrightnessSlider';
 
-function BarsSettings() {
+function BarsSettings({ config, updateConfig }) {
 
     return (
         <div className="setting">
-            <BrightnessSlider />
+            <BrightnessSlider config={config} updateConfig={updateConfig} />
         </div>
     );
 }

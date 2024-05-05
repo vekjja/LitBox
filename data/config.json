@@ -9,6 +9,7 @@
         "ssid": "LitBox-AP",
         "password": "abcd1234"
     },
+    "brightness": 18,
     "colorPallet":[31,2047,63514,65535],
     "pixelColor":65535,
     "pixelBgColor":0
