@@ -37,10 +37,11 @@ const int palletSize = 4;
 uint32_t pixelColor = WHITE;    // Default color
 uint32_t pixelBgColor = BLACK;  // Default background color
 uint32_t colorPallet[palletSize] = {BLUE, CYAN, VIOLET, WHITE};
+String colorConfig = "/colorConfig.json";
 
 void saveColors() {
   // Create a JSON document
-  StaticJsonDocument<256> doc;
+  JsonDocument doc;
 
   // Add data to the document
   JsonArray colorArray = doc.createNestedArray("colorPallet");
@@ -51,7 +52,7 @@ void saveColors() {
   doc["pixelBgColor"] = pixelBgColor;
 
   // Open file for writing
-  File file = LittleFS.open("/config.json", "w");
+  File file = LittleFS.open(colorConfig, "w");
   if (!file) {
     Serial.println("Failed to open config file for writing");
     return;
@@ -67,7 +68,7 @@ void saveColors() {
 
 void loadColors() {
   // Open file for reading
-  File file = LittleFS.open("/config.json", "r");
+  File file = LittleFS.open(colorConfig, "r");
   if (!file) {
     Serial.println("Failed to open config file for reading");
     return;

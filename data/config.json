@@ -1,0 +1,15 @@
+{
+    "mode": "client",
+    "mdns":"litbox",
+    "client": {
+        "ssid": "connectedness",
+        "password": "ReallyLongPassword123!@#"
+    },
+    "ap": {
+        "ssid": "LitBox-AP",
+        "password": "abcd1234"
+    },
+    "colorPallet":[31,2047,63514,65535],
+    "pixelColor":65535,
+    "pixelBgColor":0
+}
