@@ -231,7 +231,8 @@ void initializeWebServer() {
       if (config.containsKey("brightness")) {
         setBrightness(config["brightness"]);
       }
-      wifi.webServer.send(200, "text/plain", "Config updated");
+      // return the current config JsonDocument
+      wifi.webServer.send(200, "application/json", config.as<String>());
     }
   });
 
