@@ -24,7 +24,6 @@ function updateUI() {
 
     document.getElementById('apSSID').value = config.ap.ssid || '';
     document.getElementById('apPassword').value = config.ap.password || '';
-    document.getElementById('currentMode').innerText = config.mode || '';
 
     document.getElementById('openAIKey').value = config.openAI.apiKey || '';
     document.getElementById('openAIVoice').value = config.openAI.voice || '';
