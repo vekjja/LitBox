@@ -32,7 +32,7 @@ function App() {
       .catch(error => console.error('Error loading configuration:', error));
   }, []);
 
-  const updateConfig = (newConfig) => {
+  const saveConfig = (newConfig) => {
     fetch('/config', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -47,6 +47,22 @@ function App() {
     }).catch(error => console.error('Error updating configuration:', error));
   };
 
+  const updateConfig = (newConfig) => {
+    fetch('/updateConfig', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newConfig),
+    }).then(response => {
+      if (!response.ok) throw new Error('Failed to update configuration');
+      return response.json();
+    }).then(data => {
+      setConfig(newConfig);
+      console.log('Configuration updated:', data);
+      alert('Configuration updated');
+    }).catch(error => console.error('Error updating configuration:', error));
+  };
+
+
   // if (!config) return <div>Loading...</div>;
 
   if (!config) {
@@ -58,9 +74,9 @@ function App() {
       case 'bars':
         return <BarsSettings config={config} updateConfig={updateConfig} />;
       case 'wifi':
-        return <WiFiSettings config={config} updateConfig={updateConfig} />;
+        return <WiFiSettings config={config} saveConfig={saveConfig} />;
       case 'ap':
-        return <APSettings config={config} updateConfig={updateConfig} />;
+        return <APSettings config={config} saveConfig={saveConfig} />;
       case 'files':
         return <FileSettings />;
       case 'about':

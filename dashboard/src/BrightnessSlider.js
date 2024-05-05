@@ -8,21 +8,8 @@ function BrightnessSlider({ config, updateConfig }) {
     };
 
     const handleSliderRelease = () => {
-        // Update the brightness on the server or backend
-        // console.log('Brightness set to:', brightness);
-        // fetch('/brightness', {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'text/plain' },
-        //     body: brightness.toString()
-        // })
-        //     .then(response => {
-        //         if (!response.ok) {
-        //             throw new Error('Failed to update brightness');
-        //         }
-        //         return response.text();
-        //     })
-        //     .then(data => console.log('Update successful:', data))
-        //     .catch(error => console.error('Failed to update brightness:', error));
+        const newConfig = { ...config, brightness: parseInt(brightness) };
+        updateConfig(newConfig);
     };
 
     return (
