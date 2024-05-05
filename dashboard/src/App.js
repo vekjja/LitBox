@@ -5,6 +5,8 @@ import FileSettings from './FileSettings';
 import BarsSettings from './BarsSettings';
 
 var defaultConfig = {
+  "mode": "client",
+  "mdns": "litbox",
   "client": {
     "ssid": "connectedness",
     "password": "ReallyLongPassword123!@#"
@@ -13,12 +15,13 @@ var defaultConfig = {
     "ssid": "LitBox-AP",
     "password": "abcd1234"
   },
-  "mdns": "litbox",
-  "mode": "client",
   "brightness": 18,
-  "pixelBgColor": 0,
-  "pixelColor": 65535,
+  "sensitivity": 9,
+  "visualization": "bars",
+  "text": "LitBox",
   "colorPallet": [31, 2047, 63514, 65535],
+  "pixelColor": 65535,
+  "pixelBgColor": 0
 };
 
 function App() {

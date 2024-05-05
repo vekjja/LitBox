@@ -10,6 +10,9 @@
         "password": "abcd1234"
     },
     "brightness": 18,
+    "sensitivity": 9,
+    "visualization": "bars",
+    "text": "LitBox",
     "colorPallet":[31,2047,63514,65535],
     "pixelColor":65535,
     "pixelBgColor":0
