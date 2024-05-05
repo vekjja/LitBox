@@ -140,9 +140,9 @@ void drawCircles() {
   for (int x = 0; x < LEDWidth; x++) {
     int circleRadius = spectralData[x] / 2;
     int circleColor = colorPallet[0];
-    circleColor = (circleRadius > 2) ? colorPallet[1] : circleColor;
-    circleColor = (circleRadius > 3) ? colorPallet[2] : circleColor;
-    circleColor = (circleRadius >= 4) ? colorPallet[3] : circleColor;
+    circleColor = (circleRadius > 1) ? colorPallet[1] : circleColor;
+    circleColor = (circleRadius > 2) ? colorPallet[2] : circleColor;
+    circleColor = (circleRadius >= 3) ? colorPallet[3] : circleColor;
     if (circleRadius > 0) {
       matrix.drawCircle(x, 4, circleRadius, circleColor);
     }
