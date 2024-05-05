@@ -365,8 +365,8 @@ settingSelect.addEventListener('change', function () {
             break;
     }
 
-    if (setting !== 'wifi' && setting !== 'text' && setting !== 'about') {
-        // setVisualization(visualization);
+    if (setting !== 'wifi' && setting !== 'text' && setting !== 'about' && setting !== 'ap' && setting !== 'files') {
+        setVisualization(setting);
     }
 });
 
