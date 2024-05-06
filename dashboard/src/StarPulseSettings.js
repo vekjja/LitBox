@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import BrightnessSlider from './BrightnessSlider';
+// import SensitivitySlider from './SensitivitySlider';
 
 function StarPulseSetting({ config, updateConfig }) {
 
@@ -15,7 +16,7 @@ function StarPulseSetting({ config, updateConfig }) {
     return (
         <div className="setting">
             <BrightnessSlider config={config} updateConfig={updateConfig} />
-            {/* Add other components or controls */}
+            {/* <SensitivitySlider config={config} updateConfig={updateConfig} /> */}
         </div>
     );
 }

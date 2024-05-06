@@ -1,10 +1,9 @@
 import React, { useEffect } from 'react';
 import BrightnessSlider from './BrightnessSlider';
+// import SensitivitySlider from './SensitivitySlider';
 
 function BarsSettings({ config, updateConfig }) {
-    // Memoize the updateConfig function
 
-    // eslint-disable-next-line
     useEffect(() => {
         const newConfig = { ...config, visualization: 'bars' };
         updateConfig(newConfig);
@@ -13,10 +12,10 @@ function BarsSettings({ config, updateConfig }) {
         };
     }, []);
 
-
     return (
         <div className="setting">
             <BrightnessSlider config={config} updateConfig={updateConfig} />
+            {/* <SensitivitySlider config={config} updateConfig={updateConfig} /> */}
             {/* Add other components or controls */}
         </div>
     );

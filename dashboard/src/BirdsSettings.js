@@ -11,7 +11,6 @@ function BirdsSetting({ config, updateConfig }) {
         };
     }, []);
 
-
     return (
         <div className="setting">
             <BrightnessSlider config={config} updateConfig={updateConfig} />

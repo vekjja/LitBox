@@ -9,7 +9,7 @@
         "ssid": "LitBox-AP",
         "password": "abcd1234"
     },
-    "brightness": 18,
+    "brightness": 9,
     "sensitivity": 9,
     "visualization": "bars",
     "frameRate": 30,

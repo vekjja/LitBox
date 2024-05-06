@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import BrightnessSlider from './BrightnessSlider';
+// import SensitivitySlider from './SensitivitySlider';
 
 function WaveformSetting({ config, updateConfig }) {
 
@@ -15,6 +16,7 @@ function WaveformSetting({ config, updateConfig }) {
     return (
         <div className="setting">
             <BrightnessSlider config={config} updateConfig={updateConfig} />
+            {/* <SensitivitySlider config={config} updateConfig={updateConfig} /> */}
             {/* Add other components or controls */}
         </div>
     );
