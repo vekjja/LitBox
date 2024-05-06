@@ -1,18 +1,15 @@
 import React, { useEffect } from 'react';
 import BrightnessSlider from './BrightnessSlider';
 
-function BarsSettings({ config, updateConfig }) {
-    // Memoize the updateConfig function
+function CirclesSetting({ config, updateConfig }) {
 
-    // eslint-disable-next-line
     useEffect(() => {
-        const newConfig = { ...config, visualization: 'bars' };
+        const newConfig = { ...config, visualization: 'circles' };
         updateConfig(newConfig);
         return () => {
             // perform clean-up tasks here if needed
         };
     }, []);
-
 
     return (
         <div className="setting">
@@ -21,5 +18,4 @@ function BarsSettings({ config, updateConfig }) {
         </div>
     );
 }
-
-export default BarsSettings;
+export default CirclesSetting;

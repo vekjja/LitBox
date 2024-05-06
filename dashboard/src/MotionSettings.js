@@ -1,12 +1,10 @@
 import React, { useEffect } from 'react';
 import BrightnessSlider from './BrightnessSlider';
 
-function BarsSettings({ config, updateConfig }) {
-    // Memoize the updateConfig function
+function MotionSettings({ config, updateConfig }) {
 
-    // eslint-disable-next-line
     useEffect(() => {
-        const newConfig = { ...config, visualization: 'bars' };
+        const newConfig = { ...config, visualization: 'motion' };
         updateConfig(newConfig);
         return () => {
             // perform clean-up tasks here if needed
@@ -22,4 +20,4 @@ function BarsSettings({ config, updateConfig }) {
     );
 }
 
-export default BarsSettings;
+export default MotionSettings;

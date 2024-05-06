@@ -1,23 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import BrightnessSlider from './BrightnessSlider';
 
-function NewSettings() {
-    const [newSetting, setNewSetting] = useState([]);
+function NewSetting({ config, updateConfig }) {
 
     useEffect(() => {
-        fetch('/NEW ENDPOINT HERE')
-            .then(response => response.json())
-            .then(data => {
-                setNewSetting(data);
-            })
-            .catch(error => console.error('Failed to load setting:', error));
+        const newConfig = { ...config, visualization: 'new' };
+        updateConfig(newConfig);
+        return () => {
+            // perform clean-up tasks here if needed
+        };
     }, []);
+
 
     return (
         <div className="setting">
-          // Add your setting here
-            {newSetting}
+            <BrightnessSlider config={config} updateConfig={updateConfig} />
+            {/* Add other components or controls */}
         </div>
     );
 }
-
-export default NewSettings;
+export default NewSetting;

@@ -1,12 +1,10 @@
 import React, { useEffect } from 'react';
 import BrightnessSlider from './BrightnessSlider';
 
-function BarsSettings({ config, updateConfig }) {
-    // Memoize the updateConfig function
+function BirdsSetting({ config, updateConfig }) {
 
-    // eslint-disable-next-line
     useEffect(() => {
-        const newConfig = { ...config, visualization: 'bars' };
+        const newConfig = { ...config, visualization: 'birds' };
         updateConfig(newConfig);
         return () => {
             // perform clean-up tasks here if needed
@@ -21,5 +19,4 @@ function BarsSettings({ config, updateConfig }) {
         </div>
     );
 }
-
-export default BarsSettings;
+export default BirdsSetting;

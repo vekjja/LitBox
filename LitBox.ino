@@ -91,6 +91,7 @@ void loop() {
   } else {
     drawBars();
   }
+  wifi.handleClient();
 }
 
 void drawTemperature() {
@@ -231,6 +232,16 @@ void initializeWebServer() {
       if (config.containsKey("brightness")) {
         setBrightness(config["brightness"]);
       }
+      if (config.containsKey("sensitivity")) {
+        setSensitivity(config["sensitivity"]);
+      }
+      if (config.containsKey("frameRate")) {
+        setFramerate(config["frameRate"]);
+      }
+      if (config.containsKey("visualization")) {
+        visualization = config["visualization"].as<String>();
+      }
+      // wifi.config = config;
       // return the current config JsonDocument
       wifi.webServer.send(200, "application/json", config.as<String>());
     }
