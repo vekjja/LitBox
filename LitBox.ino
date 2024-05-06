@@ -47,6 +47,7 @@ String temperatureUnit = "C";
 ESPWiFi wifi;
 
 void setup() {
+  // TODO: Use loaded config on startup
   initializeMatrix();
   initializeWebServer();
   initializeMotion(LEDWidth, LEDHeight);
@@ -63,6 +64,7 @@ void initializeMatrix() {
 }
 
 void loop() {
+  // TODO: Use loaded config
   wifi.handleClient();
   if (visualization == "waveform") {
     drawWaveform();
