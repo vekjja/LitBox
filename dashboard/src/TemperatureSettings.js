@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import BrightnessSlider from './BrightnessSlider';
+import FramerateSlider from './FramerateSlider';
 
 function TemperatureSettings({ config, updateConfig }) {
 
@@ -15,6 +16,7 @@ function TemperatureSettings({ config, updateConfig }) {
     return (
         <div className="setting">
             <BrightnessSlider config={config} updateConfig={updateConfig} />
+            <FramerateSlider config={config} updateConfig={updateConfig} />
             {/* Add other components or controls */}
         </div>
     );
