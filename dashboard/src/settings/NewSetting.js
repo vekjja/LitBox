@@ -1,11 +1,10 @@
 import React, { useEffect } from 'react';
-import BrightnessSlider from './BrightnessSlider';
-import SensitivitySlider from './SensitivitySlider';
+import BrightnessSlider from '../sliders/BrightnessSlider';
 
-function WaveformSetting({ config, updateConfig }) {
+function NewSetting({ config, updateConfig }) {
 
     useEffect(() => {
-        const newConfig = { ...config, visualization: 'waveform' };
+        const newConfig = { ...config, visualization: 'new' };
         updateConfig(newConfig);
         return () => {
             // perform clean-up tasks here if needed
@@ -16,9 +15,8 @@ function WaveformSetting({ config, updateConfig }) {
     return (
         <div className="setting">
             <BrightnessSlider config={config} updateConfig={updateConfig} />
-            <SensitivitySlider config={config} updateConfig={updateConfig} />
             {/* Add other components or controls */}
         </div>
     );
 }
-export default WaveformSetting;
+export default NewSetting;

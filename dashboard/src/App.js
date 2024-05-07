@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import WiFiSettings from './WiFiSettings';
-import APSettings from './APSettings';
-import FileSettings from './FileSettings';
-import BarsSettings from './BarsSettings';
-import GameOfLifeSettings from './GameOfLifeSettings';
-import MatrixSettings from './MatrixSettings';
-import WaveformSetting from './WaveformSettings';
-import BirdsSetting from './BirdsSettings';
-import CirclesSetting from './CirclesSetting';
-import StarPulseSetting from './StarPulseSettings';
-import TemperatureSetting from './TemperatureSettings';
-import MotionSettings from './MotionSettings';
+import WiFiSettings from './settings/WiFiSettings';
+import APSettings from './settings/APSettings';
+import FileSettings from './settings/FileSettings';
+import BarsSettings from './settings/BarsSettings';
+import GameOfLifeSettings from './settings/GameOfLifeSettings';
+import MatrixSettings from './settings/MatrixSettings';
+import WaveformSetting from './settings/WaveformSettings';
+import BirdsSetting from './settings/BirdsSettings';
+import CirclesSetting from './settings/CirclesSetting';
+import StarPulseSetting from './settings/StarPulseSettings';
+import TemperatureSetting from './settings/TemperatureSettings';
+import MotionSettings from './settings/MotionSettings';
+import TextSettings from './settings/TextSettings';
 
 var defaultConfig = {
   "mode": "client",
@@ -28,7 +29,7 @@ var defaultConfig = {
   "visualization": "bars",
   "frameRate": 30,
   "text": "LitBox",
-  "colorPallet": [31, 2047, 63514, 65535],
+  "colorPallet": ['#1024FF', '#00EEFF', '#FF0CDE', '#FFFFFF'],
   "pixelColor": 65535,
   "pixelBgColor": 0
 };
@@ -38,7 +39,7 @@ function App() {
   const [selectedSetting, setSelectedSetting] = useState('bars');  // Default to 'about'
 
   useEffect(() => {
-    fetch('/config')
+    fetch('/updateConfig')
       .then(response => response.json())
       .then(data => setConfig(data))
       .catch(error => console.error('Error loading configuration:', error));
@@ -99,7 +100,7 @@ function App() {
       case 'starPulse':
         return <StarPulseSetting config={config} updateConfig={updateConfig} />;
       case 'text':
-        return underConstruction
+        return <TextSettings config={config} updateConfig={updateConfig} />;
       case 'temperature':
         return <TemperatureSetting config={config} updateConfig={updateConfig} />;
       case 'waveform':

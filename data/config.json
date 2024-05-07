@@ -14,6 +14,7 @@
     "visualization": "bars",
     "frameRate": 30,
     "text": "LitBox",
+    "temperatureUnit": "C",
     "colorPallet":[31,2047,63514,65535],
     "pixelColor":65535,
     "pixelBgColor":0

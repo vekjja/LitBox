@@ -76,13 +76,13 @@ void initializeMotion(int maxX, int maxY) {
   if (checkI2CDevice(motion_i2c_addr)) {
     if (BMI160.begin(BMI160GenClass::I2C_MODE, motion_i2c_addr)) {
       generateMotionObjects(maxX, maxY);
-      Serial.print("BMI160 Auto Calibration Starting");
+      Serial.println("BMI160 Auto Calibration Starting");
       BMI160.autoCalibrateXAccelOffset(1);
       BMI160.autoCalibrateYAccelOffset(1);
       BMI160.autoCalibrateZAccelOffset(1);
       BMI160.autoCalibrateGyroOffset();
       delay(250);
-      Serial.print("BMI160 Auto Calibration Complete");
+      Serial.println("BMI160 Auto Calibration Complete");
       BMI160Initialized = true;
     } else {
       BMI160Initialized = false;

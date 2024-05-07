@@ -93,7 +93,6 @@ void loop() {
   } else {
     drawBars();
   }
-  wifi.handleClient();
 }
 
 void drawTemperature() {
@@ -208,8 +207,9 @@ void drawWaveform() {
 }
 
 void setBrightness(int newBrightness) {
-  brightness = constrain(newBrightness, minBrightness, maxBrightness);
-  matrix.setBrightness(brightness);
+  wifi.config["brightness"] =
+      constrain(newBrightness, minBrightness, maxBrightness);
+  matrix.setBrightness(wifi.config["brightness"]);
   matrix.show();
 }
 
@@ -223,6 +223,21 @@ void setFramerate(unsigned int fps) {
 }
 
 void initializeWebServer() {
+  wifi.webServer.on("/updateConfig", HTTP_GET, []() {
+    wifi.config["brightness"] = brightness;
+    wifi.config["sensitivity"] = sensitivity;
+    wifi.config["frameRate"] = frameRate;
+    wifi.config["visualization"] = visualization;
+    // wifi.config["temperatureUnit"] = temperatureUnit;
+    wifi.config["text"] = text;
+    for (int i = 0; i < palletSize; i++) {
+      wifi.config["colorPallet"][i] = colorToHex(colorPallet[i]);
+    }
+    wifi.config["pixelColor"] = colorToHex(pixelColor);
+    wifi.config["pixelBgColor"] = colorToHex(pixelBgColor);
+    wifi.webServer.send(200, "application/json", wifi.config.as<String>());
+  });
+
   wifi.webServer.on("/updateConfig", HTTP_POST, []() {
     String body = wifi.webServer.arg("plain");
     JsonDocument config;
@@ -243,50 +258,27 @@ void initializeWebServer() {
       if (config.containsKey("visualization")) {
         visualization = config["visualization"].as<String>();
       }
-      // wifi.config = config;
+      if (config.containsKey("temperatureUnit")) {
+        temperatureUnit = config["temperatureUnit"].as<String>();
+      }
+      if (config.containsKey("colorPallet")) {
+        for (int i = 0; i < palletSize; i++) {
+          colorPallet[i] = hexToColor(config["colorPallet"][i].as<String>());
+          config["colorPallet"][i] = colorToHex(colorPallet[i]);
+        }
+      }
+      if (config.containsKey("pixelColor")) {
+        pixelColor = hexToColor(config["pixelColor"]);
+        config["pixelColor"] = colorToHex(pixelColor);
+      }
+      if (config.containsKey("pixelBgColor")) {
+        pixelBgColor = hexToColor(config["pixelBgColor"]);
+        config["pixelBgColor"] = colorToHex(pixelBgColor);
+      }
       // return the current config JsonDocument
       wifi.webServer.send(200, "application/json", config.as<String>());
     }
   });
-
-  // wifi.webServer.on("/colors", HTTP_GET, []() {
-  //   wifi.webServer.send(200, "text/plain",
-  //                       "color1=" + colorToHex(colorPallet[0]) + "\n" +
-  //                           "color2=" + colorToHex(colorPallet[1]) + "\n" +
-  //                           "color3=" + colorToHex(colorPallet[2]) + "\n" +
-  //                           "color4=" + colorToHex(colorPallet[3]) + "\n" +
-  //                           "pixelColor=" + colorToHex(pixelColor) + "\n" +
-  //                           "pixelBgColor=" + colorToHex(pixelBgColor) +
-  //                           "\n");
-  // });
-  // wifi.webServer.on("/colors", HTTP_POST, []() {
-  //   if (wifi.webServer.hasArg("color1")) {
-  //     colorPallet[0] = hexToColor(wifi.webServer.arg("color1"));
-  //   }
-  //   if (wifi.webServer.hasArg("color2")) {
-  //     colorPallet[1] = hexToColor(wifi.webServer.arg("color2"));
-  //   }
-  //   if (wifi.webServer.hasArg("color3")) {
-  //     colorPallet[2] = hexToColor(wifi.webServer.arg("color3"));
-  //   }
-  //   if (wifi.webServer.hasArg("color4")) {
-  //     colorPallet[3] = hexToColor(wifi.webServer.arg("color4"));
-  //   }
-  //   if (wifi.webServer.hasArg("pixelColor")) {
-  //     pixelColor = hexToColor(wifi.webServer.arg("pixelColor"));
-  //   }
-  //   if (wifi.webServer.hasArg("pixelBgColor")) {
-  //     pixelBgColor = hexToColor(wifi.webServer.arg("pixelBgColor"));
-  //   }
-  //   saveColors();
-  //   wifi.webServer.send(
-  //       200, "text/plain",
-  //       "Color Pallet set to:\n  Color 1:" + String(colorPallet[0]) +
-  //           ", Color 2:" + String(colorPallet[1]) + ", Color 3:" +
-  //           String(colorPallet[2]) + ", Color 4:" + String(colorPallet[3]) +
-  //           ", Pixel Color:" + String(pixelColor) +
-  //           ", Pixel BG Color:" + String(pixelBgColor));
-  // });
 
   // wifi.webServer.on("/text", HTTP_GET, []() {
   //   wifi.webServer.send(
