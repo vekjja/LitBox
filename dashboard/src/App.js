@@ -30,7 +30,7 @@ var defaultConfig = {
   "frameRate": 30,
   "text": "LitBox",
   "colorPallet": ['#1024FF', '#00EEFF', '#FF0CDE', '#FFFFFF'],
-  "pixelColor": 65535,
+  "pixelColor": '#1024FF',
   "pixelBgColor": 0
 };
 

@@ -1,27 +1,25 @@
-import React, { useState, useCallback } from 'react';
-import _ from 'lodash';
+import React, { useState } from 'react';
 
 function ColorSelector({ config, updateConfig }) {
     const [pixelColor, setPixelColor] = useState(config.pixelColor);
     const [pixelBgColor, setPixelBgColor] = useState(config.pixelBgColor);
 
-    const debouncedUpdateConfig = useCallback(_.debounce(() => {
-        const newConfig = {
-            ...config,
-            pixelColor: pixelColor,
-            pixelBgColor: pixelBgColor
-        };
-        updateConfig(newConfig);
-    }, 333), [pixelColor, pixelBgColor, config, updateConfig]);
-
     const handlePixelColorChange = (event) => {
-        setPixelColor(event.target.value);
-        debouncedUpdateConfig();
+        const newPixelColor = event.target.value;
+        setPixelColor(newPixelColor);
+        updateConfig({
+            ...config,
+            pixelColor: newPixelColor,
+        });
     };
 
     const handleBgColorChange = (event) => {
-        setPixelBgColor(event.target.value);
-        debouncedUpdateConfig();
+        const newBgColor = event.target.value;
+        setPixelBgColor(newBgColor);
+        updateConfig({
+            ...config,
+            pixelBgColor: newBgColor
+        });
     };
 
     return (
