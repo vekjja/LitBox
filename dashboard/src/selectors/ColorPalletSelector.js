@@ -18,12 +18,12 @@ function ColorPalletSelector({ config, updateConfig }) {
             <input id="toggleColorPallet" type="checkbox" className="toggle-button"></input>
             <label htmlFor="toggleColorPallet" className="clickable">Color Pallet</label>
             <div className="toggle-content">
-                {colors.map((color, index) => (
+                {[...colors].reverse().map((color, index) => (
                     <div className="setting" key={index}>
-                        <input type="color" id={`color${index + 1}`}
-                            title={`Choose Color ${index + 1}`} className="color-picker"
+                        <input type="color" id={`color${colors.length - index}`}
+                            title={`Choose Color ${colors.length - index}`} className="color-picker"
                             value={color}
-                            onChange={handleColorChange(index)}
+                            onChange={handleColorChange(colors.length - index - 1)}
                         ></input>
                     </div>
                 ))}
