@@ -29,9 +29,9 @@ var defaultConfig = {
   "visualization": "bars",
   "frameRate": 30,
   "text": "LitBox",
-  "colorPallet": ['#1024FF', '#00EEFF', '#FF0CDE', '#FFFFFF'],
-  "pixelColor": '#1024FF',
-  "pixelBgColor": 0
+  "colorPallet": ["#0000EE", "#00EEFF", "#FF0CDE", "#FFFFFF"],
+  "pixelColor": "#FFFFFF",
+  "pixelBgColor": "#000000"
 };
 
 function App() {
