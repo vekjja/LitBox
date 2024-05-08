@@ -223,7 +223,7 @@ void setFramerate(unsigned int fps) {
 }
 
 void initializeWebServer() {
-  wifi.webServer.on("/updateConfig", HTTP_GET, []() {
+  wifi.webServer.on("/getConfig", HTTP_GET, []() {
     wifi.config["brightness"] = brightness;
     wifi.config["sensitivity"] = sensitivity;
     wifi.config["frameRate"] = frameRate;

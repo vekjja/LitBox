@@ -35,7 +35,7 @@ var defaultConfig = {
 };
 
 function App() {
-  var [config, setConfig] = useState(null);
+  var [config, setConfig] = useState(defaultConfig);
   const [selectedSetting, setSelectedSetting] = useState('bars');  // Default to 'about'
 
   useEffect(() => {
@@ -74,12 +74,6 @@ function App() {
       // alert('Configuration updated');
     }).catch(error => console.error('Error updating configuration:', error));
   };
-
-  // if (!config) return <div>Loading...</div>;
-
-  if (!config) {
-    config = defaultConfig;
-  }
 
   var underConstruction = <div>🛠️ Under Construction 🛠️</div>;
 
