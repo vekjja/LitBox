@@ -20,38 +20,13 @@ function App() {
   useEffect(() => {
     fetch('/getConfig')
       .then(response => response.json())
-      .then(data => setConfig(data),)
+      .then(
+        data => {
+          setConfig(data)
+          setSelectedSetting(data.visualization)
+        })
       .catch(error => console.error('Error loading configuration:', error));
   }, []);
-
-  if (!config) {
-    config = {
-      "mode": "client",
-      "mdns": "litbox",
-      "client": {
-        "ssid": "SSID",
-        "password": "PASSWORD"
-      },
-      "ap": {
-        "ssid": "LitBox-AP",
-        "password": "abcd1234"
-      },
-      "brightness": 9,
-      "sensitivity": 9,
-      "visualization": "bars",
-      "frameRate": 30,
-      "temperatureUnit": "C",
-      "colorPallet": [31, 2047, 63514, 65535],
-      "pixelColor": 65535,
-      "pixelBgColor": 0,
-      "text": {
-        "content": "*.*. Lit Box .*.*",
-        "animation": "scroll",
-        "speed": "75",
-        "size": "1"
-      }
-    };
-  }
 
   const saveConfig = (newConfig) => {
     fetch('/config', {
@@ -64,7 +39,7 @@ function App() {
     }).then(data => {
       setConfig(newConfig);
       console.log('Configuration updated:', data);
-      // alert('Configuration updated');
+      alert('Configuration updated');
     }).catch(error => console.error('Error updating configuration:', error));
   };
 
@@ -79,10 +54,19 @@ function App() {
     }).then(data => {
       setConfig(newConfig);
       console.log('Configuration updated:', data);
+      // alert('Configuration updated');
     }).catch(error => console.error('Error updating configuration:', error));
   };
 
   var underConstruction = <div>🛠️ Under Construction 🛠️</div>;
+  if (!config) {
+    return (
+      <div className="container">
+        <label className="header">Lit Box</label>
+        <div>Loading configuration... ⚙️</div>
+      </div>
+    );
+  }
 
   const renderSetting = () => {
     switch (selectedSetting) {
@@ -139,6 +123,7 @@ function App() {
         <select
           id="settingSelect"
           className="clickable"
+          value={selectedSetting}
           onChange={(e) => setSelectedSetting(e.target.value)}
         >
           <option value="bars">Bars</option>
