@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import WiFiSettings from './settings/WiFiSettings';
-import APSettings from './settings/APSettings';
-import FileSettings from './settings/FileSettings';
 import BarsSettings from './settings/BarsSettings';
 import GameOfLifeSettings from './settings/GameOfLifeSettings';
 import MatrixSettings from './settings/MatrixSettings';
@@ -13,63 +11,66 @@ import TemperatureSetting from './settings/TemperatureSettings';
 import MotionSettings from './settings/MotionSettings';
 import TextSettings from './settings/TextSettings';
 
+var defaultConfig = {
+  "mode": "client",
+  "mdns": "litbox",
+  "client": {
+    "ssid": "connectedness",
+    "password": "ReallyLongPassword123!@#"
+  },
+  "ap": {
+    "ssid": "LitBox-AP",
+    "password": "abcd1234"
+  },
+  "brightness": 9,
+  "sensitivity": 9,
+  "visualization": "bars",
+  "frameRate": 30,
+  "temperatureUnit": "C",
+  "colorPallet": [31, 2047, 63514, 65535],
+  "pixelColor": 65535,
+  "pixelBgColor": 0,
+  "text": {
+    "content": "*.*. Lit Box .*.*",
+    "animation": "scroll",
+    "speed": "75",
+    "size": "1"
+  }
+};
+
 function App() {
   var [config, setConfig] = useState(null);
   const [selectedSetting, setSelectedSetting] = useState('bars');  // Default to 'about'
 
   useEffect(() => {
-    fetch('/getConfig')
-      .then(response => response.json())
-      .then(data => setConfig(data),)
-      .catch(error => console.error('Error loading configuration:', error));
+    if (process.env.NODE_ENV === 'development') {
+      setConfig(defaultConfig);
+      setSelectedSetting(defaultConfig.visualization);
+    } else {
+      fetch('/config')
+        .then((response) => response.json())
+        .then((data) => {
+          setConfig(data);
+          setSelectedSetting(data.visualization);
+        })
+        .catch((error) => console.error('Error loading configuration:', error));
+    }
   }, []);
 
-  if (!config) {
-    config = {
-      "mode": "client",
-      "mdns": "litbox",
-      "client": {
-        "ssid": "SSID",
-        "password": "PASSWORD"
-      },
-      "ap": {
-        "ssid": "LitBox-AP",
-        "password": "abcd1234"
-      },
-      "brightness": 9,
-      "sensitivity": 9,
-      "visualization": "bars",
-      "frameRate": 30,
-      "temperatureUnit": "C",
-      "colorPallet": [31, 2047, 63514, 65535],
-      "pixelColor": 65535,
-      "pixelBgColor": 0,
-      "text": {
-        "content": "*.*. Lit Box .*.*",
-        "animation": "scroll",
-        "speed": "75",
-        "size": "1"
-      }
-    };
-  }
-
   const saveConfig = (newConfig) => {
-    fetch('/config', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newConfig),
-    }).then(response => {
-      if (!response.ok) throw new Error('Failed to save configuration');
-      return response.json();
-    }).then(data => {
-      setConfig(newConfig);
-      console.log('Configuration updated:', data);
-      // alert('Configuration updated');
-    }).catch(error => console.error('Error updating configuration:', error));
+    fetch('/saveConfig')
+      .then(response => {
+        if (!response.ok) throw new Error('Failed to save configuration');
+        return response.json();
+      }).then(data => {
+        setConfig(newConfig);
+        console.log('Configuration updated:', data);
+        alert('Configuration Saved');
+      }).catch(error => console.error('Error updating configuration:', error));
   };
 
   const updateConfig = (newConfig) => {
-    fetch('/updateConfig', {
+    fetch('/config', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newConfig),
@@ -79,10 +80,18 @@ function App() {
     }).then(data => {
       setConfig(newConfig);
       console.log('Configuration updated:', data);
+      // alert('Configuration updated');
     }).catch(error => console.error('Error updating configuration:', error));
   };
 
-  var underConstruction = <div>🛠️ Under Construction 🛠️</div>;
+  if (!config) {
+    return (
+      <div className="container">
+        <label className="header">Lit Box</label>
+        <div>Loading configuration... ⚙️</div>
+      </div>
+    );
+  }
 
   const renderSetting = () => {
     switch (selectedSetting) {
@@ -108,10 +117,6 @@ function App() {
         return <WaveformSetting config={config} updateConfig={updateConfig} />;
       case 'wifi':
         return <WiFiSettings config={config} saveConfig={saveConfig} />;
-      case 'ap':
-        return <APSettings config={config} saveConfig={saveConfig} />;
-      case 'files':
-        return <FileSettings />;
       case 'about':
         return <div class="setting" id="about-settings">
 
@@ -128,7 +133,7 @@ function App() {
 
         </div>;
       default:
-        return underConstruction
+        return <div>🛠️ Under Construction 🛠️</div>;
     }
   };
 
@@ -139,6 +144,7 @@ function App() {
         <select
           id="settingSelect"
           className="clickable"
+          value={selectedSetting}
           onChange={(e) => setSelectedSetting(e.target.value)}
         >
           <option value="bars">Bars</option>
@@ -152,8 +158,6 @@ function App() {
           <option value="temperature">Temperature</option>
           <option value="waveform">Waveform</option>
           <option value="wifi">WiFi</option>
-          <option value="ap">AP</option>
-          <option value="files">Files</option>
           <option value="about">About</option>
         </select>
       </div>

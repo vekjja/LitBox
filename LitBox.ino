@@ -223,7 +223,7 @@ void setFramerate(unsigned int fps) {
 }
 
 void initializeWebServer() {
-  wifi.webServer.on("/getConfig", HTTP_GET, []() {
+  wifi.webServer.on("/config", HTTP_GET, []() {
     JsonDocument config;
     config.set(wifi.config);
     for (int i = 0; i < palletSize; i++) {
@@ -234,7 +234,7 @@ void initializeWebServer() {
     wifi.webServer.send(200, "application/json", config.as<String>());
   });
 
-  wifi.webServer.on("/updateConfig", HTTP_POST, []() {
+  wifi.webServer.on("/config", HTTP_POST, []() {
     String body = wifi.webServer.arg("plain");
     JsonDocument config;
     DeserializationError error = deserializeJson(config, body);
@@ -260,20 +260,29 @@ void initializeWebServer() {
       if (config.containsKey("colorPallet")) {
         for (int i = 0; i < palletSize; i++) {
           colorPallet[i] = hexToColor(config["colorPallet"][i].as<String>());
-          config["colorPallet"][i] = colorToHex(colorPallet[i]);
         }
       }
       if (config.containsKey("pixelColor")) {
         pixelColor = hexToColor(config["pixelColor"]);
-        config["pixelColor"] = colorToHex(pixelColor);
       }
       if (config.containsKey("pixelBgColor")) {
         pixelBgColor = hexToColor(config["pixelBgColor"]);
-        config["pixelBgColor"] = colorToHex(pixelBgColor);
       }
-      wifi.config.set(config);
+      stars = nullptr;
+      birds = nullptr;
       wifi.webServer.send(200, "application/json", config.as<String>());
+      for (int i = 0; i < palletSize; i++) {
+        config["colorPallet"][i] = hexToColor(config["colorPallet"][i]);
+      }
+      config["pixelColor"] = hexToColor(config["pixelColor"]);
+      config["pixelBgColor"] = hexToColor(config["pixelBgColor"]);
+      wifi.config.set(config);
     }
+  });
+
+  wifi.webServer.on("/saveConfig", HTTP_GET, []() {
+    wifi.saveConfig();
+    wifi.webServer.send(200, "application/json", wifi.config.as<String>());
   });
 
   wifi.webServer.on("/text", HTTP_POST, []() {
@@ -304,42 +313,6 @@ void initializeWebServer() {
       wifi.webServer.send(200, "application/json", config.as<String>());
     }
   });
-
-  // wifi.webServer.on("/birds", HTTP_GET, []() {
-  //   String response = "";
-  //   response += "birdCount=" + String(birdCount) + "\n";
-  //   response += "birdAlignment=" + String(birdAlignment) + "\n";
-  //   response += "birdCohesion=" + String(birdCohesion) + "\n";
-  //   response += "birdSeparation=" + String(birdSeparation) + "\n";
-  //   response += "birdVerticalBounds=" + String(birdVerticalBounds) + "\n";
-  //   response += "birdHorizontalBounds=" + String(birdHorizontalBounds) +
-  //   "\n"; wifi.webServer.send(200, "text/plain", response);
-  // });
-
-  // wifi.webServer.on("/birds", HTTP_POST, []() {
-  //   if (wifi.webServer.hasArg("birdCount")) {
-  //     birdCount = wifi.webServer.arg("birdCount").toInt();
-  //   }
-  //   if (wifi.webServer.hasArg("birdAlignment")) {
-  //     birdAlignment = wifi.webServer.arg("birdAlignment").toFloat();
-  //   }
-  //   if (wifi.webServer.hasArg("birdCohesion")) {
-  //     birdCohesion = wifi.webServer.arg("birdCohesion").toFloat();
-  //   }
-  //   if (wifi.webServer.hasArg("birdSeparation")) {
-  //     birdSeparation = wifi.webServer.arg("birdSeparation").toFloat();
-  //   }
-  //   if (wifi.webServer.hasArg("birdVerticalBounds")) {
-  //     birdVerticalBounds =
-  //         wifi.webServer.arg("birdVerticalBounds").compareTo("true") == 0;
-  //   }
-  //   if (wifi.webServer.hasArg("birdHorizontalBounds")) {
-  //     birdHorizontalBounds =
-  //         wifi.webServer.arg("birdHorizontalBounds").compareTo("true") == 0;
-  //   }
-  //   generateBirds(LEDWidth, LEDHeight);
-  //   wifi.webServer.send(200, "text/plain", "Bird settings updated");
-  // });
 
   wifi.connectSubroutine = []() { testMatrix(&matrix, LEDWidth, LEDHeight); };
   wifi.start();

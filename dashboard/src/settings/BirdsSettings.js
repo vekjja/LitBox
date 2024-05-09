@@ -50,6 +50,7 @@ function BirdsSetting({ config, updateConfig }) {
             <button id="updateBirds"
                 class="clickable button">Update
                 Birds</button>
+            {/* Add other components or controls */}
         </div>
     );
 }
