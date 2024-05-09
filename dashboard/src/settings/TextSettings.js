@@ -11,19 +11,17 @@ function TextSettings({ config, updateConfig }) {
     };
 
     const handleAnimationChange = (animation) => {
-        const updatedText = { ...localText, animation };
+        var updatedText = { ...localText, animation };
         setLocalText(updatedText);
 
+        if (animation === 'display') {
+            const updatedConfig = { ...config, text: localText, visualization: 'text' };
+            updateConfig(updatedConfig);
+        }
+    };
 
-
-        // Update the visualization only if animation is "display"
-        const updatedConfig = {
-            ...config,
-            text: updatedText,
-            visualization: animation === 'display' ? 'text' : config.visualization
-        };
-
-        updateConfig(updatedConfig);
+    const handleSliderChange = (event) => {
+        setLocalText({ ...localText, speed: event.target.value });
     };
 
     const handleSendText = () => {
@@ -66,6 +64,22 @@ function TextSettings({ config, updateConfig }) {
                 onChange={handleTextChange}
                 placeholder="Enter text"
             />
+            <div className="setting" id="text-speed-settings">
+                <input id="toggleTextSpeed" type="checkbox" class="toggle-button"></input>
+                <label for="toggleTextSpeed" class="clickable">Text Speed</label>
+                <div class="toggle-content">
+                    <div class="setting">
+                        <input
+                            id="TextSpeedValue"
+                            type="range"
+                            min="1"
+                            max="100"
+                            value={localText.speed}
+                            onChange={handleSliderChange}
+                        />
+                    </div>
+                </div>
+            </div>
             <button
                 onClick={handleSendText}
                 style={{ color: 'black', backgroundColor: '#38ffb9' }}
