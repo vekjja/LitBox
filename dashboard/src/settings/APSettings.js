@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
+import SaveButton from '../buttons/SaveButton';
 
 function APSettings({ config, saveConfig }) {
     const [apSSID, setApSSID] = useState(config.ap.ssid);
     const [apPassword, setApPassword] = useState(config.ap.password);
-
-    const handleSave = () => {
-        saveConfig({ ...config, client: { apSSID, apPassword } });
-    };
 
     const restartAsAP = () => {
         const newConfig = { ...config, mode: 'ap' };
@@ -35,7 +32,7 @@ function APSettings({ config, saveConfig }) {
             <input value={apSSID} onChange={e => setApSSID(e.target.value)} />
             <label>Password</label>
             <input value={apPassword} onChange={e => setApPassword(e.target.value)} />
-            <button onClick={handleSave} style={{ backgroundColor: 'brown' }}>Save</button>
+            <SaveButton config={config} saveConfig={saveConfig} />
             <button onClick={restartAsAP} style={{ backgroundColor: 'brown', marginTop: '10px' }}>Restart as Access Point</button>
         </div>
     );

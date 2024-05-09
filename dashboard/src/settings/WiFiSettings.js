@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
+import SaveButton from '../buttons/SaveButton';
 
 function WiFiSettings({ config, saveConfig }) {
     const [ssid, setSSID] = useState(config.client.ssid);
     const [password, setPassword] = useState(config.client.password);
-
-    const handleSave = () => {
-        saveConfig({ ...config, client: { ssid, password } });
-    };
 
     const restartAsClient = () => {
         const newConfig = { ...config, mode: 'client' };
@@ -35,7 +32,7 @@ function WiFiSettings({ config, saveConfig }) {
             <input value={ssid} onChange={e => setSSID(e.target.value)} />
             <label>Password</label>
             <input value={password} onChange={e => setPassword(e.target.value)} />
-            <button onClick={handleSave} style={{ backgroundColor: 'brown' }}>Save</button>
+            <SaveButton config={config} saveConfig={saveConfig} />
             <button onClick={restartAsClient} style={{ backgroundColor: 'brown', marginTop: '10px' }}>Restart as Client</button>
         </div >
     );

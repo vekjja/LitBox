@@ -224,18 +224,14 @@ void setFramerate(unsigned int fps) {
 
 void initializeWebServer() {
   wifi.webServer.on("/getConfig", HTTP_GET, []() {
-    wifi.config["brightness"] = brightness;
-    wifi.config["sensitivity"] = sensitivity;
-    wifi.config["frameRate"] = frameRate;
-    wifi.config["visualization"] = visualization;
-    wifi.config["temperatureUnit"] = temperatureUnit;
-    wifi.config["text"] = text;
+    JsonDocument config;
+    config.set(wifi.config);
     for (int i = 0; i < palletSize; i++) {
-      wifi.config["colorPallet"][i] = colorToHex(colorPallet[i]);
+      config["colorPallet"][i] = colorToHex(colorPallet[i]);
     }
-    wifi.config["pixelColor"] = colorToHex(pixelColor);
-    wifi.config["pixelBgColor"] = colorToHex(pixelBgColor);
-    wifi.webServer.send(200, "application/json", wifi.config.as<String>());
+    config["pixelColor"] = colorToHex(pixelColor);
+    config["pixelBgColor"] = colorToHex(pixelBgColor);
+    wifi.webServer.send(200, "application/json", config.as<String>());
   });
 
   wifi.webServer.on("/updateConfig", HTTP_POST, []() {
@@ -275,8 +271,7 @@ void initializeWebServer() {
         pixelBgColor = hexToColor(config["pixelBgColor"]);
         config["pixelBgColor"] = colorToHex(pixelBgColor);
       }
-      // return the current config JsonDocument
-      wifi.config = config;
+      wifi.config.set(config);
       wifi.webServer.send(200, "application/json", config.as<String>());
     }
   });
@@ -305,7 +300,7 @@ void initializeWebServer() {
           }
         }
       }
-      wifi.config = config;
+      wifi.config.set(config);
       wifi.webServer.send(200, "application/json", config.as<String>());
     }
   });
