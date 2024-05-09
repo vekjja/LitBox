@@ -13,40 +13,17 @@ import TemperatureSetting from './settings/TemperatureSettings';
 import MotionSettings from './settings/MotionSettings';
 import TextSettings from './settings/TextSettings';
 
-var defaultConfig = {
-  "mode": "client",
-  "mdns": "litbox",
-  "client": {
-    "ssid": "SSID",
-    "password": "PASSWORD",
-  },
-  "ap": {
-    "ssid": "LitBox-AP",
-    "password": "abcd1234"
-  },
-  "brightness": 18,
-  "sensitivity": 9,
-  "visualization": "bars",
-  "frameRate": 30,
-  "colorPallet": ["#0000EE", "#00EEFF", "#FF0CDE", "#FFFFFF"],
-  "pixelColor": "#FFFFFF",
-  "pixelBgColor": "#000000",
-  "text": {
-    "content": "*.*. Lit Box .*.*",
-    "animation": "scroll",
-    "speed": "75",
-    "size": "1"
-  }
-};
-
 function App() {
-  var [config, setConfig] = useState(defaultConfig);
+  var [config, setConfig] = useState(null);
   const [selectedSetting, setSelectedSetting] = useState('bars');  // Default to 'about'
 
   useEffect(() => {
-    fetch('/updateConfig')
+    fetch('/getConfig')
       .then(response => response.json())
-      .then(data => setConfig(data))
+      .then(
+        data => setConfig(data),
+        alert('Configuration loaded' + config)
+      )
       .catch(error => console.error('Error loading configuration:', error));
   }, []);
 
@@ -81,6 +58,14 @@ function App() {
   };
 
   var underConstruction = <div>🛠️ Under Construction 🛠️</div>;
+  if (!config) {
+    return (
+      <div className="container">
+        <label className="header">Lit Box</label>
+        <div>Loading configuration... ⚙️</div>
+      </div>
+    );
+  }
 
   const renderSetting = () => {
     switch (selectedSetting) {
