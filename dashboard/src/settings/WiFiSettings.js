@@ -37,10 +37,18 @@ function WiFiSettings({ config, saveConfig }) {
 
     return (
         <div class="setting">
-            <label>SSID</label>
-            <input value={ssid} onChange={e => setSSID(e.target.value)} />
-            <label>Password</label>
-            <input value={password} onChange={e => setPassword(e.target.value)} />
+            <div className="setting" id="color-pallet-settings">
+                <input id="toggleColorPallet" type="checkbox" className="toggle-button"></input>
+                <label htmlFor="toggleColorPallet" className="clickable">WiFi</label>
+                <div className="toggle-content">
+                    <div className="setting">
+                        <label>SSID</label>
+                        <input value={ssid} onChange={e => setSSID(e.target.value)} />
+                        <label>Password</label>
+                        <input value={password} onChange={e => setPassword(e.target.value)} />
+                    </div>
+                </div>
+            </div>
             <SaveButton config={config} saveConfig={saveConfig} />
             <button onClick={restartAsClient} style={{ backgroundColor: 'brown', marginTop: '10px' }}>Restart as Client</button>
             <button onClick={restartAsAccessPoint} style={{ backgroundColor: 'brown', marginTop: '10px' }}>Restart as Access Point</button>
