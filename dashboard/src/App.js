@@ -11,7 +11,6 @@ import TemperatureSetting from './settings/TemperatureSettings';
 import MotionSettings from './settings/MotionSettings';
 import TextSettings from './settings/TextSettings';
 
-
 var defaultConfig = {
   "mode": "client",
   "mdns": "litbox",
@@ -44,33 +43,34 @@ function App() {
   const [selectedSetting, setSelectedSetting] = useState('bars');  // Default to 'about'
 
   useEffect(() => {
-    fetch('/getConfig')
-      .then(response => response.json())
-      .then(
-        data => {
-          setConfig(data)
-          setSelectedSetting(data.visualization)
+    if (process.env.NODE_ENV === 'development') {
+      setConfig(defaultConfig);
+      setSelectedSetting(defaultConfig.visualization);
+    } else {
+      fetch('/config')
+        .then((response) => response.json())
+        .then((data) => {
+          setConfig(data);
+          setSelectedSetting(data.visualization);
         })
-      .catch(error => console.error('Error loading configuration:', error));
+        .catch((error) => console.error('Error loading configuration:', error));
+    }
   }, []);
 
   const saveConfig = (newConfig) => {
-    fetch('/config', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newConfig),
-    }).then(response => {
-      if (!response.ok) throw new Error('Failed to save configuration');
-      return response.json();
-    }).then(data => {
-      setConfig(newConfig);
-      console.log('Configuration updated:', data);
-      alert('Configuration updated');
-    }).catch(error => console.error('Error updating configuration:', error));
+    fetch('/saveConfig')
+      .then(response => {
+        if (!response.ok) throw new Error('Failed to save configuration');
+        return response.json();
+      }).then(data => {
+        setConfig(newConfig);
+        console.log('Configuration updated:', data);
+        alert('Configuration Saved');
+      }).catch(error => console.error('Error updating configuration:', error));
   };
 
   const updateConfig = (newConfig) => {
-    fetch('/updateConfig', {
+    fetch('/config', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newConfig),
@@ -85,7 +85,6 @@ function App() {
   };
 
   if (!config) {
-    // config = defaultConfig;
     return (
       <div className="container">
         <label className="header">Lit Box</label>

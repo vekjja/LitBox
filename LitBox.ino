@@ -223,7 +223,7 @@ void setFramerate(unsigned int fps) {
 }
 
 void initializeWebServer() {
-  wifi.webServer.on("/getConfig", HTTP_GET, []() {
+  wifi.webServer.on("/config", HTTP_GET, []() {
     JsonDocument config;
     config.set(wifi.config);
     for (int i = 0; i < palletSize; i++) {
@@ -234,7 +234,7 @@ void initializeWebServer() {
     wifi.webServer.send(200, "application/json", config.as<String>());
   });
 
-  wifi.webServer.on("/updateConfig", HTTP_POST, []() {
+  wifi.webServer.on("/config", HTTP_POST, []() {
     String body = wifi.webServer.arg("plain");
     JsonDocument config;
     DeserializationError error = deserializeJson(config, body);
@@ -260,22 +260,29 @@ void initializeWebServer() {
       if (config.containsKey("colorPallet")) {
         for (int i = 0; i < palletSize; i++) {
           colorPallet[i] = hexToColor(config["colorPallet"][i].as<String>());
-          config["colorPallet"][i] = colorToHex(colorPallet[i]);
         }
       }
       if (config.containsKey("pixelColor")) {
         pixelColor = hexToColor(config["pixelColor"]);
-        config["pixelColor"] = colorToHex(pixelColor);
       }
       if (config.containsKey("pixelBgColor")) {
         pixelBgColor = hexToColor(config["pixelBgColor"]);
-        config["pixelBgColor"] = colorToHex(pixelBgColor);
       }
       stars = nullptr;
       birds = nullptr;
-      wifi.config.set(config);
       wifi.webServer.send(200, "application/json", config.as<String>());
+      for (int i = 0; i < palletSize; i++) {
+        config["colorPallet"][i] = hexToColor(config["colorPallet"][i]);
+      }
+      config["pixelColor"] = hexToColor(config["pixelColor"]);
+      config["pixelBgColor"] = hexToColor(config["pixelBgColor"]);
+      wifi.config.set(config);
     }
+  });
+
+  wifi.webServer.on("/saveConfig", HTTP_GET, []() {
+    wifi.saveConfig();
+    wifi.webServer.send(200, "application/json", wifi.config.as<String>());
   });
 
   wifi.webServer.on("/text", HTTP_POST, []() {
