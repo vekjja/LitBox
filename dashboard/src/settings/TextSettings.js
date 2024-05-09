@@ -47,6 +47,22 @@ function TextSettings({ config, updateConfig }) {
         <div className="setting">
             <BrightnessSlider config={config} updateConfig={updateConfig} />
             <ColorSelector config={config} updateConfig={updateConfig} />
+            <div className="setting" id="text-speed-settings">
+                <input id="toggleTextSpeed" type="checkbox" class="toggle-button"></input>
+                <label for="toggleTextSpeed" class="clickable">Text Speed</label>
+                <div class="toggle-content">
+                    <div class="setting">
+                        <input
+                            id="TextSpeedValue"
+                            type="range"
+                            min="1"
+                            max="100"
+                            value={localText.speed}
+                            onChange={handleSliderChange}
+                        />
+                    </div>
+                </div>
+            </div>
             <div className="setting">
                 <select
                     id="textAnimationSelect"
@@ -64,22 +80,6 @@ function TextSettings({ config, updateConfig }) {
                 onChange={handleTextChange}
                 placeholder="Enter text"
             />
-            <div className="setting" id="text-speed-settings">
-                <input id="toggleTextSpeed" type="checkbox" class="toggle-button"></input>
-                <label for="toggleTextSpeed" class="clickable">Text Speed</label>
-                <div class="toggle-content">
-                    <div class="setting">
-                        <input
-                            id="TextSpeedValue"
-                            type="range"
-                            min="1"
-                            max="100"
-                            value={localText.speed}
-                            onChange={handleSliderChange}
-                        />
-                    </div>
-                </div>
-            </div>
             <button
                 onClick={handleSendText}
                 style={{ color: 'black', backgroundColor: '#38ffb9' }}
