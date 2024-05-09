@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import WiFiSettings from './settings/WiFiSettings';
-import APSettings from './settings/APSettings';
-import FileSettings from './settings/FileSettings';
 import BarsSettings from './settings/BarsSettings';
 import GameOfLifeSettings from './settings/GameOfLifeSettings';
 import MatrixSettings from './settings/MatrixSettings';
@@ -12,6 +10,34 @@ import StarPulseSetting from './settings/StarPulseSettings';
 import TemperatureSetting from './settings/TemperatureSettings';
 import MotionSettings from './settings/MotionSettings';
 import TextSettings from './settings/TextSettings';
+
+
+var defaultConfig = {
+  "mode": "client",
+  "mdns": "litbox",
+  "client": {
+    "ssid": "connectedness",
+    "password": "ReallyLongPassword123!@#"
+  },
+  "ap": {
+    "ssid": "LitBox-AP",
+    "password": "abcd1234"
+  },
+  "brightness": 9,
+  "sensitivity": 9,
+  "visualization": "bars",
+  "frameRate": 30,
+  "temperatureUnit": "C",
+  "colorPallet": [31, 2047, 63514, 65535],
+  "pixelColor": 65535,
+  "pixelBgColor": 0,
+  "text": {
+    "content": "*.*. Lit Box .*.*",
+    "animation": "scroll",
+    "speed": "75",
+    "size": "1"
+  }
+};
 
 function App() {
   var [config, setConfig] = useState(null);
@@ -58,8 +84,8 @@ function App() {
     }).catch(error => console.error('Error updating configuration:', error));
   };
 
-  var underConstruction = <div>🛠️ Under Construction 🛠️</div>;
   if (!config) {
+    // config = defaultConfig;
     return (
       <div className="container">
         <label className="header">Lit Box</label>
@@ -92,10 +118,6 @@ function App() {
         return <WaveformSetting config={config} updateConfig={updateConfig} />;
       case 'wifi':
         return <WiFiSettings config={config} saveConfig={saveConfig} />;
-      case 'ap':
-        return <APSettings config={config} saveConfig={saveConfig} />;
-      case 'files':
-        return <FileSettings />;
       case 'about':
         return <div class="setting" id="about-settings">
 
@@ -112,7 +134,7 @@ function App() {
 
         </div>;
       default:
-        return underConstruction
+        return <div>🛠️ Under Construction 🛠️</div>;
     }
   };
 
@@ -137,8 +159,6 @@ function App() {
           <option value="temperature">Temperature</option>
           <option value="waveform">Waveform</option>
           <option value="wifi">WiFi</option>
-          <option value="ap">AP</option>
-          <option value="files">Files</option>
           <option value="about">About</option>
         </select>
       </div>

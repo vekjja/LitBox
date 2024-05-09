@@ -5,8 +5,17 @@ function WiFiSettings({ config, saveConfig }) {
     const [ssid, setSSID] = useState(config.client.ssid);
     const [password, setPassword] = useState(config.client.password);
 
+
     const restartAsClient = () => {
         const newConfig = { ...config, mode: 'client' };
+        restart(newConfig);
+    }
+    const restartAsAccessPoint = () => {
+        const newConfig = { ...config, mode: 'ap' };
+        restart(newConfig);
+    }
+
+    const restart = (newConfig) => {
         saveConfig(newConfig);
         fetch('/restart', {
             method: 'POST',
@@ -34,6 +43,7 @@ function WiFiSettings({ config, saveConfig }) {
             <input value={password} onChange={e => setPassword(e.target.value)} />
             <SaveButton config={config} saveConfig={saveConfig} />
             <button onClick={restartAsClient} style={{ backgroundColor: 'brown', marginTop: '10px' }}>Restart as Client</button>
+            <button onClick={restartAsAccessPoint} style={{ backgroundColor: 'brown', marginTop: '10px' }}>Restart as Access Point</button>
         </div >
     );
 }
