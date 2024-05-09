@@ -271,6 +271,8 @@ void initializeWebServer() {
         pixelBgColor = hexToColor(config["pixelBgColor"]);
         config["pixelBgColor"] = colorToHex(pixelBgColor);
       }
+      stars = nullptr;
+      birds = nullptr;
       wifi.config.set(config);
       wifi.webServer.send(200, "application/json", config.as<String>());
     }
@@ -304,42 +306,6 @@ void initializeWebServer() {
       wifi.webServer.send(200, "application/json", config.as<String>());
     }
   });
-
-  // wifi.webServer.on("/birds", HTTP_GET, []() {
-  //   String response = "";
-  //   response += "birdCount=" + String(birdCount) + "\n";
-  //   response += "birdAlignment=" + String(birdAlignment) + "\n";
-  //   response += "birdCohesion=" + String(birdCohesion) + "\n";
-  //   response += "birdSeparation=" + String(birdSeparation) + "\n";
-  //   response += "birdVerticalBounds=" + String(birdVerticalBounds) + "\n";
-  //   response += "birdHorizontalBounds=" + String(birdHorizontalBounds) +
-  //   "\n"; wifi.webServer.send(200, "text/plain", response);
-  // });
-
-  // wifi.webServer.on("/birds", HTTP_POST, []() {
-  //   if (wifi.webServer.hasArg("birdCount")) {
-  //     birdCount = wifi.webServer.arg("birdCount").toInt();
-  //   }
-  //   if (wifi.webServer.hasArg("birdAlignment")) {
-  //     birdAlignment = wifi.webServer.arg("birdAlignment").toFloat();
-  //   }
-  //   if (wifi.webServer.hasArg("birdCohesion")) {
-  //     birdCohesion = wifi.webServer.arg("birdCohesion").toFloat();
-  //   }
-  //   if (wifi.webServer.hasArg("birdSeparation")) {
-  //     birdSeparation = wifi.webServer.arg("birdSeparation").toFloat();
-  //   }
-  //   if (wifi.webServer.hasArg("birdVerticalBounds")) {
-  //     birdVerticalBounds =
-  //         wifi.webServer.arg("birdVerticalBounds").compareTo("true") == 0;
-  //   }
-  //   if (wifi.webServer.hasArg("birdHorizontalBounds")) {
-  //     birdHorizontalBounds =
-  //         wifi.webServer.arg("birdHorizontalBounds").compareTo("true") == 0;
-  //   }
-  //   generateBirds(LEDWidth, LEDHeight);
-  //   wifi.webServer.send(200, "text/plain", "Bird settings updated");
-  // });
 
   wifi.connectSubroutine = []() { testMatrix(&matrix, LEDWidth, LEDHeight); };
   wifi.start();
