@@ -228,7 +228,7 @@ void initializeWebServer() {
     wifi.config["sensitivity"] = sensitivity;
     wifi.config["frameRate"] = frameRate;
     wifi.config["visualization"] = visualization;
-    // wifi.config["temperatureUnit"] = temperatureUnit;
+    wifi.config["temperatureUnit"] = temperatureUnit;
     wifi.config["text"] = text;
     for (int i = 0; i < palletSize; i++) {
       wifi.config["colorPallet"][i] = colorToHex(colorPallet[i]);
@@ -276,23 +276,37 @@ void initializeWebServer() {
         config["pixelBgColor"] = colorToHex(pixelBgColor);
       }
       // return the current config JsonDocument
+      wifi.config = config;
       wifi.webServer.send(200, "application/json", config.as<String>());
     }
   });
 
   wifi.webServer.on("/text", HTTP_POST, []() {
     String body = wifi.webServer.arg("plain");
-    JsonDocument textConfig;
-    DeserializationError error = deserializeJson(textConfig, body);
+    JsonDocument config;
+    DeserializationError error = deserializeJson(config, body);
     if (error) {
       wifi.webServer.send(400, "text/plain", "Invalid JSON");
       return;
     } else {
-      if (textConfig.containsKey("text")) {
-        text = textConfig["text"]["content"].as<String>();
-        scrollText(&matrix, text, &wifi);
+      if (config.containsKey("text")) {
+        text = config["text"]["content"].as<String>();
+        if (config["text"].containsKey("speed")) {
+          textSpeed = config["text"]["speed"].as<int>();
+        }
+        if (config["text"].containsKey("animation")) {
+          String textAnimation = config["text"]["animation"].as<String>();
+          if (textAnimation == "scroll") {
+            scrollText(&matrix, text, &wifi);
+          } else if (textAnimation == "wave") {
+            waveText(&matrix, text);
+          } else if (textAnimation == "display") {
+            visualization = "text";
+          }
+        }
       }
-      wifi.webServer.send(200, "application/json", textConfig.as<String>());
+      wifi.config = config;
+      wifi.webServer.send(200, "application/json", config.as<String>());
     }
   });
 
