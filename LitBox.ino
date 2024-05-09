@@ -280,39 +280,21 @@ void initializeWebServer() {
     }
   });
 
-  // wifi.webServer.on("/text", HTTP_GET, []() {
-  //   wifi.webServer.send(
-  //       200, "text/plain",
-  //       "text=" + text + "\n" + "textSpeed=" + String(textSpeed) + "\n" +
-  //           "textColor=" + colorToHex(pixelColor) + "\n" + "textBgColor=" +
-  //           colorToHex(pixelBgColor) + "\n" + "textAnimation=scroll\n");
-  // });
-  // wifi.webServer.on("/text", HTTP_POST, []() {
-  //   if (wifi.webServer.hasArg("textColor")) {
-  //     pixelColor = hexToColor(wifi.webServer.arg("textColor"));
-  //   }
-  //   if (wifi.webServer.hasArg("textBgColor")) {
-  //     pixelBgColor = hexToColor(wifi.webServer.arg("textBgColor"));
-  //   }
-  //   if (wifi.webServer.hasArg("textSpeed")) {
-  //     textSpeed = wifi.webServer.arg("textSpeed").toInt();
-  //     wifi.webServer.send(200, "text/plain", "Speed updated");
-  //   }
-  //   if (wifi.webServer.hasArg("text")) {
-  //     text = wifi.webServer.arg("text");
-  //   }
-  //   if (wifi.webServer.hasArg("textAnimation")) {
-  //     String textAnimation = wifi.webServer.arg("textAnimation");
-  //     if (textAnimation == "scroll") {
-  //       scrollText(&matrix, text, &wifi);
-  //     } else if (textAnimation == "wave") {
-  //       waveText(&matrix, text);
-  //     } else if (textAnimation == "display") {
-  //       visualization = "text";
-  //     }
-  //   }
-  //   wifi.webServer.send(200, "text/plain", "Text updated");
-  // });
+  wifi.webServer.on("/text", HTTP_POST, []() {
+    String body = wifi.webServer.arg("plain");
+    JsonDocument textConfig;
+    DeserializationError error = deserializeJson(textConfig, body);
+    if (error) {
+      wifi.webServer.send(400, "text/plain", "Invalid JSON");
+      return;
+    } else {
+      if (textConfig.containsKey("text")) {
+        text = textConfig["text"]["content"].as<String>();
+        scrollText(&matrix, text, &wifi);
+      }
+      wifi.webServer.send(200, "application/json", textConfig.as<String>());
+    }
+  });
 
   // wifi.webServer.on("/birds", HTTP_GET, []() {
   //   String response = "";

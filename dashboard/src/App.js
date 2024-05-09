@@ -28,10 +28,15 @@ var defaultConfig = {
   "sensitivity": 9,
   "visualization": "bars",
   "frameRate": 30,
-  "text": "LitBox",
   "colorPallet": ["#0000EE", "#00EEFF", "#FF0CDE", "#FFFFFF"],
   "pixelColor": "#FFFFFF",
-  "pixelBgColor": "#000000"
+  "pixelBgColor": "#000000",
+  "text": {
+    "content": "*.*. Lit Box .*.*",
+    "animation": "scroll",
+    "speed": "75",
+    "size": "1"
+  }
 };
 
 function App() {

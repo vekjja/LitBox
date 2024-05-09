@@ -13,9 +13,14 @@
     "sensitivity": 9,
     "visualization": "bars",
     "frameRate": 30,
-    "text": "LitBox",
     "temperatureUnit": "C",
     "colorPallet":[31,2047,63514,65535],
     "pixelColor":65535,
-    "pixelBgColor":0
+    "pixelBgColor":0,
+    "text": {
+        "content": "*.*. Lit Box .*.*",
+        "animation": "scroll",
+        "speed": "75",
+        "size": "1"
+    }
 }
