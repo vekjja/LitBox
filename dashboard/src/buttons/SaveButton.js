@@ -6,7 +6,7 @@ function SaveButton({ config, saveConfig }) {
     };
 
     return (
-        <button onClick={handleSave} style={{ color: "black", backgroundColor: '#38ffb9' }}>Save</button>
+        <button onClick={handleSave} style={{ color: "black", backgroundColor: '#38ffb9' }}>Save Current Config</button>
     );
 }
 export default SaveButton;

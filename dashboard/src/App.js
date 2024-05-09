@@ -157,7 +157,7 @@ function App() {
           <option value="text">Text</option>
           <option value="temperature">Temperature</option>
           <option value="waveform">Waveform</option>
-          <option value="wifi">WiFi</option>
+          <option value="wifi">System</option>
           <option value="about">About</option>
         </select>
       </div>
