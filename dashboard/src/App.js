@@ -12,6 +12,7 @@ import MotionSettings from './settings/MotionSettings';
 import TextSettings from './settings/TextSettings';
 
 var defaultConfig = {
+  "version": "1.0.0",
   "mode": "client",
   "mdns": "litbox",
   "client": {
@@ -19,7 +20,7 @@ var defaultConfig = {
     "password": "ReallyLongPassword123!@#"
   },
   "ap": {
-    "ssid": "LitBox-AP",
+    "ssid": "LitBox",
     "password": "abcd1234"
   },
   "brightness": 9,
