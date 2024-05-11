@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import WiFiSettings from './settings/WiFiSettings';
+import SystemSettings from './settings/SystemSettings';
 import BarsSettings from './settings/BarsSettings';
 import GameOfLifeSettings from './settings/GameOfLifeSettings';
 import MatrixSettings from './settings/MatrixSettings';
@@ -80,7 +80,7 @@ function App() {
       return response.json();
     }).then(data => {
       setConfig(newConfig);
-      console.log('Configuration updated:', data);
+      console.log('Configuration Returned:', data);
       // alert('Configuration updated');
     }).catch(error => console.error('Error updating configuration:', error));
   };
@@ -117,7 +117,7 @@ function App() {
       case 'waveform':
         return <WaveformSetting config={config} updateConfig={updateConfig} />;
       case 'wifi':
-        return <WiFiSettings config={config} saveConfig={saveConfig} />;
+        return <SystemSettings config={config} updateConfig={updateConfig} saveConfig={saveConfig} />;
       case 'about':
         return <div class="setting" id="about-settings">
 

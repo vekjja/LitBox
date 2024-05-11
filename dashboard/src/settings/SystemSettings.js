@@ -1,30 +1,37 @@
 import React, { useState } from 'react';
-import SaveButton from '../buttons/SaveButton';
 
-function WiFiSettings({ config, saveConfig }) {
+function SystemSettings({ config, updateConfig, saveConfig }) {
     const [ssid, setSSID] = useState(config.client.ssid);
     const [password, setPassword] = useState(config.client.password);
 
 
-    const restartAsClient = () => {
-        const newConfig = { ...config, mode: 'client' };
-        restart(newConfig);
-    }
-    const restartAsAccessPoint = () => {
-        const newConfig = { ...config, mode: 'ap' };
-        restart(newConfig);
+    const handleSave = () => {
+        const newConfig = {
+            ...config,
+            client: {
+                ssid: ssid,
+                password: password
+            }
+        };
+        updateConfig(newConfig);
+        saveConfig(newConfig);
     }
 
-    const restart = (newConfig) => {
+    const restartAs = (mode) => {
+        const newConfig = {
+            ...config,
+            mode: mode,
+            client: {
+                ssid: ssid,
+                password: password
+            }
+        };
+        updateConfig(newConfig);
         saveConfig(newConfig);
-        fetch('/restart', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newConfig)
-        })
+        fetch('/restart')
             .then(response => {
                 if (response.ok) {
-                    alert('System is restarting as client...');
+                    alert("System is Restarting as WiFi " + (mode === 'client' ? 'Client' : 'Access Point'));
                 } else {
                     alert('Failed to restart system.');
                 }
@@ -49,11 +56,11 @@ function WiFiSettings({ config, saveConfig }) {
                     </div>
                 </div>
             </div>
-            <SaveButton config={config} saveConfig={saveConfig} />
-            <button onClick={restartAsClient} style={{ backgroundColor: 'brown', marginTop: '10px' }}>Restart as Client</button>
-            <button onClick={restartAsAccessPoint} style={{ backgroundColor: 'brown', marginTop: '10px' }}>Restart as Access Point</button>
+            <button onClick={handleSave} style={{ color: "black", backgroundColor: '#38ffb9' }}>Save Current Config</button>
+            <button onClick={() => restartAs('client')} style={{ backgroundColor: 'brown', marginTop: '10px' }}>Restart as Client</button>
+            <button onClick={() => restartAs('ap')} style={{ backgroundColor: 'brown', marginTop: '10px' }}>Restart as Access Point</button>
         </div >
     );
 }
 
-export default WiFiSettings;
+export default SystemSettings;

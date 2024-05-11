@@ -50,9 +50,9 @@ void setup() {
   // TODO: Use loaded config on startup
   initializeMatrix();
   initializeWebServer();
+  initializeFromConfig();
   initializeMotion(LEDWidth, LEDHeight);
   randomSeed(analogRead(A0));
-  loadColors();
   Serial.println("Lit Box Initialized");
 }
 
@@ -93,6 +93,25 @@ void loop() {
   } else {
     drawBars();
   }
+}
+
+void initializeFromConfig() {
+  setBrightness(wifi.config["brightness"].as<int>());
+  setSensitivity(wifi.config["sensitivity"].as<int>());
+  setFramerate(wifi.config["frameRate"].as<unsigned int>());
+
+  visualization = wifi.config["visualization"].as<String>();
+  temperatureUnit = wifi.config["temperatureUnit"].as<String>();
+
+  JsonArray colorArray = wifi.config["colorPallet"];
+  for (int i = 0; i < palletSize; i++) {
+    colorPallet[i] = colorArray[i];
+  }
+  pixelColor = wifi.config["pixelColor"];
+  pixelBgColor = wifi.config["pixelBgColor"];
+
+  text = wifi.config["text"]["content"].as<String>();
+  textSpeed = wifi.config["text"]["speed"].as<int>();
 }
 
 void drawTemperature() {
