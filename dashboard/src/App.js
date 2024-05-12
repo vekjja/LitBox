@@ -7,6 +7,7 @@ import WaveformSetting from './settings/WaveformSettings';
 import BirdsSetting from './settings/BirdsSettings';
 import CirclesSetting from './settings/CirclesSetting';
 import StarPulseSetting from './settings/StarPulseSettings';
+import StarFieldSettings from './settings/StarFieldSettings';
 import TemperatureSetting from './settings/TemperatureSettings';
 import MotionSettings from './settings/MotionSettings';
 import TextSettings from './settings/TextSettings';
@@ -108,6 +109,8 @@ function App() {
         return <MatrixSettings config={config} updateConfig={updateConfig} />;
       case 'motion':
         return <MotionSettings config={config} updateConfig={updateConfig} />;
+      case 'starField':
+        return <StarFieldSettings config={config} updateConfig={updateConfig} />;
       case 'starPulse':
         return <StarPulseSetting config={config} updateConfig={updateConfig} />;
       case 'text':
@@ -155,6 +158,7 @@ function App() {
           <option value="matrix">Matrix</option>
           <option value="motion">Motion</option>
           <option value="starPulse">Star Pulse</option>
+          <option value="starField">Star Field</option>
           <option value="text">Text</option>
           <option value="temperature">Temperature</option>
           <option value="waveform">Waveform</option>

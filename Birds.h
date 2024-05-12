@@ -19,14 +19,15 @@ float birdRandomVelocityChangeFactor = 3;  // Max random change in velocity
 int birdRandomChangeChance = 3;  // Chance of random change (in percentage)
 
 void generateBirds(int maxX, int maxY) {
+  srand(time(0));
   birds = new Pixel[birdCount];
   for (int i = 0; i < birdCount; i++) {
     uint32_t birdColor = colorPallet[random(0, palletSize - 1)];
     birds[i].x = random(0, maxX);
     birds[i].y = random(0, maxY);
-    birds[i].intensity = random(100, 255);  // Random intensity
-    birds[i].vx = random(0, 3);             // Random velocity X
-    birds[i].vy = random(0, 3);             // Random velocity Y
+    birds[i].brightness = random(100, 255);  // Random intensity
+    birds[i].vx = random(0, 3);              // Random velocity X
+    birds[i].vy = random(0, 3);              // Random velocity Y
     birds[i].color = birdColor;  // Function to generate a random color
   }
 }

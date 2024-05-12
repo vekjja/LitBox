@@ -30,7 +30,7 @@ uint8_t matrixType =
 Adafruit_NeoMatrix matrix = Adafruit_NeoMatrix(
     LEDWidth, LEDHeight, ledDataPin, matrixType, NEO_GRB + NEO_KHZ800);
 
-// Brightness and Color Config
+// Brightness Config
 const int maxBrightness = 255;
 const int minBrightness = 1;
 int brightness = 18;
@@ -38,7 +38,7 @@ int brightness = 18;
 // Visualization Config
 const int maxFrameRate = 120;
 unsigned int frameRate = 60;
-String visualization = "bars";
+String visualization = "starField";
 
 // temperature Config
 String temperatureUnit = "C";
@@ -47,7 +47,6 @@ String temperatureUnit = "C";
 ESPWiFi wifi;
 
 void setup() {
-  // TODO: Use loaded config on startup
   initializeMatrix();
   initializeWebServer();
   initializeFromConfig();
@@ -64,7 +63,6 @@ void initializeMatrix() {
 }
 
 void loop() {
-  // TODO: Use loaded config
   wifi.handleClient();
   if (visualization == "waveform") {
     drawWaveform();
@@ -72,12 +70,6 @@ void loop() {
     drawCircles();
   } else if (visualization == "motion") {
     drawMotion();
-  } else if (visualization == "starField") {
-    // the star field will be a 3D visualization
-    // the stars are position locked and the movement of the board will
-    // change the perspective of the stars, farther stars brightness will
-    // be dim
-    // and closer stars will be brighter
   } else if (visualization == "text") {
     displayOrScrollText(&matrix, text, &wifi);
   } else if (visualization == "birds") {
@@ -88,8 +80,8 @@ void loop() {
     runAtFrameRate(drawTemperature, frameRate);
   } else if (visualization == "matrix") {
     runAtFrameRate(drawMatrixAnimation, frameRate);
-  } else if (visualization == "starPulse") {
-    drawStarPulse();
+  } else if (visualization == "starPulse" || visualization == "starField") {
+    drawStars();
   } else {
     drawBars();
   }
@@ -184,9 +176,13 @@ void drawGameOfLife() {
   matrix.show();
 }
 
-void drawStarPulse() {
-  spectralAnalyzer(LEDWidth, LEDHeight);
-  updateStartPulse(LEDWidth, LEDHeight);
+void drawStars() {
+  if (visualization == "starField") {
+    updateStarField(LEDWidth, LEDHeight);
+  } else {
+    spectralAnalyzer(LEDWidth, LEDHeight);
+    updateStartPulse(LEDWidth, LEDHeight);
+  }
   matrix.fillScreen(0);
   for (int i = 0; i < starCount; i++) {
     matrix.drawPixel(stars[i].x, stars[i].y, stars[i].color);

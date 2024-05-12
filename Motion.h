@@ -12,6 +12,7 @@
 // SDA/D2
 // SCL/D1
 const int motion_i2c_addr = 0x69;
+float offsetX = 0.0, offsetY = 0.0, offsetZ = 0.0;
 
 struct MotionObject {
   Body* body;
@@ -23,14 +24,31 @@ int motionNumObjects = 9;
 MotionObject* motionObjects = nullptr;
 
 // BMI160 sensor
+const float rawDataConversion = 32768.0;
 float gx = 0.0, gy = 0.0, gz = 0.0;
 float ax = 0.0, ay = 0.0, az = 0.0;
 bool BMI160Initialized = false;
-const float rawDataConversion = 32768.0;
+
+// Complementary filter parameters
+float angleX = 0, angleY = 0, angleZ = 0;
+const float alpha = 0.98;  // Tunable factor, usually close to 1
+const float dt = 0.01;     // Time step, depends on your sensor update rate
 
 // Physics
 bool gravityEnabled = true;
 World world(Vec2{0.0, 0.0}, 6);
+
+void updateOrientation() {
+  // Convert gyroscope degrees/sec to degrees
+  float gyroAngleX = gx * dt;
+  float gyroAngleY = gy * dt;
+  float gyroAngleZ = gz * dt;
+
+  // Integrate gyroscopic angles
+  angleX = alpha * (angleX + gyroAngleX) + (1 - alpha) * (ax);
+  angleY = alpha * (angleY + gyroAngleY) + (1 - alpha) * (ay);
+  angleZ = alpha * (angleZ + gyroAngleZ) + (1 - alpha) * (az);
+}
 
 void generateMotionObjects(int maxX, int maxY) {
   world.Clear();
@@ -72,6 +90,60 @@ void generateMotionObjects(int maxX, int maxY) {
   }
 }
 
+float convertRawGyro(int gRaw) {
+  // convert the raw gyro data to degrees/second
+  // we are using 250 degrees/seconds range
+  // -250 maps to a raw value of -32768
+  // +250 maps to a raw value of 32767
+  return (gRaw * 250.0) / rawDataConversion;
+}
+
+float convertRawAccel(int raw, int offset) {
+  // The full scale range is ±2g
+  // Scale Factor for ±2g = 32768/2 = 16384
+  return (raw - offset) / (rawDataConversion / BMI160.getAccelerometerRange());
+}
+
+void readGyro() {
+  if (!BMI160Initialized) return;
+  int gxRaw, gyRaw, gzRaw;
+  BMI160.readGyro(gxRaw, gyRaw, gzRaw);
+  gx = convertRawGyro(gxRaw);
+  gy = convertRawGyro(gyRaw);
+  gz = convertRawGyro(gzRaw);
+  // Serial.println("g: " + String(gx) + ", " + String(gy) + ", " + String(gz));
+}
+
+void readAccelerometer() {
+  if (!BMI160Initialized) return;
+  int axRaw, ayRaw, azRaw;
+  BMI160.readAccelerometer(axRaw, ayRaw, azRaw);
+  ax = convertRawAccel(axRaw, BMI160.getXAccelOffset());
+  ay = convertRawAccel(ayRaw, BMI160.getYAccelOffset());
+  az = convertRawAccel(azRaw, BMI160.getZAccelOffset());
+  // Serial.println("a: " + String(ax) + ", " + String(ay) + ", " + String(az));
+}
+
+void calibrateAccelerometer(int samples = 100) {
+  float sumX = 0.0, sumY = 0.0, sumZ = 0.0;
+
+  for (int i = 0; i < samples; i++) {
+    readAccelerometer();  // Assumes this function updates ax and ay
+    sumX += ax;
+    sumY += ay;
+    sumZ += az;
+    delay(10);  // Delay to allow for a spread of readings
+  }
+
+  offsetX = sumX / samples;
+  offsetY = sumY / samples;
+  offsetZ = sumZ / samples;
+  Serial.println("Accelerometer Calibration: ");
+  Serial.println("\tOffsetX: " + String(offsetX));
+  Serial.println("\tOffsetY: " + String(offsetY));
+  Serial.println("\tOffsetZ: " + String(offsetZ));
+}
+
 void initializeMotion(int maxX, int maxY) {
   if (checkI2CDevice(motion_i2c_addr)) {
     if (BMI160.begin(BMI160GenClass::I2C_MODE, motion_i2c_addr)) {
@@ -82,6 +154,7 @@ void initializeMotion(int maxX, int maxY) {
       BMI160.autoCalibrateZAccelOffset(1);
       BMI160.autoCalibrateGyroOffset();
       delay(250);
+      calibrateAccelerometer();
       Serial.println("BMI160 Auto Calibration Complete");
       BMI160Initialized = true;
     } else {
@@ -108,40 +181,6 @@ float getTemperature(String unit) {
     return tempF;
   }
   return tempC;
-}
-
-float convertRawGyro(int gRaw) {
-  // convert the raw gyro data to degrees/second
-  // we are using 250 degrees/seconds range
-  // -250 maps to a raw value of -32768
-  // +250 maps to a raw value of 32767
-  return (gRaw * 250.0) / rawDataConversion;
-}
-
-float convertRawAccel(int raw, int offset) {
-  // Assuming the full scale range is ±2g
-  // Scale Factor for ±2g = 32768/2 = 16384
-  return (raw - offset) / (rawDataConversion / BMI160.getAccelerometerRange());
-}
-
-void readGyro() {
-  if (!BMI160Initialized) return;
-  int gxRaw, gyRaw, gzRaw;
-  BMI160.readGyro(gxRaw, gyRaw, gzRaw);
-  gx = convertRawGyro(gxRaw);
-  gy = convertRawGyro(gyRaw);
-  gz = convertRawGyro(gzRaw);
-  // Serial.println("g: " + String(gx) + ", " + String(gy) + ", " + String(gz));
-}
-
-void readAccelerometer() {
-  if (!BMI160Initialized) return;
-  int axRaw, ayRaw, azRaw;
-  BMI160.readAccelerometer(axRaw, ayRaw, azRaw);
-  ax = convertRawAccel(axRaw, BMI160.getXAccelOffset());
-  ay = convertRawAccel(ayRaw, BMI160.getYAccelOffset());
-  az = convertRawAccel(azRaw, BMI160.getZAccelOffset());
-  // Serial.println("a: " + String(ax) + ", " + String(ay) + ", " + String(az));
 }
 
 void motionAnimation(int maxX, int maxY, float frameRate) {

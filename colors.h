@@ -29,7 +29,7 @@
 struct Pixel {
   float x = 0, y = 0;
   float vx = 0, vy = 0;
-  byte intensity = 0;
+  int brightness = 0;
   uint32_t color = 0;
 };
 
