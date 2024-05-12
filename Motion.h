@@ -97,7 +97,8 @@ void initializeMotion(int maxX, int maxY) {
 
 float getTemperature(String unit) {
   if (!BMI160Initialized) return 0;
-  int16_t rawTemp = BMI160.getTemperature();  // returns a 16-bit integer
+  int16_t rawTemp = BMI160.getTemperature();
+  // returns a 16-bit integer
   // The temperature data is a signed 16-bit value where 0x0000 corresponds to
   // 23°C, and each least significant bit (LSB) represents approximately
   // 0.00195°C.

@@ -81,8 +81,8 @@ function TextSettings({ config, updateConfig }) {
                 placeholder="Enter text"
             />
             <button
+                id='greenButton'
                 onClick={handleSendText}
-                style={{ color: 'black', backgroundColor: '#38ffb9' }}
             >
                 Send Text
             </button>

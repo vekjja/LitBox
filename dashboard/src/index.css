@@ -65,6 +65,16 @@ button,
   gap: 20px;
 }
 
+#greenButton {
+  color: black;
+  background-color: #38ffb9;
+}
+
+#redButton {
+  color: white;
+  background-color: brown;
+}
+
 input {
   background-color: #818181;
   color: #000000;

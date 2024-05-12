@@ -57,8 +57,8 @@ function SystemSettings({ config, updateConfig, saveConfig }) {
                 </div>
             </div>
             <button onClick={handleSave} style={{ color: "black", backgroundColor: '#38ffb9' }}>Save Current Config</button>
-            <button onClick={() => restartAs('client')} style={{ backgroundColor: 'brown', marginTop: '10px' }}>Restart as Client</button>
-            <button onClick={() => restartAs('ap')} style={{ backgroundColor: 'brown', marginTop: '10px' }}>Restart as Access Point</button>
+            <button id="redButton" onClick={() => restartAs('client')} >Restart as Client</button>
+            <button id="redButton" onClick={() => restartAs('ap')} >Restart as Access Point</button>
         </div >
     );
 }
