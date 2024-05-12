@@ -28,9 +28,9 @@ var defaultConfig = {
   "visualization": "bars",
   "frameRate": 30,
   "temperatureUnit": "C",
-  "colorPallet": [31, 2047, 63514, 65535],
-  "pixelColor": 65535,
-  "pixelBgColor": 0,
+  "colorPallet": ['#0000FF', '#00FFFF', '#FF00D5', '#FFFFFF'],
+  pixelBgColor: "#000000",
+  pixelColor: "#f5f0f0",
   "text": {
     "content": "*.*. Lit Box .*.*",
     "animation": "scroll",

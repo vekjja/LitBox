@@ -28,7 +28,7 @@ void updateStartPulse(int maxX, int maxY) {
     initializeStars(maxX, maxY);
   }
   for (int i = 0; i < starCount; i++) {
-    stars[i].x += spectralData[stars[i].audioBand] / 2;
+    stars[i].x += spectralData[stars[i].audioBand];
   }
 
   // Check if the star is out of bounds
