@@ -2,3 +2,4 @@
 .arduino/
 .vscode/
 data/
+**/**/config.json
