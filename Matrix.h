@@ -1,18 +1,26 @@
+#ifndef LITBOX_MATRIX_H
+#define LITBOX_MATRIX_H
+
 #include <NeoPixelBus.h>
+
+#include "colors.h"
 
 #define LED_PIN 12
 #define LED_WIDTH 32
 #define LED_HEIGHT 8
 #define NUM_LEDS (LED_WIDTH * LED_HEIGHT)
 
-NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(NUM_LEDS, LED_PIN);
+NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> matrix(NUM_LEDS, LED_PIN);
+
+// Brightness
+const uint8_t minBrightness = 1;
+const uint8_t maxBrightness = 255;
+uint8_t brightness = 50;
 
 void initializeMatrix() {
-  strip.Begin();
-  strip.Show();
+  matrix.Begin();
+  matrix.Show();
 }
-
-void clearMatrix() { strip.ClearTo(RgbColor(0, 0, 0)); }
 
 uint16_t XY(uint8_t x, uint8_t y) {
   y = LED_HEIGHT - 1 - y;  // Adjust y for the matrix orientation
@@ -23,57 +31,59 @@ uint16_t XY(uint8_t x, uint8_t y) {
   }
 }
 
-void setPixelColor(uint8_t x, uint8_t y, RgbColor color) {
+void drawPixel(uint8_t x, uint8_t y, RgbColor color) {
   uint16_t index = XY(x, y);
   if (index < NUM_LEDS) {
-    strip.SetPixelColor(index, color);
+    matrix.SetPixelColor(index, color);
   }
 }
 
 void testMatrix() {
-  RgbColor testColor(128, 128, 128);
+  RgbColor testColor = pixelColor;
 
   for (int x = 0; x < LED_WIDTH; x++) {
     for (int y = 0; y < LED_HEIGHT; y++) {
-      setPixelColor(x, y, testColor);
-      strip.Show();
+      drawPixel(x, y, testColor);
+      matrix.Show();
       delay(10);
-      setPixelColor(x, y, RgbColor(0, 0, 0));
+      drawPixel(x, y, RgbColor(0, 0, 0));
     }
   }
 
   int del = 100;
   // bottom left
-  clearMatrix();
-  setPixelColor(0, 0, testColor);
-  strip.Show();
+  matrix.ClearTo(BLACK);
+  drawPixel(0, 0, testColor);
+  matrix.Show();
   delay(del);
 
   // top left
-  clearMatrix();
-  setPixelColor(0, LED_HEIGHT - 1, testColor);
-  strip.Show();
+  matrix.ClearTo(BLACK);
+  drawPixel(0, LED_HEIGHT - 1, testColor);
+  matrix.Show();
   delay(del);
 
   // top right
-  clearMatrix();
-  setPixelColor(LED_WIDTH - 1, LED_HEIGHT - 1, testColor);
-  strip.Show();
+  matrix.ClearTo(BLACK);
+  drawPixel(LED_WIDTH - 1, LED_HEIGHT - 1, testColor);
+  matrix.Show();
   delay(del);
 
   // bottom right
-  clearMatrix();
-  setPixelColor(LED_WIDTH - 1, 0, testColor);
-  strip.Show();
+  matrix.ClearTo(BLACK);
+  drawPixel(LED_WIDTH - 1, 0, testColor);
+  matrix.Show();
   delay(del);
 
   // middle
-  clearMatrix();
-  setPixelColor(LED_WIDTH / 2, LED_HEIGHT / 2, testColor);
-  strip.Show();
+  matrix.ClearTo(BLACK);
+  drawPixel(LED_WIDTH / 2, LED_HEIGHT / 2, testColor);
+  matrix.Show();
   delay(del);
 
   // clear
-  clearMatrix();
-  strip.Show();
+  matrix.ClearTo(BLACK);
+  matrix.Show();
 }
+
+#endif  // LITBOX_MATRIX_H

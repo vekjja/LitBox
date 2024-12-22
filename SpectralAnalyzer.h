@@ -46,6 +46,7 @@ void spectralAnalyzer(int maxWidth, int maxHeight) {
     // Scale the audio input according to sensitivity
     vReal[i] = audioPin.readA() * (sensitivity / 10.0);
     vImage[i] = 0;
+    Serial.println(vReal[i]);
   }
 
   FFT.windowing(FFTWindow::Hamming, FFTDirection::Forward); /* Weigh data */

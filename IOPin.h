@@ -1,5 +1,5 @@
-#ifndef IOPIN_H
-#define IOPIN_H
+#ifndef LITBOX_IOPIN_H
+#define LITBOX_IOPIN_H
 
 #include "Arduino.h"
 
@@ -53,4 +53,5 @@ class IOPin {
   void startTone(int val, int dur) { tone(_pin, val, dur); };
   void stopTone() { noTone(_pin); };
 };
-#endif
+
+#endif  // LITBOX_IOPIN_H
