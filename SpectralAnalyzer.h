@@ -1,11 +1,12 @@
 #ifndef SPECTRAL_ANALYZER_H
 #define SPECTRAL_ANALYZER_H
 
-#include <IOPin.h>
 #include <arduinoFFT.h>
 
+#include "IOPin.h"
+
 // Audio Config
-IOPin audioPin(A0, INPUT);
+IOPin audioPin(9, INPUT);
 const int maxInput = 1023;
 const int minSensitivity = 1;
 const int maxSensitivity = 100;
