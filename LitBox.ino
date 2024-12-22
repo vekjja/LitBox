@@ -10,7 +10,7 @@
 CRGB leds[NUM_LEDS];
 
 // Layout settings
-const bool kMatrixSerpentineLayout = false;
+const bool kMatrixSerpentineLayout = true;
 
 // Brightness Config
 const int maxBrightness = 255;
@@ -38,7 +38,7 @@ void initializeMatrix() {
 void testMatrix(CRGB* leds) {
   fill_solid(leds, NUM_LEDS, CRGB::Black);
   for (int i = 0; i < NUM_LEDS; i++) {
-    leds[i] = CRGB::Red;
+    leds[i] = CRGB::Magenta;
     FastLED.show();
     delay(10);
     leds[i] = CRGB::Black;
@@ -71,17 +71,20 @@ void testMatrix(CRGB* leds) {
 
 // Helper function to map 2D coordinates to 1D array index
 uint16_t XY(uint8_t x, uint8_t y) {
+  uint8_t adjustedY =
+      LED_HEIGHT - 1 - y;  // Flip y-coordinate for bottom-left origin
+
   if (kMatrixSerpentineLayout) {
     if (x % 2 == 0) {
-      // Even columns go top to bottom
-      return (x * LED_HEIGHT) + y;
+      // Even columns go bottom to top
+      return (x * LED_HEIGHT) + adjustedY;
     } else {
-      // Odd columns go bottom to top
-      return (x * LED_HEIGHT) + (LED_HEIGHT - 1 - y);
+      // Odd columns go top to bottom
+      return (x * LED_HEIGHT) + y;
     }
   } else {
     // Standard column-major layout
-    return (x * LED_HEIGHT) + y;
+    return (x * LED_HEIGHT) + adjustedY;
   }
 }
 
