@@ -1,5 +1,4 @@
 #include <ESPWiFi.h>
-#include <FastLED.h>
 
 #include "Matrix.h"
 #include "SpectralAnalyzer.h"
@@ -21,7 +20,7 @@ void loop() {
 }
 
 void initializeWebServer() {
-  wifi.connectSubroutine = []() { testMatrix(leds); };
+  wifi.connectSubroutine = []() { testMatrix(); };
   wifi.start();
 }
 
@@ -37,7 +36,4 @@ void drawBars() {
   //     leds[XY(x, LED_HEIGHT)] = CRGB::White;
   //   }
   // }
-  leds[XY(4, 5)] = CRGB::White;
-  FastLED.show();
-  delay(50);
 }

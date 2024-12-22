@@ -1,58 +1,79 @@
-#ifndef LITBOX_MATRIX_H
-#define LITBOX_MATRIX_H
+#include <NeoPixelBus.h>
 
-#include <FastLED.h>
-
-// LED Matrix config
 #define LED_PIN 12
 #define LED_WIDTH 32
 #define LED_HEIGHT 8
 #define NUM_LEDS (LED_WIDTH * LED_HEIGHT)
 
-CRGB leds[NUM_LEDS];
-
-// Brightness Config
-const int maxBrightness = 255;
-const int minBrightness = 1;
-int brightness = 18;
-
-void clearMatrix() { fill_solid(leds, NUM_LEDS, CRGB::Black); }
-void fillMatrix(CRGB color) { fill_solid(leds, NUM_LEDS, color); }
+NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(NUM_LEDS, LED_PIN);
 
 void initializeMatrix() {
-  // Initialize FastLED
-  FastLED.addLeds<WS2812B, LED_PIN, GRB>(leds, NUM_LEDS)
-      .setCorrection(TypicalSMD5050);
-  FastLED.setBrightness(brightness);
-  clearMatrix();
-  FastLED.show();
+  strip.Begin();
+  strip.Show();
 }
 
-// Helper function to map 2D coordinates to 1D array index
+void clearMatrix() { strip.ClearTo(RgbColor(0, 0, 0)); }
+
 uint16_t XY(uint8_t x, uint8_t y) {
-  // Flip y-coordinate for bottom-left origin
-  uint8_t adjustedY = LED_HEIGHT - 1 - y;
+  y = LED_HEIGHT - 1 - y;  // Adjust y for the matrix orientation
   if (x % 2 == 0) {
-    // Even columns go bottom to top
-    return (x * LED_HEIGHT) + adjustedY;
+    return x * LED_HEIGHT + y;
   } else {
-    // Odd columns go top to bottom
-    return (x * LED_HEIGHT) + y;
+    return x * LED_HEIGHT + (LED_HEIGHT - 1 - y);
   }
 }
 
-void testMatrix(CRGB* leds) {
-  clearMatrix();
-  CRGB::HTMLColorCode testColor = CRGB::Gray;
-  // loop through x and y to light up the entire matrix
+void setPixelColor(uint8_t x, uint8_t y, RgbColor color) {
+  uint16_t index = XY(x, y);
+  if (index < NUM_LEDS) {
+    strip.SetPixelColor(index, color);
+  }
+}
+
+void testMatrix() {
+  RgbColor testColor(128, 128, 128);
+
   for (int x = 0; x < LED_WIDTH; x++) {
     for (int y = 0; y < LED_HEIGHT; y++) {
-      leds[XY(x, y)] = testColor;
-      FastLED.show();
+      setPixelColor(x, y, testColor);
+      strip.Show();
       delay(10);
-      leds[XY(x, y)] = CRGB::Black;
+      setPixelColor(x, y, RgbColor(0, 0, 0));
     }
   }
-}
 
-#endif  // LITBOX_MATRIX_H
+  int del = 100;
+  // bottom left
+  clearMatrix();
+  setPixelColor(0, 0, testColor);
+  strip.Show();
+  delay(del);
+
+  // top left
+  clearMatrix();
+  setPixelColor(0, LED_HEIGHT - 1, testColor);
+  strip.Show();
+  delay(del);
+
+  // top right
+  clearMatrix();
+  setPixelColor(LED_WIDTH - 1, LED_HEIGHT - 1, testColor);
+  strip.Show();
+  delay(del);
+
+  // bottom right
+  clearMatrix();
+  setPixelColor(LED_WIDTH - 1, 0, testColor);
+  strip.Show();
+  delay(del);
+
+  // middle
+  clearMatrix();
+  setPixelColor(LED_WIDTH / 2, LED_HEIGHT / 2, testColor);
+  strip.Show();
+  delay(del);
+
+  // clear
+  clearMatrix();
+  strip.Show();
+}
