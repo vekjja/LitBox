@@ -1,15 +1,12 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-void runAtFrameRate(void (*functionToRun)(), unsigned int fps) {
-  static unsigned long lastFrameTime = 0;
-  unsigned long currentFrameTime = millis();
-  unsigned int frameDuration =
-      1000 / fps;  // Duration of each frame in milliseconds
-
-  if (currentFrameTime - lastFrameTime >= frameDuration) {
-    lastFrameTime = currentFrameTime;
-    functionToRun();
+void runAtFrameRate(void (*callback)(), unsigned int frameRate) {
+  static unsigned long lastTime = 0;
+  unsigned long currentTime = millis();
+  if (currentTime - lastTime >= 1000 / frameRate) {
+    callback();
+    lastTime = currentTime;
   }
 }
 

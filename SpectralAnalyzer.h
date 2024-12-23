@@ -29,8 +29,8 @@ void initializeSpectralAnalyzer() {
 }
 
 void peakDetection(int* peakData, int maxWidth, int maxHeight) {
-  int avgRange = (usableSamples - 1) /
-                 maxWidth;  // Adjust the range, skipping the first bin
+  // Adjust the range, skipping the first bin
+  int avgRange = (usableSamples) / maxWidth;
   // Start the loop from 1 to skip the first bin
   for (int i = 1; i <= maxWidth; i++) {
     double peak = 0;
