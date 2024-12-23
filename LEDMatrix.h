@@ -1,17 +1,19 @@
 #ifndef LITBOX_LED_MATRIX_H
 #define LITBOX_LED_MATRIX_H
 
-#include <NeoPixelBus.h>
+#include <FastLED.h>
 
 #include "colors.h"
 
+// LED Matrix Config
 #define LED_PIN 12
 #define LED_WIDTH 32
 #define LED_HEIGHT 8
 #define NUM_LEDS (LED_WIDTH * LED_HEIGHT)
+#define COLOR_ORDER GRB
+#define CHIPSET WS2812B
 
-// Use the RMT method for WS2812B LEDs
-NeoPixelBus<NeoGrbFeature, NeoEsp32Rmt0800KbpsMethod> matrix(NUM_LEDS, LED_PIN);
+CRGB leds[NUM_LEDS];
 
 // Brightness
 const uint8_t minBrightness = 1;
@@ -19,73 +21,72 @@ const uint8_t maxBrightness = 255;
 uint8_t brightness = 9;
 
 void initializeMatrix() {
-  matrix.Begin();
-  matrix.Show();
+  FastLED.addLeds<CHIPSET, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS)
+      .setCorrection(TypicalLEDStrip);
+  FastLED.setBrightness(brightness);
+  FastLED.clear();
+  FastLED.show();
   Serial.println("LED Matrix Initialized");
 }
 
 uint16_t XY(uint8_t x, uint8_t y) {
-  y = LED_HEIGHT - 1 - y;  // Adjust y for the matrix orientation
+  y = LED_HEIGHT - 1 - y;  // Adjust for orientation
   if (x % 2 == 0) {
-    return x * LED_HEIGHT + y;
+    return x * LED_HEIGHT + y;  // Even columns top to bottom
   } else {
-    return x * LED_HEIGHT + (LED_HEIGHT - 1 - y);
+    return x * LED_HEIGHT + (LED_HEIGHT - 1 - y);  // Odd columns bottom to top
   }
 }
 
-void drawPixel(uint8_t x, uint8_t y, RgbColor color) {
+void drawPixel(uint8_t x, uint8_t y, CRGB color) {
   uint16_t index = XY(x, y);
   if (index < NUM_LEDS) {
-    matrix.SetPixelColor(index, color.Dim(brightness));
+    leds[index] = color;
   }
 }
 
 void testMatrix() {
-  RgbColor testColor = pixelColor;
+  CRGB testColor = CRGB::White;
 
+  // Light up all LEDs one by one
   for (int x = 0; x < LED_WIDTH; x++) {
     for (int y = 0; y < LED_HEIGHT; y++) {
       drawPixel(x, y, testColor);
-      matrix.Show();
+      FastLED.show();
       delay(10);
-      drawPixel(x, y, RgbColor(0, 0, 0));
+      drawPixel(x, y, CRGB::Black);
     }
   }
 
   int del = 100;
-  // bottom left
-  matrix.ClearTo(BLACK);
-  drawPixel(0, 0, testColor);
-  matrix.Show();
+  // Test specific positions
+  FastLED.clear();
+  drawPixel(0, 0, testColor);  // Bottom left
+  FastLED.show();
   delay(del);
 
-  // top left
-  matrix.ClearTo(BLACK);
-  drawPixel(0, LED_HEIGHT - 1, testColor);
-  matrix.Show();
+  FastLED.clear();
+  drawPixel(0, LED_HEIGHT - 1, testColor);  // Top left
+  FastLED.show();
   delay(del);
 
-  // top right
-  matrix.ClearTo(BLACK);
-  drawPixel(LED_WIDTH - 1, LED_HEIGHT - 1, testColor);
-  matrix.Show();
+  FastLED.clear();
+  drawPixel(LED_WIDTH - 1, LED_HEIGHT - 1, testColor);  // Top right
+  FastLED.show();
   delay(del);
 
-  // bottom right
-  matrix.ClearTo(BLACK);
-  drawPixel(LED_WIDTH - 1, 0, testColor);
-  matrix.Show();
+  FastLED.clear();
+  drawPixel(LED_WIDTH - 1, 0, testColor);  // Bottom right
+  FastLED.show();
   delay(del);
 
-  // middle
-  matrix.ClearTo(BLACK);
-  drawPixel(LED_WIDTH / 2, LED_HEIGHT / 2, testColor);
-  matrix.Show();
+  FastLED.clear();
+  drawPixel(LED_WIDTH / 2, LED_HEIGHT / 2, testColor);  // Center
+  FastLED.show();
   delay(del);
 
-  // clear
-  matrix.ClearTo(BLACK);
-  matrix.Show();
+  FastLED.clear();
+  FastLED.show();
 }
 
 #endif  // LITBOX_LED_MATRIX_H

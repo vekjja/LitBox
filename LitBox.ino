@@ -21,7 +21,7 @@ void loop() { runAtFrameRate(drawBars, 60); }
 
 void drawBars() {
   spectralAnalyzer(LED_WIDTH, LED_HEIGHT);
-  matrix.ClearTo(BLACK);
+  FastLED.clear();
   // Check for new spectral data
   // for (int x = 0; x < LED_WIDTH; x++) {
   //   for (int y = 0; y < spectralData[x]; y++) {
@@ -33,13 +33,12 @@ void drawBars() {
   //   }
   // }
   drawPixel(16, 4, RED);
-  matrix.Show();
-  delay(9);
+  FastLED.show();
 }
 
 void drawGameOfLife() {
   updateGameOfLife(LED_WIDTH, LED_HEIGHT, 231);
-  matrix.ClearTo(BLACK);
+  FastLED.clear();
   for (int x = 0; x < LED_WIDTH; x++) {
     for (int y = 0; y < LED_HEIGHT; y++) {
       if (gol_Cells[x][y] == 1) {
@@ -47,7 +46,7 @@ void drawGameOfLife() {
       }
     }
   }
-  matrix.Show();
+  FastLED.show();
 }
 
 void initializeWebServer() {

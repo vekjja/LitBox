@@ -21,6 +21,7 @@
                 "/Users/kjj/Documents/Arduino/libraries/ESPWiFi/src",
                 "/Users/kjj/Documents/Arduino/libraries/ArduinoJson/src",
                 "/Users/kjj/Documents/Arduino/libraries/IOPin",
+                "/Users/kjj/Documents/Arduino/libraries/FastLED/src",
                 "/Users/kjj/Library/Arduino15/packages/esp32/hardware/esp32/3.1.0/libraries/LittleFS/src",
                 "/Users/kjj/Library/Arduino15/packages/esp32/hardware/esp32/3.1.0/libraries/FS/src",
                 "/Users/kjj/Library/Arduino15/packages/esp32/hardware/esp32/3.1.0/libraries/WiFi/src",
