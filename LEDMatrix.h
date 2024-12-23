@@ -1,6 +1,10 @@
 #ifndef LITBOX_LED_MATRIX_H
 #define LITBOX_LED_MATRIX_H
 
+// #define FASTLED_ALLOW_INTERRUPTS 0
+// #define FASTLED_SHOW_CORE 0
+// #define FASTLED_ESP32_I2S
+#define FASTLED_RMT5_RECYCLE 1
 #include <FastLED.h>
 
 #include "colors.h"
