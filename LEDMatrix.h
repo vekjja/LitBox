@@ -1,5 +1,5 @@
-#ifndef LITBOX_MATRIX_H
-#define LITBOX_MATRIX_H
+#ifndef LITBOX_LED_MATRIX_H
+#define LITBOX_LED_MATRIX_H
 
 #include <NeoPixelBus.h>
 
@@ -10,16 +10,18 @@
 #define LED_HEIGHT 8
 #define NUM_LEDS (LED_WIDTH * LED_HEIGHT)
 
-NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> matrix(NUM_LEDS, LED_PIN);
+// Use the RMT method for WS2812B LEDs
+NeoPixelBus<NeoGrbFeature, NeoEsp32Rmt0800KbpsMethod> matrix(NUM_LEDS, LED_PIN);
 
 // Brightness
 const uint8_t minBrightness = 1;
 const uint8_t maxBrightness = 255;
-uint8_t brightness = 50;
+uint8_t brightness = 9;
 
 void initializeMatrix() {
   matrix.Begin();
   matrix.Show();
+  Serial.println("LED Matrix Initialized");
 }
 
 uint16_t XY(uint8_t x, uint8_t y) {
@@ -34,7 +36,7 @@ uint16_t XY(uint8_t x, uint8_t y) {
 void drawPixel(uint8_t x, uint8_t y, RgbColor color) {
   uint16_t index = XY(x, y);
   if (index < NUM_LEDS) {
-    matrix.SetPixelColor(index, color);
+    matrix.SetPixelColor(index, color.Dim(brightness));
   }
 }
 
@@ -86,4 +88,4 @@ void testMatrix() {
   matrix.Show();
 }
 
-#endif  // LITBOX_MATRIX_H
+#endif  // LITBOX_LED_MATRIX_H
