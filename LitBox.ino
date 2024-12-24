@@ -45,19 +45,20 @@ void loop() {
   if (visualization == "gameOfLife") {
     runAtFrameRate(drawGameOfLife, frameRate);
   } else {
-    runAtFrameRate(drawBars, frameRate);
+    // runAtFrameRate(drawBars, frameRate);
+    drawBars();
   }
 }
 
 void drawBars() {
+  // Analyze audio and populate spectralData
   spectralAnalyzer(LED_WIDTH, LED_HEIGHT);
   FastLED.clear();
   for (int x = 0; x < LED_WIDTH; x++) {
-    // Serial.println("X: " + String(x) + " Y: " + String(spectralData[x]));
     for (int y = 0; y < spectralData[x]; y++) {
-      // Map y to colorPallet index
-      CRGB pixelColor = colorPallet[min(y / 2, 3)];
-      drawPixel(x, y, pixelColor);
+      // Map y to a color palette
+      CRGB color = CHSV(map(y, 0, LED_HEIGHT, 0, 255), 255, 255);
+      leds[XY(x, y)] = color;
     }
   }
   FastLED.show();
