@@ -18,7 +18,7 @@ void setup() {
   initializeMatrix();
   initializeWebServer();
   initializeSpectralAnalyzer();
-  randomSeed(analogRead(A0));
+  // randomSeed(analogRead(A0));
   Serial.println("Lit Box Initialized");
 }
 
@@ -34,6 +34,7 @@ void drawBars() {
   spectralAnalyzer(LED_WIDTH, LED_HEIGHT);
   FastLED.clear();
   for (int x = 0; x < LED_WIDTH; x++) {
+    Serial.println("X: " + String(x) + " Y: " + String(spectralData[x]));
     for (int y = 0; y < spectralData[x]; y++) {
       // Map y to colorPallet index
       CRGB pixelColor = colorPallet[min(y / 2, 3)];

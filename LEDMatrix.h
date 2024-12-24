@@ -14,8 +14,6 @@
 #define LED_WIDTH 32
 #define LED_HEIGHT 8
 #define NUM_LEDS (LED_WIDTH * LED_HEIGHT)
-#define COLOR_ORDER GRB
-#define CHIPSET WS2812B
 
 CRGB leds[NUM_LEDS];
 
@@ -25,7 +23,7 @@ const uint8_t maxBrightness = 255;
 uint8_t brightness = 9;
 
 void initializeMatrix() {
-  FastLED.addLeds<CHIPSET, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS)
+  FastLED.addLeds<WS2812B, LED_PIN, GRB>(leds, NUM_LEDS)
       .setCorrection(TypicalLEDStrip);
   FastLED.setBrightness(brightness);
   FastLED.clear();

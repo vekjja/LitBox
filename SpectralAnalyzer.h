@@ -1,13 +1,11 @@
 #ifndef SPECTRAL_ANALYZER_H
 #define SPECTRAL_ANALYZER_H
 
-#include <Arduino.h>
 #include <arduinoFFT.h>
 
-#define AUDIO_PIN A2
-
 // Audio Config
-const int maxInput = 4096;  // 12-bit ADC
+#define AUDIO_PIN A0
+const int maxInput = 4095;  // Adjust for 12-bit ADC on ESP32-S3
 const int minSensitivity = 1;
 const int maxSensitivity = 100;
 const uint16_t audioSamples = 128;  // This value MUST ALWAYS be a power of 2
@@ -15,7 +13,8 @@ const int usableSamples = (audioSamples / 2);
 int* spectralData = nullptr;
 
 // must be less than 10000 due to ADC
-const double samplingFrequency = 8000;  // Hz
+const double samplingFrequency = 8000;                 // Hz
+double samplingDelay = (1000000 / samplingFrequency);  // microseconds
 double vReal[audioSamples];
 double vImage[audioSamples];
 ArduinoFFT<double> FFT =
@@ -23,18 +22,19 @@ ArduinoFFT<double> FFT =
 int sensitivity = 9;
 
 void initializeSpectralAnalyzer() {
-  pinMode(AUDIO_PIN, INPUT);  // Set pin as input
-  analogReadResolution(12);   // Ensure 12-bit resolution
+  pinMode(AUDIO_PIN, INPUT);  // Set the audio pin as input
+  analogReadResolution(12);   // 12-bit ADC resolution
+  // analogSetAttenuation(ADC_11db);  // Use appropriate attenuation (0-3.3V
+  // range)
   Serial.println("Spectral Analyzer Initialized");
 }
 
 void peakDetection(int* peakData, int maxWidth, int maxHeight) {
-  // Adjust the range, skipping the first bin
-  int avgRange = (usableSamples) / maxWidth;
-  // Start the loop from 1 to skip the first bin
-  for (int i = 1; i <= maxWidth; i++) {
+  int avgRange = (usableSamples - 1) /
+                 maxWidth;  // Divide FFT bins across the LED matrix width
+  for (int i = 0; i < maxWidth; i++) {
     double peak = 0;
-    int startFreqBin = (i)*avgRange + 1;  // Adjust start to skip first bin
+    int startFreqBin = (i * avgRange) + 1;  // Skip the first FFT bin
     int endFreqBin = startFreqBin + avgRange;
 
     for (int j = startFreqBin; j < endFreqBin && j < usableSamples; j++) {
@@ -42,38 +42,25 @@ void peakDetection(int* peakData, int maxWidth, int maxHeight) {
         peak = vReal[j];
       }
     }
-    // Map the peak value to a row on the LED matrix
-    peakData[i - 1] = map(peak, 0, maxInput, 0, maxHeight);
+    peakData[i] = map(peak, 0, maxInput, 0, maxHeight);  // Map to matrix height
+    peakData[i] = constrain(peakData[i], 0, maxHeight);  // Clamp to height
   }
 }
 
 void spectralAnalyzer(int maxWidth, int maxHeight) {
   for (int i = 0; i < audioSamples; i++) {
-    // Read and normalize raw value
-    int rawValue = analogRead(AUDIO_PIN);
-    double normalizedValue =
-        rawValue / double(maxInput);  // Normalize to [0, 1]
-
-    // Scale based on sensitivity
-    vReal[i] = normalizedValue * sensitivity * maxInput / 10.0;
-    vImage[i] = 0;  // Set imaginary part to 0
-
-    // Serial.println("Raw Value: " + String(rawValue) +
-    //                " Normalized Value: " + String(normalizedValue) +
-    //                " Scaled Value: " + String(vReal[i]));
+    vReal[i] = analogRead(AUDIO_PIN);  // Read raw ADC value
+    vImage[i] = 0;                     // Set imaginary part to zero
+    delayMicroseconds(samplingDelay);  // Ensure 8 kHz sampling rate
   }
 
-  FFT.windowing(FFTWindow::Hamming, FFTDirection::Forward); /* Apply window */
+  FFT.windowing(FFTWindow::Hamming, FFTDirection::Forward); /* Weigh data */
   FFT.compute(FFTDirection::Forward);                       /* Compute FFT */
   FFT.complexToMagnitude(); /* Compute magnitudes */
 
-  // Ensure `spectralData` is initialized
   if (spectralData == nullptr) {
     spectralData = new int[maxWidth];
   }
-
-  // Detect peaks and store in `spectralData`
   peakDetection(spectralData, maxWidth, maxHeight);
 }
-
 #endif  // SPECTRAL_ANALYZER_H
