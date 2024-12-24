@@ -19,7 +19,7 @@
                 "/Users/kjj/Library/Arduino15/packages/esp32/hardware/esp32/3.1.0/cores/esp32",
                 "/Users/kjj/Library/Arduino15/packages/esp32/hardware/esp32/3.1.0/variants/waveshare_esp32_s3_zero",
                 "/Users/kjj/Documents/Arduino/libraries/ESPWiFi/src",
-                "/Users/kjj/Documents/Arduino/libraries/ArduinoJson/src",
+                "/Users/kjj/Documents/Arduino/libraries/ArduinoJson/**",
                 "/Users/kjj/Documents/Arduino/libraries/IOPin",
                 "/Users/kjj/Documents/Arduino/libraries/FastLED/src",
                 "/Users/kjj/Library/Arduino15/packages/esp32/hardware/esp32/3.1.0/libraries/LittleFS/src",

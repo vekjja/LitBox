@@ -1,3 +1,4 @@
+#include <ArduinoJson.h>
 #include <ESPWiFi.h>
 
 #include "GameOfLife.h"
@@ -22,6 +23,24 @@ void setup() {
   Serial.println("Lit Box Initialized");
 }
 
+void setBrightness(int newBrightness) {
+  wifi.config["brightness"] =
+      constrain(newBrightness, minBrightness, maxBrightness);
+  FastLED.setBrightness(wifi.config["brightness"]);
+  FastLED.show();
+}
+
+void setSensitivity(int newSensitivity) {
+  wifi.config["sensitivity"] =
+      constrain(newSensitivity, minSensitivity, maxSensitivity);
+  sensitivity = wifi.config["sensitivity"];
+}
+
+void setFramerate(unsigned int fps) {
+  wifi.config["frameRate"] = constrain(fps, 1, maxFrameRate);
+  frameRate = wifi.config["frameRate"];
+}
+
 void loop() {
   if (visualization == "gameOfLife") {
     runAtFrameRate(drawGameOfLife, frameRate);
@@ -34,7 +53,7 @@ void drawBars() {
   spectralAnalyzer(LED_WIDTH, LED_HEIGHT);
   FastLED.clear();
   for (int x = 0; x < LED_WIDTH; x++) {
-    Serial.println("X: " + String(x) + " Y: " + String(spectralData[x]));
+    // Serial.println("X: " + String(x) + " Y: " + String(spectralData[x]));
     for (int y = 0; y < spectralData[x]; y++) {
       // Map y to colorPallet index
       CRGB pixelColor = colorPallet[min(y / 2, 3)];
