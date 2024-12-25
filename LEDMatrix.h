@@ -47,6 +47,16 @@ void drawPixel(uint8_t x, uint8_t y, CRGB color) {
   }
 }
 
+void drawCircle(uint8_t x, uint8_t y, uint8_t radius, CRGB color) {
+  for (int i = 0; i < LED_WIDTH; i++) {
+    for (int j = 0; j < LED_HEIGHT; j++) {
+      if (pow(i - x, 2) + pow(j - y, 2) < pow(radius, 2)) {
+        drawPixel(i, j, color);
+      }
+    }
+  }
+}
+
 void testMatrix() {
   CRGB testColor = CRGB::White;
 

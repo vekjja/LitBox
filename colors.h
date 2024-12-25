@@ -28,6 +28,12 @@ CRGB SALMON(250, 128, 114);
 CRGB ROSE(255, 228, 225);
 CRGB PEACH(255, 218, 185);
 
+struct Pixel {
+  float x = 0, y = 0;
+  float vx = 0, vy = 0;
+  CRGB color = BLACK;
+};
+
 // Palette and Configurations
 const int palletSize = 4;
 CRGB pixelColor = WHITE;    // Default color
