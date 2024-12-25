@@ -13,7 +13,7 @@ ESPWiFi wifi;
 // Visualization Config
 const int maxFrameRate = 120;
 unsigned int frameRate = 60;
-String visualization = "bars";
+String visualization = "gameOfLife";
 
 void setup() {
   initializeMatrix();
@@ -58,7 +58,7 @@ void drawBars() {
     for (int y = 0; y < spectralData[x]; y++) {
       // Map y to a color palette
       CRGB color = CHSV(map(y, 0, LED_HEIGHT, 0, 255), 255, 255);
-      leds[XY(x, y)] = color;
+      drawPixel(x, y, color);
     }
   }
   FastLED.show();

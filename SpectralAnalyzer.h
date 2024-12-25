@@ -11,14 +11,14 @@ const int usableSamples = (audioSamples / 2);
 double vReal[audioSamples];
 double vImaginary[audioSamples];
 int* spectralData = nullptr;  // Array to store spectral data for matrix
-const double samplingFrequency = 32000.0;
+const double samplingFrequency = 16000.0;
 
 ArduinoFFT<double> FFT =
     ArduinoFFT<double>(vReal, vImaginary, audioSamples, samplingFrequency);
 
 // Configurable Values
 const int minSensitivity = 1;
-const int maxSensitivity = 10;
+const int maxSensitivity = 100;
 int sensitivity = 9;
 
 void initializeSpectralAnalyzer() {
@@ -35,9 +35,9 @@ void spectralAnalyzer(int matrixWidth, int matrixHeight) {
 
   // Read audio samples
   for (int i = 0; i < audioSamples; i++) {
-    vReal[i] = analogRead(AUDIO_PIN);  // Read ADC value
-    vImaginary[i] = 0;                 // Initialize imaginary part
-    delayMicroseconds(1000000 / samplingFrequency);  // Maintain sampling rate
+    vReal[i] = analogRead(AUDIO_PIN) * (sensitivity / 10.0);  // Read ADC value
+    vImaginary[i] = 0;  // Initialize imaginary part
+    // delayMicroseconds(1000000 / samplingFrequency);
   }
 
   // Perform FFT
