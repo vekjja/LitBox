@@ -2,7 +2,7 @@
 #define BIRDS_H
 
 #include "Colors.h"
-#include "Utils.h"
+#include "Utils.cpp"
 
 // Birds Config
 int birdCount = 18;

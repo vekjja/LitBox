@@ -4,7 +4,7 @@
 #include <arduinoFFT.h>
 
 // Audio Device Configuration
-#define AUDIO_PIN A0
+#define AUDIO_PIN 1
 const int maxInput = 4095;          // 12-bit ADC on ESP32-S3
 const uint16_t audioSamples = 512;  // This value MUST be a power of 2
 const int usableSamples = (audioSamples / 2);

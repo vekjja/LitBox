@@ -1,28 +1,18 @@
 #include <ESPWiFi.h>
 
 #include "Birds.h"
+#include "Colors.h"
 #include "GameOfLife.h"
 #include "LEDMatrix.h"
 #include "SpectralAnalyzer.h"
-#include "Utils.h"
-#include "colors.h"
 
-// Web Server Config
+// Web Server
 ESPWiFi wifi;
 
 // Visualization Config
 const int maxFrameRate = 120;
 unsigned int frameRate = 60;
 String visualization = "bars";
-
-void setup() {
-  initializeMatrix();
-  initializeWebServer();
-  initializeFromConfig();
-  initializeSpectralAnalyzer();
-  // randomSeed(analogRead(A0));
-  Serial.println("Lit Box Initialized");
-}
 
 void setBrightness(int newBrightness) {
   wifi.config["brightness"] =
@@ -58,19 +48,6 @@ void initializeFromConfig() {
 
   // text = wifi.config["text"]["content"].as<String>();
   // textSpeed = wifi.config["text"]["speed"].as<int>();
-}
-
-void loop() {
-  if (visualization == "gameOfLife") {
-    runAtFrameRate(drawGameOfLife, frameRate);
-  } else if (visualization == "birds") {
-    runAtFrameRate(drawBirds, frameRate);
-  } else if (visualization == "circles") {
-    // runAtFrameRate(drawCircles, frameRate);
-    drawCircles();
-  } else {
-    drawBars();
-  }
 }
 
 void drawBars() {
@@ -140,16 +117,16 @@ void initializeWebServer() {
       wifi.webServer.send(400, "text/plain", "Invalid JSON");
       return;
     } else {
-      if (config.containsKey("brightness")) {
+      if (config["brightness"].is<int>()) {
         setBrightness(config["brightness"]);
       }
-      if (config.containsKey("sensitivity")) {
+      if (config["sensitivity"].is<int>()) {
         setSensitivity(config["sensitivity"]);
       }
-      if (config.containsKey("frameRate")) {
+      if (config["frameRate"].is<unsigned int>()) {
         setFramerate(config["frameRate"]);
       }
-      if (config.containsKey("visualization")) {
+      if (config["visualization"].is<String>()) {
         visualization = config["visualization"].as<String>();
       }
 
@@ -166,4 +143,38 @@ void initializeWebServer() {
 
   wifi.connectSubroutine = []() { testMatrix(); };
   wifi.start();
+}
+
+void setup() {
+  initializeMatrix();
+  initializeWebServer();
+  initializeFromConfig();
+  initializeSpectralAnalyzer();
+  // randomSeed(analogRead(A0));
+  Serial.println("Lit Box Initialized");
+}
+
+void runAtFrameRate(void (*callback)(), unsigned int frameRate) {
+  static unsigned long lastTime = 0;
+  unsigned long currentTime = millis();
+  if (currentTime - lastTime >= 1000 / frameRate) {
+    callback();
+    lastTime = currentTime;
+  }
+}
+
+void loop() {
+  if (visualization == "gameOfLife") {
+    runAtFrameRate(drawGameOfLife, frameRate);
+  } else if (visualization == "birds") {
+    runAtFrameRate(drawBirds, frameRate);
+  } else if (visualization == "circles") {
+    // runAtFrameRate(drawCircles, frameRate);
+    drawCircles();
+  } else {
+    drawBars();
+  }
+  digitalWrite(LED_PIN, LOW);   // Turn off the built-in LED
+  delay(100);                   // Small delay to prevent watchdog reset
+  digitalWrite(LED_PIN, HIGH);  // Turn it back on
 }

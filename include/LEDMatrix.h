@@ -7,7 +7,7 @@
 #define FASTLED_RMT5_RECYCLE 1
 #include <FastLED.h>
 
-#include "colors.h"
+#include "Colors.h"
 
 // LED Matrix Config
 #define LED_PIN 12
