@@ -25,7 +25,7 @@ void initializeSpectralAnalyzer() {
   pinMode(AUDIO_PIN, INPUT);       // Set audio pin as input
   analogReadResolution(12);        // Set ADC resolution to 12-bit
   analogSetAttenuation(ADC_11db);  // 0-3.3V range for ADC
-  Serial.println("Spectral Analyzer Initialized");
+  Serial.println("📊 Spectral Analyzer Initialized");
 }
 
 void spectralAnalyzer(int matrixWidth, int matrixHeight) {

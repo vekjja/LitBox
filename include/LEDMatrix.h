@@ -4,13 +4,14 @@
 // #define FASTLED_ALLOW_INTERRUPTS 0
 // #define FASTLED_SHOW_CORE 0
 // #define FASTLED_ESP32_I2S
-#define FASTLED_RMT5_RECYCLE 1
+// #define FASTLED_RMT5_RECYCLE 1
+#define FASTLED_RMT_CHANNEL 1
 #include <FastLED.h>
 
 #include "Colors.h"
 
 // LED Matrix Config
-#define LED_PIN 12
+#define LED_PIN 2
 #define LED_WIDTH 32
 #define LED_HEIGHT 8
 #define NUM_LEDS (LED_WIDTH * LED_HEIGHT)
@@ -23,8 +24,8 @@ const uint8_t maxBrightness = 255;
 uint8_t brightness = 9;
 
 void initializeMatrix() {
-  FastLED.addLeds<WS2812B, LED_PIN, GRB>(leds, NUM_LEDS)
-      .setCorrection(TypicalLEDStrip);
+  FastLED.addLeds<WS2812B, LED_PIN, GRB>(leds, NUM_LEDS);
+  FastLED.setCorrection(TypicalLEDStrip);
   FastLED.setBrightness(brightness);
   FastLED.clear();
   FastLED.show();

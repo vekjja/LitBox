@@ -13,7 +13,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "BUILD_PATH='../data' react-scripts build",
+    "build": "GENERATE_SOURCEMAP=false BUILD_PATH='../data' react-scripts build",
     "build-upload": "npm run build && npm run upload ",
     "upload": "/Users/kjj/Documents/Arduino/libraries/ESPWiFi/scripts/esp_upload -e -d ../data",
     "test": "react-scripts test",

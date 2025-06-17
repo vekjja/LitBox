@@ -1,7 +1,8 @@
 #ifndef MATRIX_ANIMATION_H
 #define MATRIX_ANIMATION_H
 
-#include <Adafruit_NeoMatrix.h>
+#include "Colors.h"
+#include "LEDMatrix.h"
 
 // Matrix Animation Configuration
 struct MatrixColumn : public Pixel {
@@ -26,17 +27,16 @@ void initializeMatrixAnimation(int maxX) {
   }
 }
 
-void matrixAnimation(Adafruit_NeoMatrix* matrix, int maxX, int maxY) {
+void matrixAnimation(int maxX, int maxY) {
   if (matrixColumns == nullptr) {
     initializeMatrixAnimation(maxX);
   }
-  matrix->fillScreen(0);
+  FastLED.clear();  // Clear the matrix before drawing
   for (int i = 0; i < maxX; i++) {
     // White leading pixel
     int headY = matrixColumns[i].y;
     if (headY >= 0 && headY < maxY) {
-      matrix->drawPixel(matrixColumns[i].x, headY,
-                        matrix->Color(255, 255, 255));
+      drawPixel(matrixColumns[i].x, headY, CRGB(255, 255, 255));
     }
 
     // Green tail with randomly varying brightness
@@ -45,8 +45,7 @@ void matrixAnimation(Adafruit_NeoMatrix* matrix, int maxX, int maxY) {
       if (tailY >= 0 && tailY < maxY) {
         uint8_t brightness =
             random(90, 255);  // Random brightness for each pixel
-        matrix->drawPixel(matrixColumns[i].x, tailY,
-                          matrix->Color(0, brightness, 0));
+        drawPixel(matrixColumns[i].x, tailY, CRGB(0, brightness, 0));
       }
     }
 
@@ -58,7 +57,7 @@ void matrixAnimation(Adafruit_NeoMatrix* matrix, int maxX, int maxY) {
       matrixColumns[i].length = random(5, matMaxTailLength + 1);
     }
   }
-  matrix->show();
+  FastLED.show();  // Show the updated matrix
 }
 
 #endif  // MATRIX_ANIMATION_H

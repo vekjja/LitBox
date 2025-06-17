@@ -4,6 +4,7 @@
 #include "Colors.h"
 #include "GameOfLife.h"
 #include "LEDMatrix.h"
+#include "Matrix.h"
 #include "SpectralAnalyzer.h"
 
 // Web Server
@@ -66,15 +67,6 @@ void drawBars() {
   FastLED.show();
 }
 
-void drawBirds() {
-  updateFlock(LED_WIDTH, LED_HEIGHT);
-  FastLED.clear();
-  for (int i = 0; i < birdCount; i++) {
-    drawPixel(birds[i].x, birds[i].y, birds[i].color);
-  }
-  FastLED.show();
-}
-
 void drawCircles() {
   spectralAnalyzer(LED_WIDTH, LED_HEIGHT);
   FastLED.clear();
@@ -87,6 +79,46 @@ void drawCircles() {
     if (circleRadius > 0) {
       drawCircle(x, 4, circleRadius, circleColor);
     }
+  }
+  FastLED.show();
+}
+
+void drawWaveform() {
+  spectralAnalyzer(LED_WIDTH, LED_HEIGHT);
+  FastLED.clear();
+
+  int middleY = LED_HEIGHT / 2;  // Calculate the middle row of the matrix
+
+  for (int x = 0; x < LED_WIDTH; x++) {
+    int value = spectralData[x] / 2;
+    for (int y = 0; y < value; y++) {
+      // Draw upwards from the middle
+      CRGB pixelColor = colorPallet[0];
+      if (y > 1) {
+        pixelColor = colorPallet[1];
+      }
+      if (y > 2) {
+        pixelColor = colorPallet[2];
+      }
+      if (y > 3) {
+        pixelColor = colorPallet[3];
+      }
+      drawPixel(x, middleY - y, pixelColor);
+      // Draw downwards from the middle
+      if (y > 0 && middleY + y < LED_HEIGHT) {
+        drawPixel(x, middleY + y, pixelColor);
+      }
+    }
+  }
+
+  FastLED.show();
+}
+
+void drawBirds() {
+  updateFlock(LED_WIDTH, LED_HEIGHT);
+  FastLED.clear();
+  for (int i = 0; i < birdCount; i++) {
+    drawPixel(birds[i].x, birds[i].y, birds[i].color);
   }
   FastLED.show();
 }
@@ -130,7 +162,7 @@ void initializeWebServer() {
         visualization = config["visualization"].as<String>();
       }
 
-      birds = nullptr;
+      // birds = nullptr;
       wifi.webServer.send(200, "application/json", config.as<String>());
       wifi.config.set(config);
     }
@@ -145,15 +177,6 @@ void initializeWebServer() {
   wifi.start();
 }
 
-void setup() {
-  initializeMatrix();
-  initializeWebServer();
-  initializeFromConfig();
-  initializeSpectralAnalyzer();
-  // randomSeed(analogRead(A0));
-  Serial.println("Lit Box Initialized");
-}
-
 void runAtFrameRate(void (*callback)(), unsigned int frameRate) {
   static unsigned long lastTime = 0;
   unsigned long currentTime = millis();
@@ -163,18 +186,29 @@ void runAtFrameRate(void (*callback)(), unsigned int frameRate) {
   }
 }
 
+void setup() {
+  initializeMatrix();
+  testMatrix();
+  initializeWebServer();
+  initializeFromConfig();
+  initializeSpectralAnalyzer();
+  // randomSeed(analogRead(A0));
+  Serial.println("🔥 Lit Box Initialized");
+}
+
 void loop() {
-  if (visualization == "gameOfLife") {
-    runAtFrameRate(drawGameOfLife, frameRate);
+  wifi.handleClient();
+  if (visualization == "circles") {
+    drawCircles();
   } else if (visualization == "birds") {
     runAtFrameRate(drawBirds, frameRate);
-  } else if (visualization == "circles") {
-    // runAtFrameRate(drawCircles, frameRate);
-    drawCircles();
+  } else if (visualization == "gameOfLife") {
+    runAtFrameRate(drawGameOfLife, frameRate);
+  } else if (visualization == "waveform") {
+    runAtFrameRate(drawWaveform, frameRate);
+  } else if (visualization == "matrix") {
+    runAtFrameRate([]() { matrixAnimation(LED_WIDTH, LED_HEIGHT); }, frameRate);
   } else {
     drawBars();
   }
-  digitalWrite(LED_PIN, LOW);   // Turn off the built-in LED
-  delay(100);                   // Small delay to prevent watchdog reset
-  digitalWrite(LED_PIN, HIGH);  // Turn it back on
 }
