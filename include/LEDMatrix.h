@@ -5,7 +5,7 @@
 // #define FASTLED_SHOW_CORE 0
 // #define FASTLED_ESP32_I2S
 // #define FASTLED_RMT5_RECYCLE 1
-#define FASTLED_RMT_CHANNEL 1
+// #define FASTLED_RMT_CHANNEL 1
 #include <FastLED.h>
 
 #include "Colors.h"
@@ -29,7 +29,7 @@ void initializeMatrix() {
   FastLED.setBrightness(brightness);
   FastLED.clear();
   FastLED.show();
-  Serial.println("LED Matrix Initialized");
+  Serial.println("🌈 LED Matrix Initialized");
 }
 
 uint16_t XY(uint8_t x, uint8_t y) {

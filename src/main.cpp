@@ -8,7 +8,7 @@
 #include "SpectralAnalyzer.h"
 
 // Web Server
-ESPWiFi wifi;
+ESPWiFi device;
 
 // Visualization Config
 const int maxFrameRate = 120;
@@ -16,39 +16,39 @@ unsigned int frameRate = 60;
 String visualization = "bars";
 
 void setBrightness(int newBrightness) {
-  wifi.config["brightness"] =
+  device.config["brightness"] =
       constrain(newBrightness, minBrightness, maxBrightness);
-  FastLED.setBrightness(wifi.config["brightness"]);
+  FastLED.setBrightness(device.config["brightness"]);
 }
 
 void setSensitivity(int newSensitivity) {
-  wifi.config["sensitivity"] =
+  device.config["sensitivity"] =
       constrain(newSensitivity, minSensitivity, maxSensitivity);
-  sensitivity = wifi.config["sensitivity"];
+  sensitivity = device.config["sensitivity"];
 }
 
 void setFramerate(unsigned int fps) {
-  wifi.config["frameRate"] = constrain(fps, 1, maxFrameRate);
-  frameRate = wifi.config["frameRate"];
+  device.config["frameRate"] = constrain(fps, 1, maxFrameRate);
+  frameRate = device.config["frameRate"];
 }
 
 void initializeFromConfig() {
-  setBrightness(wifi.config["brightness"].as<int>());
-  setSensitivity(wifi.config["sensitivity"].as<int>());
-  setFramerate(wifi.config["frameRate"].as<unsigned int>());
+  setBrightness(device.config["brightness"].as<int>());
+  setSensitivity(device.config["sensitivity"].as<int>());
+  setFramerate(device.config["frameRate"].as<unsigned int>());
 
-  visualization = wifi.config["visualization"].as<String>();
-  // temperatureUnit = wifi.config["temperatureUnit"].as<String>();
+  visualization = device.config["visualization"].as<String>();
+  // temperatureUnit = device.config["temperatureUnit"].as<String>();
 
-  // JsonArray colorArray = wifi.config["colorPallet"];
+  // JsonArray colorArray = device.config["colorPallet"];
   // for (int i = 0; i < palletSize; i++) {
   //   colorPallet[i] = colorArray[i];
   // }
-  // pixelColor = wifi.config["pixelColor"];
-  // pixelBgColor = wifi.config["pixelBgColor"];
+  // pixelColor = device.config["pixelColor"];
+  // pixelBgColor = device.config["pixelBgColor"];
 
-  // text = wifi.config["text"]["content"].as<String>();
-  // textSpeed = wifi.config["text"]["speed"].as<int>();
+  // text = device.config["text"]["content"].as<String>();
+  // textSpeed = device.config["text"]["speed"].as<int>();
 }
 
 void drawBars() {
@@ -137,44 +137,47 @@ void drawGameOfLife() {
 }
 
 void initializeWebServer() {
-  wifi.webServer.on("/config", HTTP_GET, []() {
-    wifi.webServer.send(200, "application/json", wifi.config.as<String>());
-  });
+  device.initWebServer();
+  // device.addESPWiFiEndpoints();
+  device.webServer->on(
+      "/config", HTTP_POST, [](AsyncWebServerRequest* request) {
+        if (request->hasParam("plain", true)) {
+          String body = request->getParam("plain", true)->value();
+          JsonDocument config;
+          DeserializationError error = deserializeJson(config, body);
+          if (error) {
+            request->send(400, "text/plain", "Invalid JSON");
+            return;
+          } else {
+            if (config["brightness"].is<int>()) {
+              setBrightness(config["brightness"]);
+            }
+            if (config["sensitivity"].is<int>()) {
+              setSensitivity(config["sensitivity"]);
+            }
+            if (config["frameRate"].is<unsigned int>()) {
+              setFramerate(config["frameRate"]);
+            }
+            if (config["visualization"].is<String>()) {
+              visualization = config["visualization"].as<String>();
+            }
 
-  wifi.webServer.on("/config", HTTP_POST, []() {
-    String body = wifi.webServer.arg("plain");
-    JsonDocument config;
-    DeserializationError error = deserializeJson(config, body);
-    if (error) {
-      wifi.webServer.send(400, "text/plain", "Invalid JSON");
-      return;
-    } else {
-      if (config["brightness"].is<int>()) {
-        setBrightness(config["brightness"]);
-      }
-      if (config["sensitivity"].is<int>()) {
-        setSensitivity(config["sensitivity"]);
-      }
-      if (config["frameRate"].is<unsigned int>()) {
-        setFramerate(config["frameRate"]);
-      }
-      if (config["visualization"].is<String>()) {
-        visualization = config["visualization"].as<String>();
-      }
+            request->send(200, "application/json", config.as<String>());
+            device.config.set(config);
+          }
+        } else {
+          request->send(400, "text/plain", "Missing body");
+        }
+      });
 
-      // birds = nullptr;
-      wifi.webServer.send(200, "application/json", config.as<String>());
-      wifi.config.set(config);
-    }
-  });
+  device.webServer->on(
+      "/saveConfig", HTTP_GET, [](AsyncWebServerRequest* request) {
+        device.saveConfig();
+        request->send(200, "application/json", device.config.as<String>());
+      });
 
-  wifi.webServer.on("/saveConfig", HTTP_GET, []() {
-    wifi.saveConfig();
-    wifi.webServer.send(200, "application/json", wifi.config.as<String>());
-  });
-
-  wifi.connectSubroutine = []() { testMatrix(); };
-  wifi.start();
+  // device.connectSubroutine = []() { testMatrix(); };
+  device.startWebServer();
 }
 
 void runAtFrameRate(void (*callback)(), unsigned int frameRate) {
@@ -187,28 +190,32 @@ void runAtFrameRate(void (*callback)(), unsigned int frameRate) {
 }
 
 void setup() {
+  device.startLog();
+  device.startWiFi();
+  device.startMDNS();
   initializeMatrix();
   testMatrix();
   initializeWebServer();
   initializeFromConfig();
   initializeSpectralAnalyzer();
-  // randomSeed(analogRead(A0));
   Serial.println("🔥 Lit Box Initialized");
 }
 
 void loop() {
-  wifi.handleClient();
-  if (visualization == "circles") {
-    drawCircles();
-  } else if (visualization == "birds") {
-    runAtFrameRate(drawBirds, frameRate);
-  } else if (visualization == "gameOfLife") {
-    runAtFrameRate(drawGameOfLife, frameRate);
-  } else if (visualization == "waveform") {
-    runAtFrameRate(drawWaveform, frameRate);
-  } else if (visualization == "matrix") {
-    runAtFrameRate([]() { matrixAnimation(LED_WIDTH, LED_HEIGHT); }, frameRate);
-  } else {
-    drawBars();
-  }
+  yield();
+  drawBars();
+  // if (visualization == "circles") {
+  //   drawCircles();
+  // } else if (visualization == "birds") {
+  //   runAtFrameRate(drawBirds, frameRate);
+  // } else if (visualization == "gameOfLife") {
+  //   runAtFrameRate(drawGameOfLife, frameRate);
+  // } else if (visualization == "waveform") {
+  //   runAtFrameRate(drawWaveform, frameRate);
+  // } else if (visualization == "matrix") {
+  //   runAtFrameRate([]() { matrixAnimation(LED_WIDTH, LED_HEIGHT); },
+  //   frameRate);
+  // } else {
+  //   drawBars();
+  // }
 }

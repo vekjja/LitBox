@@ -22,9 +22,11 @@ const int maxSensitivity = 100;
 int sensitivity = 9;
 
 void initializeSpectralAnalyzer() {
-  pinMode(AUDIO_PIN, INPUT);       // Set audio pin as input
+  pinMode(AUDIO_PIN, INPUT);  // Set audio pin as input
+#ifdef ESP32
   analogReadResolution(12);        // Set ADC resolution to 12-bit
   analogSetAttenuation(ADC_11db);  // 0-3.3V range for ADC
+#endif
   Serial.println("📊 Spectral Analyzer Initialized");
 }
 
