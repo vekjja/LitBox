@@ -5,7 +5,7 @@
 #include "Birds.h"
 #include "Colors.h"
 #include "GameOfLife.h"
-#include "Matrix.h"
+#include "MatrixAnimation.h"
 #include "SpectralAnalyzer.h"
 
 // Web Server
@@ -40,19 +40,21 @@ void applyConfig() {
   visualization = device.config["visualization"].as<String>();
 }
 
+// Simplified drawBars function to directly use colorPallet
 void drawBars() {
   // Analyze audio and populate spectralData
   spectralAnalyzer(LED_WIDTH, LED_HEIGHT);
   FastLED.clear();
+
   for (int x = 0; x < LED_WIDTH; x++) {
-    for (int y = 0; y < spectralData[x]; y++) {
-      CRGB color = colorPallet[0];
-      if (y > 1) color = colorPallet[1];
-      if (y > 4) color = colorPallet[2];
-      if (y > 6) color = colorPallet[3];
+    int spectralValue = spectralData[x];
+    for (int y = 0; y < spectralValue; y++) {
+      // Use colorPallet directly based on y value
+      CRGB color = colorPallet[min(y / 2, 3)];
       drawPixel(x, y, color);
     }
   }
+
   FastLED.show();
 }
 
@@ -132,7 +134,7 @@ void startWebServer() {
   device.srvConfig();
   device.srvRestart();
 
-  device.connectSubroutine = []() { testMatrix(); };
+  // device.connectSubroutine = []() { testMatrix(); };
   device.startWiFi();
   device.startMDNS();
   device.startWebServer();
@@ -149,6 +151,7 @@ void runAtFrameRate(void (*callback)(), unsigned int frameRate) {
 
 void setup() {
   device.startLog();
+  device.readConfig();
   device.startLEDMatrix();
   testMatrix();
   startWebServer();
