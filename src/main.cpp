@@ -137,41 +137,75 @@ void drawGameOfLife() {
 }
 
 void initializeWebServer() {
-  device.initWebServer();
-  // device.addESPWiFiEndpoints();
-  device.webServer->on(
-      "/config", HTTP_POST, [](AsyncWebServerRequest* request) {
-        if (request->hasParam("plain", true)) {
-          String body = request->getParam("plain", true)->value();
-          JsonDocument config;
-          DeserializationError error = deserializeJson(config, body);
-          if (error) {
-            request->send(400, "text/plain", "Invalid JSON");
-            return;
-          } else {
-            if (config["brightness"].is<int>()) {
-              setBrightness(config["brightness"]);
-            }
-            if (config["sensitivity"].is<int>()) {
-              setSensitivity(config["sensitivity"]);
-            }
-            if (config["frameRate"].is<unsigned int>()) {
-              setFramerate(config["frameRate"]);
-            }
-            if (config["visualization"].is<String>()) {
-              visualization = config["visualization"].as<String>();
-            }
+  device.addEndpoint("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+    if (LittleFS.exists("/index.html")) {
+      AsyncWebServerResponse *response =
+          request->beginResponse(LittleFS, "/index.html", "text/html");
+      device.addCORS(response);
+      request->send(response);
+    } else {
+      AsyncWebServerResponse *response =
+          request->beginResponse(404, "text/plain", "File Not Found");
+      device.addCORS(response);
+      request->send(response);
+    }
+  });
 
-            request->send(200, "application/json", config.as<String>());
-            device.config.set(config);
-          }
-        } else {
-          request->send(400, "text/plain", "Missing body");
+  device.addEndpoint("/config", HTTP_GET, [](AsyncWebServerRequest *request) {
+    device.handleCorsPreflight(request);
+    if (device.config.isNull()) {
+      AsyncWebServerResponse *response =
+          request->beginResponse(404, "text/plain", "Config not found");
+      device.addCORS(response);
+      request->send(response);
+    } else {
+      AsyncWebServerResponse *response = request->beginResponse(
+          200, "application/json", device.config.as<String>());
+      device.addCORS(response);
+      request->send(response);
+    }
+  });
+
+  device.addEndpoint("/config", HTTP_POST, [](AsyncWebServerRequest *request) {
+    if (request->hasParam("plain", true)) {
+      String body = request->getParam("plain", true)->value();
+      JsonDocument config;
+      DeserializationError error = deserializeJson(config, body);
+      device.handleCorsPreflight(request);
+      if (error) {
+        AsyncWebServerResponse *response =
+            request->beginResponse(400, "text/plain", "Invalid JSON");
+        device.addCORS(response);
+        request->send(response);
+        return;
+      } else {
+        if (config["brightness"].is<int>()) {
+          setBrightness(config["brightness"]);
         }
-      });
+        if (config["sensitivity"].is<int>()) {
+          setSensitivity(config["sensitivity"]);
+        }
+        if (config["frameRate"].is<unsigned int>()) {
+          setFramerate(config["frameRate"]);
+        }
+        if (config["visualization"].is<String>()) {
+          visualization = config["visualization"].as<String>();
+        }
 
-  device.webServer->on(
-      "/saveConfig", HTTP_GET, [](AsyncWebServerRequest* request) {
+        AsyncWebServerResponse *response = request->beginResponse(
+            200, "application/json", config.as<String>());
+        request->send(response);
+        device.config.set(config);
+      }
+    } else {
+      AsyncWebServerResponse *response =
+          request->beginResponse(400, "text/plain", "Missing body");
+      request->send(response);
+    }
+  });
+
+  device.addEndpoint(
+      "/saveConfig", HTTP_GET, [](AsyncWebServerRequest *request) {
         device.saveConfig();
         request->send(200, "application/json", device.config.as<String>());
       });

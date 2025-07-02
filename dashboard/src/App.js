@@ -1,89 +1,95 @@
-import React, { useState, useEffect } from 'react';
-import SystemSettings from './settings/SystemSettings';
-import BarsSettings from './settings/BarsSettings';
-import GameOfLifeSettings from './settings/GameOfLifeSettings';
-import MatrixSettings from './settings/MatrixSettings';
-import WaveformSetting from './settings/WaveformSettings';
-import BirdsSetting from './settings/BirdsSettings';
-import CirclesSetting from './settings/CirclesSetting';
-import StarPulseSetting from './settings/StarPulseSettings';
-import StarFieldSettings from './settings/StarFieldSettings';
-import TemperatureSetting from './settings/TemperatureSettings';
-import MotionSettings from './settings/MotionSettings';
-import TextSettings from './settings/TextSettings';
+import React, { useState, useEffect } from "react";
+import SystemSettings from "./settings/SystemSettings";
+import BarsSettings from "./settings/BarsSettings";
+import GameOfLifeSettings from "./settings/GameOfLifeSettings";
+import MatrixSettings from "./settings/MatrixSettings";
+import WaveformSetting from "./settings/WaveformSettings";
+import BirdsSetting from "./settings/BirdsSettings";
+import CirclesSetting from "./settings/CirclesSetting";
+import StarPulseSetting from "./settings/StarPulseSettings";
+import StarFieldSettings from "./settings/StarFieldSettings";
+import TemperatureSetting from "./settings/TemperatureSettings";
+import MotionSettings from "./settings/MotionSettings";
+import TextSettings from "./settings/TextSettings";
 
-var defaultConfig = {
-  "version": "1.0.0",
-  "mode": "client",
-  "mdns": "litbox",
-  "client": {
-    "ssid": "connectedness",
-    "password": "ReallyLongPassword123!@#"
-  },
-  "ap": {
-    "ssid": "LitBox",
-    "password": "abcd1234"
-  },
-  "brightness": 9,
-  "sensitivity": 9,
-  "visualization": "bars",
-  "frameRate": 30,
-  "temperatureUnit": "C",
-  "colorPallet": ['#0000FF', '#00FFFF', '#FF00D5', '#FFFFFF'],
-  pixelBgColor: "#000000",
-  pixelColor: "#f5f0f0",
-  "text": {
-    "content": "*.*. Lit Box .*.*",
-    "animation": "scroll",
-    "speed": "75",
-    "size": "1"
-  }
-};
+// var defaultConfig = {
+//   version: "1.0.0",
+//   mode: "client",
+//   mdns: "litbox",
+//   client: {
+//     ssid: "connectedness",
+//     password: "ReallyLongPassword123!@#",
+//   },
+//   ap: {
+//     ssid: "LitBox",
+//     password: "abcd1234",
+//   },
+//   brightness: 9,
+//   sensitivity: 9,
+//   visualization: "bars",
+//   frameRate: 30,
+//   temperatureUnit: "C",
+//   colorPallet: ["#0000FF", "#00FFFF", "#FF00D5", "#FFFFFF"],
+//   pixelBgColor: "#000000",
+//   pixelColor: "#f5f0f0",
+//   text: {
+//     content: "*.*. Lit Box .*.*",
+//     animation: "scroll",
+//     speed: "75",
+//     size: "1",
+//   },
+// };
 
 function App() {
+  const hostname = process.env.REACT_APP_API_HOST || "localhost";
+  const port = process.env.REACT_APP_API_PORT || 80;
+  const apiURL =
+    process.env.NODE_ENV === "production" ? "" : `http://${hostname}:${port}`;
+
   var [config, setConfig] = useState(null);
-  const [selectedSetting, setSelectedSetting] = useState('bars');  // Default to 'about'
+  const [selectedSetting, setSelectedSetting] = useState("bars"); // Default to 'about'
 
   useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      setConfig(defaultConfig);
-      setSelectedSetting(defaultConfig.visualization);
-    } else {
-      fetch('/config')
-        .then((response) => response.json())
-        .then((data) => {
-          setConfig(data);
-          setSelectedSetting(data.visualization);
-        })
-        .catch((error) => console.error('Error loading configuration:', error));
-    }
+    fetch(apiURL + "/config")
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Configuration loaded:", data);
+        const configWithAPI = { ...data, apiURL };
+        setConfig(configWithAPI);
+        setSelectedSetting(data.visualization);
+      })
+      .catch((error) => console.error("Error loading configuration:", error));
   }, []);
 
   const saveConfig = (newConfig) => {
-    fetch('/saveConfig')
-      .then(response => {
-        if (!response.ok) throw new Error('Failed to save configuration');
+    fetch(apiURL + "/saveConfig")
+      .then((response) => {
+        if (!response.ok) throw new Error("Failed to save configuration");
         return response.json();
-      }).then(data => {
+      })
+      .then((data) => {
         setConfig(newConfig);
-        console.log('Configuration updated:', data);
-        alert('Configuration Saved');
-      }).catch(error => console.error('Error updating configuration:', error));
+        console.log("Configuration updated:", data);
+        alert("Configuration Saved");
+      })
+      .catch((error) => console.error("Error updating configuration:", error));
   };
 
   const updateConfig = (newConfig) => {
-    fetch('/config', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    fetch(apiURL + "/config", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newConfig),
-    }).then(response => {
-      if (!response.ok) throw new Error('Failed to update configuration');
-      return response.json();
-    }).then(data => {
-      setConfig(newConfig);
-      console.log('Configuration Returned:', data);
-      // alert('Configuration updated');
-    }).catch(error => console.error('Error updating configuration:', error));
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error("Failed to update configuration");
+        return response.json();
+      })
+      .then((data) => {
+        setConfig(newConfig);
+        console.log("Configuration Returned:", data);
+      })
+      .catch((error) => console.error("Error updating configuration:", error));
   };
 
   if (!config) {
@@ -97,45 +103,63 @@ function App() {
 
   const renderSetting = () => {
     switch (selectedSetting) {
-      case 'bars':
+      case "bars":
         return <BarsSettings config={config} updateConfig={updateConfig} />;
-      case 'birds':
+      case "birds":
         return <BirdsSetting config={config} updateConfig={updateConfig} />;
-      case 'circles':
+      case "circles":
         return <CirclesSetting config={config} updateConfig={updateConfig} />;
-      case 'gameOfLife':
-        return <GameOfLifeSettings config={config} updateConfig={updateConfig} />;
-      case 'matrix':
+      case "gameOfLife":
+        return (
+          <GameOfLifeSettings config={config} updateConfig={updateConfig} />
+        );
+      case "matrix":
         return <MatrixSettings config={config} updateConfig={updateConfig} />;
-      case 'motion':
+      case "motion":
         return <MotionSettings config={config} updateConfig={updateConfig} />;
-      case 'starField':
-        return <StarFieldSettings config={config} updateConfig={updateConfig} />;
-      case 'starPulse':
+      case "starField":
+        return (
+          <StarFieldSettings config={config} updateConfig={updateConfig} />
+        );
+      case "starPulse":
         return <StarPulseSetting config={config} updateConfig={updateConfig} />;
-      case 'text':
+      case "text":
         return <TextSettings config={config} updateConfig={updateConfig} />;
-      case 'temperature':
-        return <TemperatureSetting config={config} updateConfig={updateConfig} />;
-      case 'waveform':
+      case "temperature":
+        return (
+          <TemperatureSetting config={config} updateConfig={updateConfig} />
+        );
+      case "waveform":
         return <WaveformSetting config={config} updateConfig={updateConfig} />;
-      case 'wifi':
-        return <SystemSettings config={config} updateConfig={updateConfig} saveConfig={saveConfig} />;
-      case 'about':
-        return <div class="setting" id="about-settings">
+      case "wifi":
+        return (
+          <SystemSettings
+            config={config}
+            updateConfig={updateConfig}
+            saveConfig={saveConfig}
+          />
+        );
+      case "about":
+        return (
+          <div class="setting" id="about-settings">
+            <div class="setting">
+              <label>Version</label>
+              <label id="version">{config.version}</label>
+            </div>
 
-          <div class="setting">
-            <label>Version</label>
-            <label id="version">{config.version}</label>
+            <div class="setting">
+              <label>Designed and Developed by:</label>
+              <a
+                href="https://github.com/seemywingz/LitBox"
+                target="_blank"
+                id="SeeMyWingZ"
+                rel="noreferrer"
+              >
+                SeeMyWingZ
+              </a>
+            </div>
           </div>
-
-          <div class="setting">
-            <label>Designed and Developed by:</label>
-            <a href="https://github.com/seemywingz/LitBox"
-              target="_blank" id="SeeMyWingZ" rel="noreferrer">SeeMyWingZ</a>
-          </div>
-
-        </div>;
+        );
       default:
         return <div>🛠️ Under Construction 🛠️</div>;
     }
