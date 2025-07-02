@@ -145,13 +145,13 @@ function App() {
         );
       case "about":
         return (
-          <div class="setting" id="about-settings">
-            <div class="setting">
-              <label>Version</label>
+          <div className="setting" id="about-settings">
+            <div className="setting">
+              <label htmlFor="version">Version</label>
               <label id="version">{config.version}</label>
             </div>
 
-            <div class="setting">
+            <div className="setting">
               <label>Designed and Developed by:</label>
               <a
                 href="https://github.com/seemywingz/LitBox"
