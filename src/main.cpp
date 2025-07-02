@@ -1,12 +1,12 @@
 #include <AsyncJson.h>
 #include <ESPWiFi.h>
 #include <LEDMatrix.h>
+#include <SpectralAnalyzer.h>
 
 #include "Birds.h"
 #include "Colors.h"
 #include "GameOfLife.h"
 #include "MatrixAnimation.h"
-#include "SpectralAnalyzer.h"
 #include "Stars.h"
 
 // Web Server
@@ -16,6 +16,21 @@ ESPWiFi device;
 const int maxFrameRate = 120;
 unsigned int frameRate = 60;
 String visualization = "bars";
+
+// Helper: Convert a config value (int or string) to a hex color string
+inline String configValueToHexString(const JsonVariant &val) {
+  if (val.is<int>() || val.is<unsigned int>() || val.is<long>()) {
+    char buf[8];
+    snprintf(buf, sizeof(buf), "%06x", val.as<unsigned int>());
+    return String("#") + buf;
+  } else if (val.is<const char *>() || val.is<String>()) {
+    String s = val.as<String>();
+    if (!s.startsWith("#") && s.length() == 6)
+      return String("#") + s;
+    return s;
+  }
+  return "#000000";
+}
 
 void setBrightness(int newBrightness) {
   device.config["brightness"] =
@@ -39,6 +54,20 @@ void applyConfig() {
   setSensitivity(device.config["sensitivity"].as<int>());
   setFramerate(device.config["frameRate"].as<unsigned int>());
   visualization = device.config["visualization"].as<String>();
+
+  if (device.config.containsKey("pixelColor")) {
+    pixelColor = hexToCRGB(configValueToHexString(device.config["pixelColor"]));
+  }
+  if (device.config.containsKey("pixelBgColor")) {
+    pixelBgColor =
+        hexToCRGB(configValueToHexString(device.config["pixelBgColor"]));
+  }
+  if (device.config.containsKey("colorPallet")) {
+    JsonArray arr = device.config["colorPallet"].as<JsonArray>();
+    for (int i = 0; i < palletSize && i < arr.size(); i++) {
+      colorPallet[i] = hexToCRGB(configValueToHexString(arr[i]));
+    }
+  }
 }
 
 // Simplified drawBars function to directly use colorPallet
@@ -148,6 +177,8 @@ void startWebServer() {
   device.srvRestart();
 
   device.connectSubroutine = []() { testMatrix(); };
+
+  applyConfig();
   device.startWiFi();
   device.startMDNS();
   device.startWebServer();
@@ -165,12 +196,11 @@ void runAtFrameRate(void (*callback)(), unsigned int frameRate) {
 void setup() {
   device.startLog();
   device.readConfig();
+
   device.startLEDMatrix();
   testMatrix();
   startWebServer();
-  applyConfig();
-  startSpectralAnalyzer();
-  device.log("📊 Spectral Analyzer Initialized");
+  device.startSpectralAnalyzer();
   device.log("🔥 Lit Box Initialized");
 }
 
