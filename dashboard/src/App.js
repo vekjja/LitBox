@@ -12,34 +12,6 @@ import TemperatureSetting from "./settings/TemperatureSettings";
 import MotionSettings from "./settings/MotionSettings";
 import TextSettings from "./settings/TextSettings";
 
-// var defaultConfig = {
-//   version: "1.0.0",
-//   mode: "client",
-//   mdns: "litbox",
-//   client: {
-//     ssid: "connectedness",
-//     password: "ReallyLongPassword123!@#",
-//   },
-//   ap: {
-//     ssid: "LitBox",
-//     password: "abcd1234",
-//   },
-//   brightness: 9,
-//   sensitivity: 9,
-//   visualization: "bars",
-//   frameRate: 30,
-//   temperatureUnit: "C",
-//   colorPallet: ["#0000FF", "#00FFFF", "#FF00D5", "#FFFFFF"],
-//   pixelBgColor: "#000000",
-//   pixelColor: "#f5f0f0",
-//   text: {
-//     content: "*.*. Lit Box .*.*",
-//     animation: "scroll",
-//     speed: "75",
-//     size: "1",
-//   },
-// };
-
 function App() {
   const hostname = process.env.REACT_APP_API_HOST || "localhost";
   const port = process.env.REACT_APP_API_PORT || 80;
