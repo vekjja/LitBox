@@ -62,7 +62,11 @@ function App() {
   }, []);
 
   const saveConfig = (newConfig) => {
-    fetch(apiURL + "/saveConfig")
+    fetch(apiURL + "/config", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newConfig),
+    })
       .then((response) => {
         if (!response.ok) throw new Error("Failed to save configuration");
         return response.json();
@@ -87,7 +91,7 @@ function App() {
       })
       .then((data) => {
         setConfig(newConfig);
-        console.log("Configuration Returned:", data);
+        console.log("Configuration Updated:", data);
       })
       .catch((error) => console.error("Error updating configuration:", error));
   };

@@ -1,3 +1,4 @@
+#include <AsyncJson.h>
 #include <ESPWiFi.h>
 
 #include "Birds.h"
@@ -32,23 +33,11 @@ void setFramerate(unsigned int fps) {
   frameRate = device.config["frameRate"];
 }
 
-void initializeFromConfig() {
+void applyConfig() {
   setBrightness(device.config["brightness"].as<int>());
   setSensitivity(device.config["sensitivity"].as<int>());
   setFramerate(device.config["frameRate"].as<unsigned int>());
-
   visualization = device.config["visualization"].as<String>();
-  // temperatureUnit = device.config["temperatureUnit"].as<String>();
-
-  // JsonArray colorArray = device.config["colorPallet"];
-  // for (int i = 0; i < palletSize; i++) {
-  //   colorPallet[i] = colorArray[i];
-  // }
-  // pixelColor = device.config["pixelColor"];
-  // pixelBgColor = device.config["pixelBgColor"];
-
-  // text = device.config["text"]["content"].as<String>();
-  // textSpeed = device.config["text"]["speed"].as<int>();
 }
 
 void drawBars() {
@@ -136,80 +125,12 @@ void drawGameOfLife() {
   FastLED.show();
 }
 
-void initializeWebServer() {
-  device.addEndpoint("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-    if (LittleFS.exists("/index.html")) {
-      AsyncWebServerResponse *response =
-          request->beginResponse(LittleFS, "/index.html", "text/html");
-      device.addCORS(response);
-      request->send(response);
-    } else {
-      AsyncWebServerResponse *response =
-          request->beginResponse(404, "text/plain", "File Not Found");
-      device.addCORS(response);
-      request->send(response);
-    }
-  });
-
-  device.addEndpoint("/config", HTTP_GET, [](AsyncWebServerRequest *request) {
-    device.handleCorsPreflight(request);
-    if (device.config.isNull()) {
-      AsyncWebServerResponse *response =
-          request->beginResponse(404, "text/plain", "Config not found");
-      device.addCORS(response);
-      request->send(response);
-    } else {
-      AsyncWebServerResponse *response = request->beginResponse(
-          200, "application/json", device.config.as<String>());
-      device.addCORS(response);
-      request->send(response);
-    }
-  });
-
-  device.addEndpoint("/config", HTTP_POST, [](AsyncWebServerRequest *request) {
-    if (request->hasParam("plain", true)) {
-      String body = request->getParam("plain", true)->value();
-      JsonDocument config;
-      DeserializationError error = deserializeJson(config, body);
-      device.handleCorsPreflight(request);
-      if (error) {
-        AsyncWebServerResponse *response =
-            request->beginResponse(400, "text/plain", "Invalid JSON");
-        device.addCORS(response);
-        request->send(response);
-        return;
-      } else {
-        if (config["brightness"].is<int>()) {
-          setBrightness(config["brightness"]);
-        }
-        if (config["sensitivity"].is<int>()) {
-          setSensitivity(config["sensitivity"]);
-        }
-        if (config["frameRate"].is<unsigned int>()) {
-          setFramerate(config["frameRate"]);
-        }
-        if (config["visualization"].is<String>()) {
-          visualization = config["visualization"].as<String>();
-        }
-
-        AsyncWebServerResponse *response = request->beginResponse(
-            200, "application/json", config.as<String>());
-        request->send(response);
-        device.config.set(config);
-      }
-    } else {
-      AsyncWebServerResponse *response =
-          request->beginResponse(400, "text/plain", "Missing body");
-      request->send(response);
-    }
-  });
-
-  device.addEndpoint(
-      "/saveConfig", HTTP_GET, [](AsyncWebServerRequest *request) {
-        device.saveConfig();
-        request->send(200, "application/json", device.config.as<String>());
-      });
-
+void initWebServer() {
+  device.srvLog();
+  device.srvRoot();
+  device.srvFiles();
+  device.srvConfig();
+  device.srvRestart();
   // device.connectSubroutine = []() { testMatrix(); };
   device.startWebServer();
 }
@@ -229,14 +150,15 @@ void setup() {
   device.startMDNS();
   initializeMatrix();
   testMatrix();
-  initializeWebServer();
-  initializeFromConfig();
+  initWebServer();
+  applyConfig();
   initializeSpectralAnalyzer();
   Serial.println("🔥 Lit Box Initialized");
 }
 
 void loop() {
   yield();
+  applyConfig();
   drawBars();
   // if (visualization == "circles") {
   //   drawCircles();
