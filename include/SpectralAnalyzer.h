@@ -4,7 +4,7 @@
 #include <arduinoFFT.h>
 
 // Audio Device Configuration
-#define AUDIO_PIN 1
+#define AUDIO_PIN 4
 const int maxInput = 4095;
 const uint16_t audioSamples = 256; // This value MUST be a power of 2
 const int usableSamples = (audioSamples / 2);
@@ -37,7 +37,7 @@ void spectralAnalyzer(int matrixWidth, int matrixHeight) {
     vReal[i] = analogRead(AUDIO_PIN) * (sensitivity / 10.0); // Read ADC value
     vImaginary[i] = 0; // Initialize imaginary part
   }
- 
+
   // Perform FFT
   FFT.windowing(FFTWindow::Blackman_Harris,
                 FFTDirection::Forward); // Apply window

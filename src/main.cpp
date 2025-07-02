@@ -7,6 +7,7 @@
 #include "GameOfLife.h"
 #include "MatrixAnimation.h"
 #include "SpectralAnalyzer.h"
+#include "Stars.h"
 
 // Web Server
 ESPWiFi device;
@@ -64,9 +65,12 @@ void drawCircles() {
   for (int x = 0; x < LED_WIDTH; x++) {
     int circleRadius = spectralData[x] / 2;
     CRGB circleColor = colorPallet[0];
-    if (circleRadius > 1) circleColor = colorPallet[1];
-    if (circleRadius > 4) circleColor = colorPallet[2];
-    if (circleRadius > 6) circleColor = colorPallet[3];
+    if (circleRadius > 1)
+      circleColor = colorPallet[1];
+    if (circleRadius > 4)
+      circleColor = colorPallet[2];
+    if (circleRadius > 6)
+      circleColor = colorPallet[3];
     if (circleRadius > 0) {
       drawCircle(x, 4, circleRadius, circleColor);
     }
@@ -78,7 +82,7 @@ void drawWaveform() {
   spectralAnalyzer(LED_WIDTH, LED_HEIGHT);
   FastLED.clear();
 
-  int middleY = LED_HEIGHT / 2;  // Calculate the middle row of the matrix
+  int middleY = LED_HEIGHT / 2; // Calculate the middle row of the matrix
 
   for (int x = 0; x < LED_WIDTH; x++) {
     int value = spectralData[x] / 2;
@@ -127,6 +131,15 @@ void drawGameOfLife() {
   FastLED.show();
 }
 
+void drawStars() {
+  updateStartPulse(LED_WIDTH, LED_HEIGHT);
+  FastLED.clear();
+  for (int i = 0; i < starCount; i++) {
+    drawPixel(stars[i].x, stars[i].y, stars[i].color);
+  }
+  FastLED.show();
+}
+
 void startWebServer() {
   device.srvLog();
   device.srvRoot();
@@ -134,7 +147,7 @@ void startWebServer() {
   device.srvConfig();
   device.srvRestart();
 
-  // device.connectSubroutine = []() { testMatrix(); };
+  device.connectSubroutine = []() { testMatrix(); };
   device.startWiFi();
   device.startMDNS();
   device.startWebServer();
@@ -174,6 +187,8 @@ void loop() {
     runAtFrameRate(drawWaveform, frameRate);
   } else if (visualization == "matrix") {
     runAtFrameRate([]() { matrixAnimation(LED_WIDTH, LED_HEIGHT); }, frameRate);
+  } else if (visualization == "stars") {
+    runAtFrameRate(drawStars, frameRate);
   } else {
     drawBars();
   }
