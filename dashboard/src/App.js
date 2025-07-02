@@ -63,7 +63,7 @@ function App() {
 
   const saveConfig = (newConfig) => {
     fetch(apiURL + "/config", {
-      method: "POST",
+      method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newConfig),
     })
@@ -73,7 +73,7 @@ function App() {
       })
       .then((data) => {
         setConfig(newConfig);
-        console.log("Configuration updated:", data);
+        console.log("Configuration Saved:", data);
         alert("Configuration Saved");
       })
       .catch((error) => console.error("Error updating configuration:", error));

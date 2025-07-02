@@ -5,7 +5,7 @@
 
 // Audio Device Configuration
 #define AUDIO_PIN 1
-const int maxInput = 4095;          // 12-bit ADC on ESP32-S3
+const int maxInput = 4095;
 const uint16_t audioSamples = 512;  // This value MUST be a power of 2
 const int usableSamples = (audioSamples / 2);
 double vReal[audioSamples];
@@ -21,13 +21,8 @@ const int minSensitivity = 1;
 const int maxSensitivity = 100;
 int sensitivity = 9;
 
-void initializeSpectralAnalyzer() {
+void startSpectralAnalyzer() {
   pinMode(AUDIO_PIN, INPUT);  // Set audio pin as input
-#ifdef ESP32
-  analogReadResolution(12);        // Set ADC resolution to 12-bit
-  analogSetAttenuation(ADC_11db);  // 0-3.3V range for ADC
-#endif
-  Serial.println("📊 Spectral Analyzer Initialized");
 }
 
 void spectralAnalyzer(int matrixWidth, int matrixHeight) {
@@ -39,7 +34,6 @@ void spectralAnalyzer(int matrixWidth, int matrixHeight) {
   for (int i = 0; i < audioSamples; i++) {
     vReal[i] = analogRead(AUDIO_PIN) * (sensitivity / 10.0);  // Read ADC value
     vImaginary[i] = 0;  // Initialize imaginary part
-    // delayMicroseconds(1000000 / samplingFrequency);
   }
 
   // Perform FFT

@@ -1,10 +1,10 @@
 #include <AsyncJson.h>
 #include <ESPWiFi.h>
+#include <LEDMatrix.h>
 
 #include "Birds.h"
 #include "Colors.h"
 #include "GameOfLife.h"
-#include "LEDMatrix.h"
 #include "Matrix.h"
 #include "SpectralAnalyzer.h"
 
@@ -125,13 +125,16 @@ void drawGameOfLife() {
   FastLED.show();
 }
 
-void initWebServer() {
+void startWebServer() {
   device.srvLog();
   device.srvRoot();
   device.srvFiles();
   device.srvConfig();
   device.srvRestart();
-  // device.connectSubroutine = []() { testMatrix(); };
+
+  device.connectSubroutine = []() { testMatrix(); };
+  device.startWiFi();
+  device.startMDNS();
   device.startWebServer();
 }
 
@@ -146,32 +149,29 @@ void runAtFrameRate(void (*callback)(), unsigned int frameRate) {
 
 void setup() {
   device.startLog();
-  device.startWiFi();
-  device.startMDNS();
-  initializeMatrix();
+  device.startLEDMatrix();
   testMatrix();
-  initWebServer();
+  startWebServer();
   applyConfig();
-  initializeSpectralAnalyzer();
-  Serial.println("🔥 Lit Box Initialized");
+  startSpectralAnalyzer();
+  device.log("📊 Spectral Analyzer Initialized");
+  device.log("🔥 Lit Box Initialized");
 }
 
 void loop() {
   yield();
   applyConfig();
-  drawBars();
-  // if (visualization == "circles") {
-  //   drawCircles();
-  // } else if (visualization == "birds") {
-  //   runAtFrameRate(drawBirds, frameRate);
-  // } else if (visualization == "gameOfLife") {
-  //   runAtFrameRate(drawGameOfLife, frameRate);
-  // } else if (visualization == "waveform") {
-  //   runAtFrameRate(drawWaveform, frameRate);
-  // } else if (visualization == "matrix") {
-  //   runAtFrameRate([]() { matrixAnimation(LED_WIDTH, LED_HEIGHT); },
-  //   frameRate);
-  // } else {
-  //   drawBars();
-  // }
+  if (visualization == "circles") {
+    drawCircles();
+  } else if (visualization == "birds") {
+    runAtFrameRate(drawBirds, frameRate);
+  } else if (visualization == "gameOfLife") {
+    runAtFrameRate(drawGameOfLife, frameRate);
+  } else if (visualization == "waveform") {
+    runAtFrameRate(drawWaveform, frameRate);
+  } else if (visualization == "matrix") {
+    runAtFrameRate([]() { matrixAnimation(LED_WIDTH, LED_HEIGHT); }, frameRate);
+  } else {
+    drawBars();
+  }
 }
