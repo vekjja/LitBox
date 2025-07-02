@@ -55,14 +55,14 @@ void applyConfig() {
   setFramerate(device.config["frameRate"].as<unsigned int>());
   visualization = device.config["visualization"].as<String>();
 
-  if (device.config.containsKey("pixelColor")) {
+  if (!device.config["pixelColor"].isNull()) {
     pixelColor = hexToCRGB(configValueToHexString(device.config["pixelColor"]));
   }
-  if (device.config.containsKey("pixelBgColor")) {
+  if (!device.config["pixelBgColor"].isNull()) {
     pixelBgColor =
         hexToCRGB(configValueToHexString(device.config["pixelBgColor"]));
   }
-  if (device.config.containsKey("colorPallet")) {
+  if (!device.config["colorPallet"].isNull()) {
     JsonArray arr = device.config["colorPallet"].as<JsonArray>();
     for (int i = 0; i < palletSize && i < arr.size(); i++) {
       colorPallet[i] = hexToCRGB(configValueToHexString(arr[i]));
@@ -161,7 +161,8 @@ void drawGameOfLife() {
   FastLED.show();
 }
 
-void drawStars() {
+void drawStarPulse() {
+  spectralAnalyzer(LED_WIDTH, LED_HEIGHT);
   updateStartPulse(LED_WIDTH, LED_HEIGHT);
   FastLED.clear();
   for (int i = 0; i < starCount; i++) {
@@ -218,8 +219,8 @@ void loop() {
     runAtFrameRate(drawWaveform, frameRate);
   } else if (visualization == "matrix") {
     runAtFrameRate([]() { matrixAnimation(LED_WIDTH, LED_HEIGHT); }, frameRate);
-  } else if (visualization == "stars") {
-    runAtFrameRate(drawStars, frameRate);
+  } else if (visualization == "starPulse") {
+    runAtFrameRate(drawStarPulse, frameRate);
   } else {
     drawBars();
   }
