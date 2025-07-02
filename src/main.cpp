@@ -149,7 +149,8 @@ void drawBirds() {
 
 void drawGameOfLife() {
   updateGameOfLife(LED_WIDTH, LED_HEIGHT, 231);
-  FastLED.clear();
+
+  fillMatrix(pixelBgColor);
   for (int x = 0; x < LED_WIDTH; x++) {
     for (int y = 0; y < LED_HEIGHT; y++) {
       if (gol_Cells[x][y] == 1) {
