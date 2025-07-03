@@ -91,17 +91,33 @@ void drawBars() {
 void drawCircles() {
   spectralAnalyzer(LED_WIDTH, LED_HEIGHT);
   FastLED.clear();
+
   for (int x = 0; x < LED_WIDTH; x++) {
     int circleRadius = spectralData[x] / 2;
-    CRGB circleColor = colorPallet[0];
-    if (circleRadius > 1)
-      circleColor = colorPallet[1];
-    if (circleRadius > 4)
-      circleColor = colorPallet[2];
-    if (circleRadius > 6)
-      circleColor = colorPallet[3];
+    // Ensure circle radius uses full matrix height
+    circleRadius = constrain(circleRadius, 0, LED_HEIGHT / 2);
+
     if (circleRadius > 0) {
-      drawCircle(x, 4, circleRadius, circleColor);
+      // Use colorPallet with dynamic transitions based on radius
+      CRGB circleColor;
+
+      // Dynamic color selection based on radius
+      if (circleRadius <= 1) {
+        circleColor = colorPallet[0];
+      } else if (circleRadius <= 2) {
+        circleColor = colorPallet[1];
+      } else if (circleRadius <= 3) {
+        circleColor = colorPallet[2];
+      } else {
+        circleColor = colorPallet[3];
+      }
+
+      // Add intensity-based brightness for more dynamic appearance
+      uint8_t brightness = map(circleRadius, 0, LED_HEIGHT / 2, 128, 255);
+      circleColor.nscale8(brightness);
+
+      // Draw circle at center of matrix for full utilization
+      drawCircle(x, LED_HEIGHT / 2, circleRadius, circleColor);
     }
   }
   FastLED.show();
@@ -142,7 +158,9 @@ void drawBirds() {
   updateFlock(LED_WIDTH, LED_HEIGHT);
   FastLED.clear();
   for (int i = 0; i < birdCount; i++) {
-    drawPixel(birds[i].x, birds[i].y, birds[i].color);
+    // Invert Y coordinate so birds appear right-side up
+    int displayY = LED_HEIGHT - 1 - birds[i].y;
+    drawPixel(birds[i].x, displayY, birds[i].color);
   }
   FastLED.show();
 }
@@ -220,7 +238,7 @@ void loop() {
   } else if (visualization == "matrix") {
     runAtFrameRate([]() { matrixAnimation(LED_WIDTH, LED_HEIGHT); }, frameRate);
   } else if (visualization == "starPulse") {
-    runAtFrameRate(drawStarPulse, frameRate);
+    drawStarPulse();
   } else {
     drawBars();
   }
