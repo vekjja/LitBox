@@ -91,33 +91,15 @@ void drawBars() {
 void drawCircles() {
   spectralAnalyzer(LED_WIDTH, LED_HEIGHT);
   FastLED.clear();
-
+  int maxRadius = LED_HEIGHT / 2;
   for (int x = 0; x < LED_WIDTH; x++) {
     int circleRadius = spectralData[x] / 2;
-    // Ensure circle radius uses full matrix height
-    circleRadius = constrain(circleRadius, 0, LED_HEIGHT / 2);
-
     if (circleRadius > 0) {
-      // Use colorPallet with dynamic transitions based on radius
-      CRGB circleColor;
-
-      // Dynamic color selection based on radius
-      if (circleRadius <= 1) {
-        circleColor = colorPallet[0];
-      } else if (circleRadius <= 2) {
-        circleColor = colorPallet[1];
-      } else if (circleRadius <= 3) {
-        circleColor = colorPallet[2];
-      } else {
-        circleColor = colorPallet[3];
-      }
-
-      // Add intensity-based brightness for more dynamic appearance
-      uint8_t brightness = map(circleRadius, 0, LED_HEIGHT / 2, 128, 255);
-      circleColor.nscale8(brightness);
-
-      // Draw circle at center of matrix for full utilization
-      drawCircle(x, LED_HEIGHT / 2, circleRadius, circleColor);
+      // Map radius proportionally to color index (0-3)
+      int colorIdx = map(circleRadius, 1, maxRadius, 0, 3);
+      colorIdx = constrain(colorIdx, 0, 3);
+      CRGB circleColor = colorPallet[colorIdx];
+      drawCircle(x, 3, circleRadius, circleColor);
     }
   }
   FastLED.show();
