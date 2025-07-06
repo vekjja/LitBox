@@ -17,21 +17,6 @@ const int maxFrameRate = 120;
 unsigned int frameRate = 60;
 String visualization = "bars";
 
-// Helper: Convert a config value (int or string) to a hex color string
-inline String configValueToHexString(const JsonVariant &val) {
-  if (val.is<int>() || val.is<unsigned int>() || val.is<long>()) {
-    char buf[8];
-    snprintf(buf, sizeof(buf), "%06x", val.as<unsigned int>());
-    return String("#") + buf;
-  } else if (val.is<const char *>() || val.is<String>()) {
-    String s = val.as<String>();
-    if (!s.startsWith("#") && s.length() == 6)
-      return String("#") + s;
-    return s;
-  }
-  return "#000000";
-}
-
 void setBrightness(int newBrightness) {
   device.config["brightness"] =
       constrain(newBrightness, minBrightness, maxBrightness);
@@ -39,8 +24,7 @@ void setBrightness(int newBrightness) {
 }
 
 void setSensitivity(int newSensitivity) {
-  device.config["sensitivity"] =
-      constrain(newSensitivity, minSensitivity, maxSensitivity);
+  device.config["sensitivity"] = constrain(newSensitivity, 1, 100);
   sensitivity = device.config["sensitivity"];
 }
 
@@ -56,16 +40,15 @@ void applyConfig() {
   visualization = device.config["visualization"].as<String>();
 
   if (!device.config["pixelColor"].isNull()) {
-    pixelColor = hexToCRGB(configValueToHexString(device.config["pixelColor"]));
+    pixelColor = hexToCRGB(device.config["pixelColor"]);
   }
   if (!device.config["pixelBgColor"].isNull()) {
-    pixelBgColor =
-        hexToCRGB(configValueToHexString(device.config["pixelBgColor"]));
+    pixelBgColor = hexToCRGB(device.config["pixelBgColor"]);
   }
   if (!device.config["colorPallet"].isNull()) {
     JsonArray arr = device.config["colorPallet"].as<JsonArray>();
     for (int i = 0; i < palletSize && i < arr.size(); i++) {
-      colorPallet[i] = hexToCRGB(configValueToHexString(arr[i]));
+      colorPallet[i] = hexToCRGB(arr[i]);
     }
   }
 }
@@ -78,10 +61,13 @@ void drawBars() {
 
   for (int x = 0; x < LED_WIDTH; x++) {
     int spectralValue = spectralData[x];
-    for (int y = 0; y < spectralValue; y++) {
-      // Use colorPallet directly based on y value
-      CRGB color = colorPallet[min(y / 2, 3)];
-      drawPixel(x, y, color);
+    // Apply minimum threshold to reduce noise
+    if (spectralValue > 1) {
+      for (int y = 0; y < spectralValue && y < LED_HEIGHT; y++) {
+        // Use colorPallet directly based on y value
+        CRGB color = colorPallet[min(y / 2, 3)];
+        drawPixel(x, y, color);
+      }
     }
   }
 
@@ -94,7 +80,8 @@ void drawCircles() {
   int maxRadius = LED_HEIGHT / 2;
   for (int x = 0; x < LED_WIDTH; x++) {
     int circleRadius = spectralData[x] / 2;
-    if (circleRadius > 0) {
+    // Apply minimum threshold to reduce noise
+    if (circleRadius > 1) {
       // Map radius proportionally to color index (0-3)
       int colorIdx = map(circleRadius, 1, maxRadius, 0, 3);
       colorIdx = constrain(colorIdx, 0, 3);
@@ -113,22 +100,25 @@ void drawWaveform() {
 
   for (int x = 0; x < LED_WIDTH; x++) {
     int value = spectralData[x] / 2;
-    for (int y = 0; y < value; y++) {
-      // Draw upwards from the middle
-      CRGB pixelColor = colorPallet[0];
-      if (y > 1) {
-        pixelColor = colorPallet[1];
-      }
-      if (y > 2) {
-        pixelColor = colorPallet[2];
-      }
-      if (y > 3) {
-        pixelColor = colorPallet[3];
-      }
-      drawPixel(x, middleY - y, pixelColor);
-      // Draw downwards from the middle
-      if (y > 0 && middleY + y < LED_HEIGHT) {
-        drawPixel(x, middleY + y, pixelColor);
+    // Apply minimum threshold to reduce noise
+    if (value > 1) {
+      for (int y = 0; y < value && y < middleY; y++) {
+        // Draw upwards from the middle
+        CRGB pixelColor = colorPallet[0];
+        if (y > 1) {
+          pixelColor = colorPallet[1];
+        }
+        if (y > 2) {
+          pixelColor = colorPallet[2];
+        }
+        if (y > 3) {
+          pixelColor = colorPallet[3];
+        }
+        drawPixel(x, middleY - y, pixelColor);
+        // Draw downwards from the middle
+        if (y > 0 && middleY + y < LED_HEIGHT) {
+          drawPixel(x, middleY + y, pixelColor);
+        }
       }
     }
   }
