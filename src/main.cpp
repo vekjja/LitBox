@@ -7,6 +7,7 @@
 #include "Colors.h"
 #include "GameOfLife.h"
 #include "MatrixAnimation.h"
+#include "Motion.h"
 #include "Stars.h"
 
 // Web Server
@@ -16,6 +17,15 @@ ESPWiFi device;
 const int maxFrameRate = 120;
 unsigned int frameRate = 60;
 String visualization = "bars";
+
+void runAtFrameRate(void (*callback)(), unsigned int frameRate) {
+  static unsigned long lastTime = 0;
+  unsigned long currentTime = millis();
+  if (currentTime - lastTime >= 1000 / frameRate) {
+    callback();
+    lastTime = currentTime;
+  }
+}
 
 void setBrightness(int newBrightness) {
   device.config["brightness"] =
@@ -53,7 +63,6 @@ void applyConfig() {
   }
 }
 
-// Simplified drawBars function to directly use colorPallet
 void drawBars() {
   // Analyze audio and populate spectralData
   spectralAnalyzer(LED_WIDTH, LED_HEIGHT);
@@ -122,7 +131,6 @@ void drawWaveform() {
       }
     }
   }
-
   FastLED.show();
 }
 
@@ -139,7 +147,6 @@ void drawBirds() {
 
 void drawGameOfLife() {
   updateGameOfLife(LED_WIDTH, LED_HEIGHT, 231);
-
   fillMatrix(pixelBgColor);
   for (int x = 0; x < LED_WIDTH; x++) {
     for (int y = 0; y < LED_HEIGHT; y++) {
@@ -161,10 +168,24 @@ void drawStarPulse() {
   FastLED.show();
 }
 
-void startWebServer() {
+void drawMotion() {
+  motionStep(LED_WIDTH, LED_HEIGHT);
+  FastLED.clear();
+  for (int i = 0; i < motionNumObjects; i++) {
+    drawPixel(motionObjects[i].body->position.x,
+              motionObjects[i].body->position.y, motionObjects[i].color);
+  }
+  FastLED.show();
+}
+
+void setup() {
+  device.startLog();
+  device.readConfig();
+
+  device.startLEDMatrix();
+  testMatrix();
   device.srvLog();
   device.srvRoot();
-  device.srvFiles();
   device.srvConfig();
   device.srvRestart();
 
@@ -174,25 +195,11 @@ void startWebServer() {
   device.startWiFi();
   device.startMDNS();
   device.startWebServer();
-}
-
-void runAtFrameRate(void (*callback)(), unsigned int frameRate) {
-  static unsigned long lastTime = 0;
-  unsigned long currentTime = millis();
-  if (currentTime - lastTime >= 1000 / frameRate) {
-    callback();
-    lastTime = currentTime;
-  }
-}
-
-void setup() {
-  device.startLog();
-  device.readConfig();
-
-  device.startLEDMatrix();
-  testMatrix();
-  startWebServer();
   device.startSpectralAnalyzer();
+
+  // Initialize motion sensor
+  startMotionSensor(LED_WIDTH, LED_HEIGHT);
+
   device.log("🔥 Lit Box Initialized");
 }
 
@@ -211,6 +218,8 @@ void loop() {
     runAtFrameRate([]() { matrixAnimation(LED_WIDTH, LED_HEIGHT); }, frameRate);
   } else if (visualization == "starPulse") {
     drawStarPulse();
+  } else if (visualization == "motion") {
+    drawMotion();
   } else {
     drawBars();
   }
