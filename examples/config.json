@@ -11,16 +11,16 @@
         "password": "abcd1234"
     },
     "colorPallet": [
-        "#004cff",
-        "#00ffee",
-        "#f500ed",
-        "#ffffff"
+        "#1d54ff",
+        "#532bff",
+        "#fb62ff",
+        "#ff3691"
     ],
     "visualization": "bars",
     "temperatureUnit": "C",
-    "pixelColor": "#ff006f",
+    "pixelColor": "#ff3691",
     "pixelBgColor": "#000000",
-    "sensitivity": 9,
+    "sensitivity": 25,
     "brightness": 3,
     "frameRate": 60,
     "text": {

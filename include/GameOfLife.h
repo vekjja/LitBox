@@ -65,7 +65,7 @@ void startGameOfLife(int width, int height) {
   gol_Generations = 0;
   gol_Cells = new int* [width] { 0 };
   for (int i = 0; i < width; ++i) gol_Cells[i] = new int[height]{0};
-  randomSeed(analogRead(12));
+  randomSeed(analogRead(A0));
   randomizeCells(width, height);
 }
 

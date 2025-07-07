@@ -13,13 +13,15 @@ Star *stars = nullptr;
 // Function to initialize stars with random values
 void initializeStars(int maxX, int maxY) {
   stars = new Star[starCount];
+
   randomSeed(analogRead(A0));
+
   for (int i = 0; i < starCount; i++) {
+    int colorIndex = random(0, palletSize);
     stars[i].x = random(maxX);
     stars[i].y = random(maxY);
-    stars[i].color =
-        colorPallet[random(0, palletSize)]; // Random color from the pallet
-    stars[i].audioBand = random(8, maxX - 1);
+    stars[i].colorPaletteIndex = colorIndex;
+    stars[i].audioBand = random(maxY, maxX - 1);
   }
 }
 

@@ -15,7 +15,7 @@ ESPWiFi device;
 
 // Visualization Config
 const int maxFrameRate = 120;
-unsigned int frameRate = 60;
+unsigned int frameRate = 18;
 String visualization = "bars";
 
 void runAtFrameRate(void (*callback)(), unsigned int frameRate) {
@@ -50,15 +50,34 @@ void applyConfig() {
   visualization = device.config["visualization"].as<String>();
 
   if (!device.config["pixelColor"].isNull()) {
-    pixelColor = hexToCRGB(device.config["pixelColor"]);
+    CRGB newColor = hexToCRGB(device.config["pixelColor"]);
+    if (newColor != pixelColor) {
+      pixelColor = newColor;
+      device.log("👾 Pixel Color Changed:");
+      device.log("\tR=" + String(pixelColor.r) + ", G=" + String(pixelColor.g) +
+                 ", B=" + String(pixelColor.b));
+    }
   }
   if (!device.config["pixelBgColor"].isNull()) {
-    pixelBgColor = hexToCRGB(device.config["pixelBgColor"]);
+    CRGB newColor = hexToCRGB(device.config["pixelBgColor"]);
+    if (newColor != pixelBgColor) {
+      pixelBgColor = newColor;
+      device.log("👾 Pixel Background Color Changed:");
+      device.log("\tR=" + String(pixelBgColor.r) + ", G=" +
+                 String(pixelBgColor.g) + ", B=" + String(pixelBgColor.b));
+    }
   }
   if (!device.config["colorPallet"].isNull()) {
     JsonArray arr = device.config["colorPallet"].as<JsonArray>();
     for (int i = 0; i < palletSize && i < arr.size(); i++) {
-      colorPallet[i] = hexToCRGB(arr[i]);
+      CRGB newColor = hexToCRGB(arr[i]);
+      if (colorPallet[i] != newColor) {
+        colorPallet[i] = newColor;
+        device.log("🎨 Color Pallet Updated:");
+        device.log("\tColor " + String(i) + ": R=" + String(colorPallet[i].r) +
+                   ", G=" + String(colorPallet[i].g) +
+                   ", B=" + String(colorPallet[i].b));
+      }
     }
   }
 }
@@ -105,28 +124,19 @@ void drawWaveform() {
   spectralAnalyzer(LED_WIDTH, LED_HEIGHT);
   FastLED.clear();
 
-  int middleY = LED_HEIGHT / 2; // Calculate the middle row of the matrix
+  int middleY = LED_HEIGHT / 2;  // Calculate the middle row of the matrix
 
   for (int x = 0; x < LED_WIDTH; x++) {
     int value = spectralData[x] / 2;
     // Apply minimum threshold to reduce noise
     if (value > 1) {
       for (int y = 0; y < value && y < middleY; y++) {
+        CRGB color = colorPallet[min(y / 2, 3)];
         // Draw upwards from the middle
-        CRGB pixelColor = colorPallet[0];
-        if (y > 1) {
-          pixelColor = colorPallet[1];
-        }
-        if (y > 2) {
-          pixelColor = colorPallet[2];
-        }
-        if (y > 3) {
-          pixelColor = colorPallet[3];
-        }
-        drawPixel(x, middleY - y, pixelColor);
+        drawPixel(x, middleY - y, color);
         // Draw downwards from the middle
-        if (y > 0 && middleY + y < LED_HEIGHT) {
-          drawPixel(x, middleY + y, pixelColor);
+        if (y > 0 && middleY + y < LED_HEIGHT + 1) {
+          drawPixel(x, middleY + y, color);
         }
       }
     }
@@ -140,7 +150,7 @@ void drawBirds() {
   for (int i = 0; i < birdCount; i++) {
     // Invert Y coordinate so birds appear right-side up
     int displayY = LED_HEIGHT - 1 - birds[i].y;
-    drawPixel(birds[i].x, displayY, birds[i].color);
+    drawPixel(birds[i].x, displayY, colorPallet[birds[i].colorPaletteIndex]);
   }
   FastLED.show();
 }
@@ -163,13 +173,13 @@ void drawStarPulse() {
   updateStartPulse(LED_WIDTH, LED_HEIGHT);
   FastLED.clear();
   for (int i = 0; i < starCount; i++) {
-    drawPixel(stars[i].x, stars[i].y, stars[i].color);
+    drawPixel(stars[i].x, stars[i].y, colorPallet[stars[i].colorPaletteIndex]);
   }
   FastLED.show();
 }
 
 void drawMotion() {
-  motionStep(LED_WIDTH, LED_HEIGHT);
+  motionStep(LED_WIDTH, LED_HEIGHT, device);
   FastLED.clear();
   for (int i = 0; i < motionNumObjects; i++) {
     drawPixel(motionObjects[i].body->position.x,
@@ -197,8 +207,7 @@ void setup() {
   device.startWebServer();
   device.startSpectralAnalyzer();
 
-  // Initialize motion sensor
-  startMotionSensor(LED_WIDTH, LED_HEIGHT);
+  device.startBMI160();
 
   device.log("🔥 Lit Box Initialized");
 }
