@@ -124,20 +124,26 @@ void drawWaveform() {
   spectralAnalyzer(LED_WIDTH, LED_HEIGHT);
   FastLED.clear();
 
-  int middleY = LED_HEIGHT / 2; // Calculate the middle row of the matrix
+  int centerY = LED_HEIGHT / 2;
+  int paletteSize = palletSize;
 
   for (int x = 0; x < LED_WIDTH; x++) {
     int value = spectralData[x] / 2;
-    // Apply minimum threshold to reduce noise
-    if (value > 1) {
-      for (int y = 0; y < value && y < middleY; y++) {
-        CRGB color = colorPallet[min(y / 2, 3)];
-        // Draw upwards from the middle
-        drawPixel(x, middleY - y, color);
-        // Draw downwards from the middle
-        if (y > 0 && middleY + y < LED_HEIGHT + 1) {
-          drawPixel(x, middleY + y, color);
-        }
+    int maxOffset = min(value, centerY);
+    for (int y = 0; y <= maxOffset; y++) {
+      int colorIdx = map(y, 0, centerY, 0, paletteSize - 1);
+      CRGB color = colorPallet[colorIdx];
+      int upY = centerY - y;
+      int downY = centerY + y;
+      if (y == 0) {
+        // Only draw the center line once
+        if (centerY >= 0 && centerY < LED_HEIGHT)
+          drawPixel(x, centerY, color);
+      } else {
+        if (upY >= 0)
+          drawPixel(x, upY, color);
+        if (downY < LED_HEIGHT)
+          drawPixel(x, downY, color);
       }
     }
   }
@@ -175,6 +181,11 @@ void drawStarPulse() {
   for (int i = 0; i < starCount; i++) {
     drawPixel(stars[i].x, stars[i].y, colorPallet[stars[i].colorPaletteIndex]);
   }
+  FastLED.show();
+}
+
+void drawMatrix() {
+  matrixAnimation(LED_WIDTH, LED_HEIGHT);
   FastLED.show();
 }
 
@@ -223,12 +234,12 @@ void loop() {
     runAtFrameRate(drawBirds, frameRate);
   } else if (visualization == "gameOfLife") {
     runAtFrameRate(drawGameOfLife, frameRate);
-  } else if (visualization == "waveform") {
-    runAtFrameRate(drawWaveform, frameRate);
   } else if (visualization == "matrix") {
-    runAtFrameRate([]() { matrixAnimation(LED_WIDTH, LED_HEIGHT); }, frameRate);
+    runAtFrameRate(drawMatrix, frameRate);
   } else if (visualization == "starPulse") {
     drawStarPulse();
+  } else if (visualization == "waveform") {
+    drawWaveform();
   } else if (visualization == "motion") {
     drawMotion();
   } else {
