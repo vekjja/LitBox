@@ -124,7 +124,7 @@ void drawWaveform() {
   spectralAnalyzer(LED_WIDTH, LED_HEIGHT);
   FastLED.clear();
 
-  int middleY = LED_HEIGHT / 2;  // Calculate the middle row of the matrix
+  int middleY = LED_HEIGHT / 2; // Calculate the middle row of the matrix
 
   for (int x = 0; x < LED_WIDTH; x++) {
     int value = spectralData[x] / 2;
@@ -196,6 +196,7 @@ void setup() {
   testMatrix();
   device.srvLog();
   device.srvRoot();
+  device.srvFiles();
   device.srvConfig();
   device.srvRestart();
 
