@@ -194,18 +194,19 @@ void setup() {
 
   device.startLEDMatrix();
   testMatrix();
-  device.srvLog();
-  device.srvRoot();
-  device.srvFiles();
-  device.srvConfig();
-  device.srvRestart();
 
-  device.connectSubroutine = []() { testMatrix(); };
+  randomSeed(analogRead(A0));
+  device.connectSubroutine = []() {
+    CRGB color = CRGB(random(255), random(255), random(255));
+    testMatrix(color);
+  };
 
   applyConfig();
+  device.srvAll();
   device.startWiFi();
   device.startMDNS();
   device.startWebServer();
+
   device.startSpectralAnalyzer();
 
   device.startBMI160();
