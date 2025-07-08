@@ -202,8 +202,7 @@ void drawMotion() {
 }
 
 void drawTemperature() {
-  float temperature = device.getTemperature();
-  device.log("🌡️ Temperature: " + String(temperature) + "°C");
+  float temperature = device.getTemperature(device.config["temperatureUnit"]);
   staticText(String(temperature).c_str());
 }
 

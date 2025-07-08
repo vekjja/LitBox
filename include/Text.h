@@ -101,7 +101,7 @@ void staticText(const char *text) {
   }
   matrix.setTextSize(textSize);
   matrix.setTextColor(crgbTo16bit(pixelColor));
-  int textLength = strlen(textContent) * 6;
+  int textLength = strlen(text) * 6;
   int xStart = (LED_WIDTH - textLength) / 2;
   int yStart = (LED_HEIGHT - 8) / 2;
   FastLED.clear();
