@@ -58,6 +58,7 @@ public:
 
 // Global matrix instance
 FastLED_NeoMatrix matrix(leds, LED_WIDTH, LED_HEIGHT);
+
 const int maxLen = 200;
 
 // Text configuration
@@ -66,10 +67,7 @@ char textAnimation[16] = "scroll";
 int textSpeed = 75;
 int textSize = 1;
 bool textMode = false;
-
-// Deferred scrolling to avoid conflicts with web server callbacks
 bool scrollRequested = false;
-char scrollBuffer[201]; // 100 chars + null terminator
 
 // Function to convert CRGB to 16-bit color
 uint16_t crgbTo16bit(CRGB color) {
@@ -79,7 +77,7 @@ uint16_t crgbTo16bit(CRGB color) {
   return (r << 11) | (g << 5) | b;
 }
 
-void scrollText(const char *text, ESPWiFi *wifi, CRGB textColor, CRGB bgColor) {
+void scrollText(const char *text, CRGB textColor, CRGB bgColor) {
   if (textMode) {
     Serial.println("scrollText skipped: already active");
     return;
@@ -179,19 +177,19 @@ void displayOrScrollText(const char *text, ESPWiFi *wifi, CRGB textColor,
     return;
   }
   if (strlen(text) > 20) {
-    scrollText(text, wifi, textColor, bgColor);
+    scrollText(text, textColor, bgColor);
   } else if (textFits(text)) {
     staticText(text, textColor, bgColor);
   } else {
-    scrollText(text, wifi, textColor, bgColor);
+    scrollText(text, textColor, bgColor);
   }
 }
 
 // Function to handle deferred scrolling from main loop
-bool handleDeferredScroll(ESPWiFi *device) {
+bool handleDeferredScroll() {
   if (scrollRequested && !textMode) {
     scrollRequested = false;
-    scrollText(scrollBuffer, device, pixelColor, pixelBgColor);
+    scrollText(textContent, pixelColor, pixelBgColor);
     return true; // Indicate that scrolling was handled
   }
   return false; // No scrolling handled
@@ -252,9 +250,6 @@ void startText(ESPWiFi *device) {
         } else if (strcmp(textAnimation, "wave") == 0) {
           waveText(textContent, pixelColor, pixelBgColor);
         } else if (strcmp(textAnimation, "scroll") == 0) {
-          // Defer scrolling to main loop
-          strncpy(scrollBuffer, textContent, maxLen);
-          scrollBuffer[maxLen] = '\0';
           scrollRequested = true;
         } else if (strcmp(textAnimation, "display") == 0) {
           displayOrScrollText(textContent, device, pixelColor, pixelBgColor);

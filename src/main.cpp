@@ -236,7 +236,7 @@ void loop() {
   if (textMode) {
     return;
   }
-  handleDeferredScroll(&device);
+  handleDeferredScroll();
 
   if (visualization == "circles") {
     drawCircles();
