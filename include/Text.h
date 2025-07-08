@@ -58,13 +58,18 @@ public:
 
 // Global matrix instance
 FastLED_NeoMatrix matrix(leds, LED_WIDTH, LED_HEIGHT);
+const int maxLen = 200;
 
 // Text configuration
-String textContent = "*.*. Lit Box .*.*";
-String textAnimation = "scroll";
+char textContent[maxLen] = "*.*. Lit Box .*.*"; // 40 chars max + null
+char textAnimation[16] = "scroll";
 int textSpeed = 75;
 int textSize = 1;
 bool textMode = false;
+
+// Deferred scrolling to avoid conflicts with web server callbacks
+bool scrollRequested = false;
+char scrollBuffer[201]; // 100 chars + null terminator
 
 // Function to convert CRGB to 16-bit color
 uint16_t crgbTo16bit(CRGB color) {
@@ -74,11 +79,18 @@ uint16_t crgbTo16bit(CRGB color) {
   return (r << 11) | (g << 5) | b;
 }
 
-void scrollText(String text, ESPWiFi *wifi, CRGB textColor, CRGB bgColor) {
+void scrollText(const char *text, ESPWiFi *wifi, CRGB textColor, CRGB bgColor) {
+  if (textMode) {
+    Serial.println("scrollText skipped: already active");
+    return;
+  }
   textMode = true;
 
-  // Check for empty text
-  if (text.length() == 0) {
+  char safeText[maxLen + 1];
+  strncpy(safeText, text, maxLen);
+  safeText[maxLen] = '\0';
+
+  if (strlen(safeText) == 0) {
     textMode = false;
     return;
   }
@@ -86,127 +98,103 @@ void scrollText(String text, ESPWiFi *wifi, CRGB textColor, CRGB bgColor) {
   matrix.setTextSize(textSize);
   matrix.setTextColor(crgbTo16bit(textColor));
 
-  // Stream text character by character to avoid memory issues
-  int charWidth = 6;
-  int totalWidth = text.length() * charWidth;
-  int startX = LED_WIDTH;
+  const int charWidth = 6;
+  int textPixelWidth = strlen(safeText) * charWidth;
+  int scrollEnd = textPixelWidth + LED_WIDTH;
 
-  Serial.print("Streaming text: ");
-  Serial.print(text.length());
-  Serial.println(" characters");
-
-  // Scroll through the entire text width
-  for (int x = startX; x > -totalWidth; x--) {
-    // Clear screen
-    FastLED.clear();
-
-    // Fill background
+  for (int x = 0; x < scrollEnd; x++) {
     fill_solid(leds, LED_WIDTH * LED_HEIGHT, bgColor);
-
-    // Calculate which characters are visible
-    int firstChar = max(0, -x / charWidth);
-    int lastChar =
-        min((int)text.length(), (LED_WIDTH - x + charWidth - 1) / charWidth);
-
-    // Only draw visible characters
-    if (firstChar < lastChar) {
-      String visibleText = text.substring(firstChar, lastChar);
-      matrix.setCursor(x + (firstChar * charWidth), 0);
-      matrix.print(visibleText);
-    }
-
+    matrix.setCursor(-x, 0);
+    matrix.print(safeText);
     matrix.show();
-    delay(100 - textSpeed);
+    delay(constrain(120 - textSpeed, 20, 200));
     yield();
   }
 
   textMode = false;
 }
 
-void staticText(String text, CRGB textColor, CRGB bgColor) {
+void staticText(const char *text, CRGB textColor, CRGB bgColor) {
   textMode = true;
-
+  if (!text || strlen(text) == 0) {
+    textMode = false;
+    return;
+  }
+  const int maxLen = 40;
+  char safeText[maxLen + 1];
+  strncpy(safeText, text, maxLen);
+  safeText[maxLen] = '\0';
   matrix.setTextSize(textSize);
   matrix.setTextColor(crgbTo16bit(textColor));
-
-  // Use original proven approach: 6 pixels per character
-  int textLength = text.length() * 6;
+  int textLength = strlen(safeText) * 6;
   int xStart = (LED_WIDTH - textLength) / 2;
   int yStart = (LED_HEIGHT - 8) / 2;
-
-  // Debug: Print text info
-  Serial.print("Static text length: ");
-  Serial.print(text.length());
-  Serial.print(" Text width: ");
-  Serial.print(textLength);
-  Serial.print(" Position: x=");
-  Serial.print(xStart);
-  Serial.print(" y=");
-  Serial.println(yStart);
-
-  // Clear and fill background
   FastLED.clear();
   fill_solid(leds, LED_WIDTH * LED_HEIGHT, bgColor);
-
   matrix.setCursor(xStart, yStart);
-  matrix.print(text);
+  matrix.print(safeText);
   FastLED.show();
-
   textMode = false;
 }
 
-void waveText(String text, CRGB textColor, CRGB bgColor) {
+void waveText(const char *text, CRGB textColor, CRGB bgColor) {
   textMode = true;
-
+  if (!text || strlen(text) == 0) {
+    textMode = false;
+    return;
+  }
+  const int maxLen = 40;
+  char safeText[maxLen + 1];
+  strncpy(safeText, text, maxLen);
+  safeText[maxLen] = '\0';
   matrix.setTextSize(textSize);
   matrix.setTextColor(crgbTo16bit(textColor));
-
-  // Use simple character-based width calculation (4 pixels per character for
-  // better fit)
   int textPixelSize = 4;
-  int textLength = text.length() * textPixelSize;
-
+  int textLength = strlen(safeText) * textPixelSize;
   for (int x = 0; x < LED_WIDTH + textLength; x++) {
     matrix.clear();
-
-    // Fill background
     for (int i = 0; i < LED_WIDTH * LED_HEIGHT; i++) {
       leds[i] = bgColor;
     }
-
-    // Sine wave for vertical position
     int y = sin(x / 2.0) * 2;
-    y = constrain(y, 0, LED_HEIGHT - 8); // 8 pixels for text height
-
+    y = constrain(y, 0, LED_HEIGHT - 8);
     matrix.setCursor(LED_WIDTH - x, y);
-    matrix.print(text);
+    matrix.print(safeText);
     matrix.show();
-
     delay(100 - textSpeed);
   }
-
   textMode = false;
 }
 
-bool textFits(String text) {
-  // Check for empty text
-  if (text.length() == 0) {
+bool textFits(const char *text) {
+  if (!text || strlen(text) == 0) {
     return false;
   }
-
-  // Simple calculation like Adafruit example
-  return (text.length() * 6) <= LED_WIDTH;
+  return (strlen(text) * 6) <= LED_WIDTH;
 }
 
-void displayOrScrollText(String text, ESPWiFi *wifi, CRGB textColor,
+void displayOrScrollText(const char *text, ESPWiFi *wifi, CRGB textColor,
                          CRGB bgColor) {
-  if (text.length() > 20) {
+  if (!text || strlen(text) == 0) {
+    return;
+  }
+  if (strlen(text) > 20) {
     scrollText(text, wifi, textColor, bgColor);
   } else if (textFits(text)) {
     staticText(text, textColor, bgColor);
   } else {
     scrollText(text, wifi, textColor, bgColor);
   }
+}
+
+// Function to handle deferred scrolling from main loop
+bool handleDeferredScroll(ESPWiFi *device) {
+  if (scrollRequested && !textMode) {
+    scrollRequested = false;
+    scrollText(scrollBuffer, device, pixelColor, pixelBgColor);
+    return true; // Indicate that scrolling was handled
+  }
+  return false; // No scrolling handled
 }
 
 void startText(ESPWiFi *device) {
@@ -221,10 +209,8 @@ void startText(ESPWiFi *device) {
           device->logError("/text Error parsing JSON: EmptyInput");
           return;
         }
-
         JsonObject jsonObject = json.as<JsonObject>();
         JsonObject textObj = jsonObject["text"];
-
         if (textObj.isNull()) {
           AsyncWebServerResponse *response = request->beginResponse(
               400, "application/json", "{\"error\":\"NoTextObject\"}");
@@ -233,12 +219,10 @@ void startText(ESPWiFi *device) {
           device->logError("/text Error: No text object in JSON");
           return;
         }
-
         String content = textObj["content"] | "";
         String animation = textObj["animation"] | "scroll";
         int speed = textObj["speed"] | 75;
         int size = textObj["size"] | 1;
-
         if (content.length() == 0) {
           AsyncWebServerResponse *response = request->beginResponse(
               400, "application/json", "{\"error\":\"NoContent\"}");
@@ -247,13 +231,14 @@ void startText(ESPWiFi *device) {
           device->logError("/text Error: No content provided");
           return;
         }
-
-        // Set text parameters
-        textContent = content;
+        // Copy to char arrays
+        strncpy(textContent, content.c_str(), maxLen);
+        textContent[maxLen] = '\0';
+        strncpy(textAnimation, animation.c_str(), 15);
+        textAnimation[15] = '\0';
         textSpeed = speed;
         textSize = size;
 
-        // Serialize the JsonObject to a string before sending
         String responseStr;
         serializeJson(textObj, responseStr);
         AsyncWebServerResponse *response =
@@ -261,14 +246,17 @@ void startText(ESPWiFi *device) {
         device->addCORS(response);
         request->send(response);
 
-        // Display text based on animation type
-        if (animation == "static") {
+        // Defer text display to main loop to avoid conflicts
+        if (strcmp(textAnimation, "static") == 0) {
           staticText(textContent, pixelColor, pixelBgColor);
-        } else if (animation == "wave") {
+        } else if (strcmp(textAnimation, "wave") == 0) {
           waveText(textContent, pixelColor, pixelBgColor);
-        } else if (animation == "scroll") {
-          scrollText(textContent, device, pixelColor, pixelBgColor);
-        } else if (animation == "display") {
+        } else if (strcmp(textAnimation, "scroll") == 0) {
+          // Defer scrolling to main loop
+          strncpy(scrollBuffer, textContent, maxLen);
+          scrollBuffer[maxLen] = '\0';
+          scrollRequested = true;
+        } else if (strcmp(textAnimation, "display") == 0) {
           displayOrScrollText(textContent, device, pixelColor, pixelBgColor);
         }
       }));
