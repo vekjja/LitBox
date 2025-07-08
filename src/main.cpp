@@ -125,7 +125,7 @@ void drawWaveform() {
   spectralAnalyzer(LED_WIDTH, LED_HEIGHT);
   FastLED.clear();
 
-  int centerY = LED_HEIGHT / 2 + 1;
+  int centerY = LED_HEIGHT / 2;
   int paletteSize = palletSize;
 
   for (int x = 0; x < LED_WIDTH; x++) {
