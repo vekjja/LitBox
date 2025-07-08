@@ -82,8 +82,8 @@ void scrollText(const char *text) {
   matrix.setTextColor(crgbTo16bit(pixelColor));
 
   const int charWidth = 6;
-  int textPixelWidth = strlen(textContent) * charWidth;
-  int scrollEnd = textPixelWidth + LED_WIDTH;
+  int textPixelWidth = strlen(text) * charWidth;
+  int scrollEnd = textPixelWidth + 1;
 
   for (int x = 0; x < scrollEnd; x++) {
     fill_solid(leds, LED_WIDTH * LED_HEIGHT, pixelBgColor);
@@ -194,7 +194,7 @@ void startText(ESPWiFi *device) {
         }
 
         String content = textObj["content"] | "";
-        content = "      " + content;
+        content = "     " + content;
         String animation = textObj["animation"] | "scroll";
         int speed = textObj["speed"] | 75;
 

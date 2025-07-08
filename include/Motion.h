@@ -71,6 +71,15 @@ void motionStep(int maxX, int maxY, ESPWiFi &device) {
   }
 
   device.readAccelerometer(ax, ay, az);
+  // device.readGyroscope(gx, gy, gz);
+
+  // // Apply a force to each object based on the gyroscope or accelerometer
+  // values for (int i = 0; i < motionNumObjects; i++) {
+  //   Body *b = motionObjects[i].body;
+  //   // Example: Add velocity based on gyroscope (shake) values
+  //   b->velocity.x += gx * 0.1f; // scale as needed
+  //   b->velocity.y += gy * 0.1f; // scale as needed
+  // }
 
   // Serial.println("g: " + String(-ay) + ", " + String(-ax));
   world.gravity.Set(-ay, -ax);
@@ -84,4 +93,4 @@ void motionStep(int maxX, int maxY, ESPWiFi &device) {
   }
 }
 
-#endif  // MOTION_H
+#endif // MOTION_H
