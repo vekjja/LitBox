@@ -125,20 +125,25 @@ void drawWaveform() {
   spectralAnalyzer(LED_WIDTH, LED_HEIGHT);
   FastLED.clear();
 
-  int centerY = LED_HEIGHT / 2;
+  int centerY = LED_HEIGHT / 2 - 1;
   int paletteSize = palletSize;
 
   for (int x = 0; x < LED_WIDTH; x++) {
-    int value = spectralData[x] / 2;
-    if (value > 0) {
-      int maxOffset = min(value, centerY);
-      for (int y = 0; y < maxOffset; y++) {
-        int colorIdx = map(y, 0, centerY, 0, paletteSize - 1);
-        CRGB color = colorPallet[colorIdx];
-        if (y == 0) {
-          if (centerY >= 0 && centerY < LED_HEIGHT)
-            drawPixel(x, centerY, color);
-        } else {
+    int amplitude = spectralData[x];
+    int maxAmplitudeInput = 32; // adjust as needed for your signal
+    int maxOffset = map(amplitude, 1, maxAmplitudeInput, 0, centerY + 1);
+    maxOffset = constrain(maxOffset, 0, centerY + 1);
+    if (amplitude > 0) {
+      if (maxOffset == 0) {
+        if (centerY >= 0 && centerY < LED_HEIGHT)
+          drawPixel(x, centerY, colorPallet[0]);
+      } else {
+        if (centerY >= 0 && centerY < LED_HEIGHT)
+          drawPixel(x, centerY, colorPallet[0]);
+        // Expand outwards from the center
+        for (int y = 1; y <= maxOffset; y++) {
+          int colorIdx = map(y, 0, centerY + 1, 0, paletteSize - 1);
+          CRGB color = colorPallet[colorIdx];
           int upY = centerY - y;
           int downY = centerY + y;
           if (upY >= 0)
