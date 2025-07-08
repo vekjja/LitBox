@@ -158,7 +158,6 @@ function App() {
           <option value="matrix">Matrix</option>
           <option value="motion">Motion</option>
           <option value="starPulse">Star Pulse</option>
-          <option value="starField">Star Field</option>
           <option value="text">Text</option>
           <option value="temperature">Temperature</option>
           <option value="waveform">Waveform</option>

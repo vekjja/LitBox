@@ -32,7 +32,7 @@ function TextSettings({ config, updateConfig }) {
     const updatedConfig = { ...config, text: localText };
     updateConfig(updatedConfig);
 
-    fetch("/text", {
+    fetch(`${config.apiURL}/text`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updatedConfig),
@@ -42,7 +42,7 @@ function TextSettings({ config, updateConfig }) {
         return response.json();
       })
       .then((data) => {
-        console.log("Config updated:", data);
+        console.log("Text Sent:", data);
       })
       .catch((error) => console.error("Error sending config:", error));
   };

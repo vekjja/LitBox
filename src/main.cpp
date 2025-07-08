@@ -9,6 +9,7 @@
 #include "MatrixAnimation.h"
 #include "Motion.h"
 #include "Stars.h"
+#include "Text.h"
 
 // Web Server
 ESPWiFi device;
@@ -216,6 +217,7 @@ void setup() {
   applyConfig();
   device.srvAll();
   device.startWiFi();
+  startText(&device);
   device.startMDNS();
   device.startWebServer();
 
@@ -229,6 +231,12 @@ void setup() {
 void loop() {
   yield();
   applyConfig();
+
+  // Don't run visualizations if text is being displayed
+  if (textMode) {
+    return;
+  }
+
   if (visualization == "circles") {
     drawCircles();
   } else if (visualization == "birds") {
