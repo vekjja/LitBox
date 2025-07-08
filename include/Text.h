@@ -64,10 +64,9 @@ const int maxLen = 200;
 // Text configuration
 char textContent[maxLen] = "*.*. Lit Box .*.*"; // 40 chars max + null
 char textAnimation[16] = "scroll";
+bool textRequested = false;
 int textSpeed = 75;
 int textSize = 1;
-bool textMode = false;
-bool scrollRequested = false;
 
 // Function to convert CRGB to 16-bit color
 uint16_t crgbTo16bit(CRGB color) {
@@ -77,91 +76,61 @@ uint16_t crgbTo16bit(CRGB color) {
   return (r << 11) | (g << 5) | b;
 }
 
-void scrollText(const char *text, CRGB textColor, CRGB bgColor) {
-  if (textMode) {
-    Serial.println("scrollText skipped: already active");
-    return;
-  }
-  textMode = true;
-
-  char safeText[maxLen + 1];
-  strncpy(safeText, text, maxLen);
-  safeText[maxLen] = '\0';
-
-  if (strlen(safeText) == 0) {
-    textMode = false;
-    return;
-  }
+void scrollText(const char *text) {
 
   matrix.setTextSize(textSize);
-  matrix.setTextColor(crgbTo16bit(textColor));
+  matrix.setTextColor(crgbTo16bit(pixelColor));
 
   const int charWidth = 6;
-  int textPixelWidth = strlen(safeText) * charWidth;
+  int textPixelWidth = strlen(textContent) * charWidth;
   int scrollEnd = textPixelWidth + LED_WIDTH;
 
   for (int x = 0; x < scrollEnd; x++) {
-    fill_solid(leds, LED_WIDTH * LED_HEIGHT, bgColor);
+    fill_solid(leds, LED_WIDTH * LED_HEIGHT, pixelBgColor);
     matrix.setCursor(-x, 0);
-    matrix.print(safeText);
+    matrix.print(text);
     matrix.show();
     delay(constrain(120 - textSpeed, 20, 200));
     yield();
   }
-
-  textMode = false;
 }
 
-void staticText(const char *text, CRGB textColor, CRGB bgColor) {
-  textMode = true;
+void staticText(const char *text) {
   if (!text || strlen(text) == 0) {
-    textMode = false;
     return;
   }
-  const int maxLen = 40;
-  char safeText[maxLen + 1];
-  strncpy(safeText, text, maxLen);
-  safeText[maxLen] = '\0';
   matrix.setTextSize(textSize);
-  matrix.setTextColor(crgbTo16bit(textColor));
-  int textLength = strlen(safeText) * 6;
+  matrix.setTextColor(crgbTo16bit(pixelColor));
+  int textLength = strlen(textContent) * 6;
   int xStart = (LED_WIDTH - textLength) / 2;
   int yStart = (LED_HEIGHT - 8) / 2;
   FastLED.clear();
-  fill_solid(leds, LED_WIDTH * LED_HEIGHT, bgColor);
+  fill_solid(leds, LED_WIDTH * LED_HEIGHT, pixelBgColor);
   matrix.setCursor(xStart, yStart);
-  matrix.print(safeText);
+  matrix.print(text);
   FastLED.show();
-  textMode = false;
 }
 
-void waveText(const char *text, CRGB textColor, CRGB bgColor) {
-  textMode = true;
+void waveText(const char *text) {
   if (!text || strlen(text) == 0) {
-    textMode = false;
     return;
   }
-  const int maxLen = 40;
-  char safeText[maxLen + 1];
-  strncpy(safeText, text, maxLen);
-  safeText[maxLen] = '\0';
   matrix.setTextSize(textSize);
-  matrix.setTextColor(crgbTo16bit(textColor));
+  matrix.setTextColor(crgbTo16bit(pixelColor));
   int textPixelSize = 4;
-  int textLength = strlen(safeText) * textPixelSize;
+  int textLength = strlen(textContent) * textPixelSize;
   for (int x = 0; x < LED_WIDTH + textLength; x++) {
     matrix.clear();
     for (int i = 0; i < LED_WIDTH * LED_HEIGHT; i++) {
-      leds[i] = bgColor;
+      leds[i] = pixelBgColor;
     }
     int y = sin(x / 2.0) * 2;
     y = constrain(y, 0, LED_HEIGHT - 8);
     matrix.setCursor(LED_WIDTH - x, y);
-    matrix.print(safeText);
+    matrix.print(textContent);
     matrix.show();
     delay(100 - textSpeed);
   }
-  textMode = false;
 }
 
 bool textFits(const char *text) {
@@ -171,28 +140,33 @@ bool textFits(const char *text) {
   return (strlen(text) * 6) <= LED_WIDTH;
 }
 
-void displayOrScrollText(const char *text, ESPWiFi *wifi, CRGB textColor,
-                         CRGB bgColor) {
+void displayOrScrollText(const char *text) {
   if (!text || strlen(text) == 0) {
     return;
   }
   if (strlen(text) > 20) {
-    scrollText(text, textColor, bgColor);
+    scrollText(text);
   } else if (textFits(text)) {
-    staticText(text, textColor, bgColor);
+    staticText(text);
   } else {
-    scrollText(text, textColor, bgColor);
+    scrollText(text);
   }
 }
 
-// Function to handle deferred scrolling from main loop
-bool handleDeferredScroll() {
-  if (scrollRequested && !textMode) {
-    scrollRequested = false;
-    scrollText(textContent, pixelColor, pixelBgColor);
-    return true; // Indicate that scrolling was handled
+// Function to handle deferred text display from main loop
+void handleText() {
+  if (textRequested) {
+    if (strcmp(textAnimation, "static") == 0) {
+      staticText(textContent);
+    } else if (strcmp(textAnimation, "wave") == 0) {
+      waveText(textContent);
+    } else if (strcmp(textAnimation, "scroll") == 0) {
+      scrollText(textContent);
+    } else if (strcmp(textAnimation, "display") == 0) {
+      displayOrScrollText(textContent);
+    }
+    textRequested = false;
   }
-  return false; // No scrolling handled
 }
 
 void startText(ESPWiFi *device) {
@@ -207,6 +181,7 @@ void startText(ESPWiFi *device) {
           device->logError("/text Error parsing JSON: EmptyInput");
           return;
         }
+
         JsonObject jsonObject = json.as<JsonObject>();
         JsonObject textObj = jsonObject["text"];
         if (textObj.isNull()) {
@@ -217,10 +192,12 @@ void startText(ESPWiFi *device) {
           device->logError("/text Error: No text object in JSON");
           return;
         }
+
         String content = textObj["content"] | "";
+        content = "      " + content;
         String animation = textObj["animation"] | "scroll";
         int speed = textObj["speed"] | 75;
-        int size = textObj["size"] | 1;
+
         if (content.length() == 0) {
           AsyncWebServerResponse *response = request->beginResponse(
               400, "application/json", "{\"error\":\"NoContent\"}");
@@ -229,13 +206,16 @@ void startText(ESPWiFi *device) {
           device->logError("/text Error: No content provided");
           return;
         }
+
         // Copy to char arrays
         strncpy(textContent, content.c_str(), maxLen);
         textContent[maxLen] = '\0';
         strncpy(textAnimation, animation.c_str(), 15);
         textAnimation[15] = '\0';
         textSpeed = speed;
-        textSize = size;
+
+        // Defer all text display to main loop to avoid conflicts
+        textRequested = true;
 
         String responseStr;
         serializeJson(textObj, responseStr);
@@ -243,17 +223,6 @@ void startText(ESPWiFi *device) {
             request->beginResponse(200, "application/json", responseStr);
         device->addCORS(response);
         request->send(response);
-
-        // Defer text display to main loop to avoid conflicts
-        if (strcmp(textAnimation, "static") == 0) {
-          staticText(textContent, pixelColor, pixelBgColor);
-        } else if (strcmp(textAnimation, "wave") == 0) {
-          waveText(textContent, pixelColor, pixelBgColor);
-        } else if (strcmp(textAnimation, "scroll") == 0) {
-          scrollRequested = true;
-        } else if (strcmp(textAnimation, "display") == 0) {
-          displayOrScrollText(textContent, device, pixelColor, pixelBgColor);
-        }
       }));
 }
 

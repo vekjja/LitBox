@@ -201,6 +201,12 @@ void drawMotion() {
   FastLED.show();
 }
 
+void drawTemperature() {
+  float temperature = device.getTemperature();
+  device.log("🌡️ Temperature: " + String(temperature) + "°C");
+  staticText(String(temperature).c_str());
+}
+
 void setup() {
   device.startLog();
   device.readConfig();
@@ -232,11 +238,7 @@ void loop() {
   yield();
   applyConfig();
 
-  // Don't run visualizations if text is being displayed
-  if (textMode) {
-    return;
-  }
-  handleDeferredScroll();
+  handleText();
 
   if (visualization == "circles") {
     drawCircles();
@@ -246,6 +248,8 @@ void loop() {
     runAtFrameRate(drawGameOfLife, frameRate);
   } else if (visualization == "matrix") {
     runAtFrameRate(drawMatrix, frameRate);
+  } else if (visualization == "temperature") {
+    runAtFrameRate(drawTemperature, frameRate);
   } else if (visualization == "starPulse") {
     drawStarPulse();
   } else if (visualization == "waveform") {
