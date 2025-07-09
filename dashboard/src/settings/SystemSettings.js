@@ -42,13 +42,19 @@ function SystemSettings({ config, updateConfig, saveConfig }) {
     );
   }
 
+  // Helper to omit apiURL and version from config
+  function omitConfigValues(obj) {
+    const { apiURL, version, ...rest } = obj;
+    return rest;
+  }
+
   const handleOpen = () => {
     setSSID(config.client.ssid);
     setPassword(config.client.password);
     setMode(config.client.mode || "client");
     setMdns(config.mdns || "");
     setMdnsError("");
-    setJsonConfig(JSON.stringify(config, null, 2));
+    setJsonConfig(JSON.stringify(omitConfigValues(config), null, 2));
     setJsonError("");
     setIsEditable(false);
     setOpen(true);
@@ -84,7 +90,7 @@ function SystemSettings({ config, updateConfig, saveConfig }) {
         mode: newMode,
         mdns,
       };
-      return JSON.stringify(newConfig, null, 2);
+      return JSON.stringify(omitConfigValues(newConfig), null, 2);
     });
   };
 
@@ -107,7 +113,7 @@ function SystemSettings({ config, updateConfig, saveConfig }) {
         mode,
         mdns,
       };
-      return JSON.stringify(newConfig, null, 2);
+      return JSON.stringify(omitConfigValues(newConfig), null, 2);
     });
   };
 
@@ -129,7 +135,7 @@ function SystemSettings({ config, updateConfig, saveConfig }) {
         mode,
         mdns,
       };
-      return JSON.stringify(newConfig, null, 2);
+      return JSON.stringify(omitConfigValues(newConfig), null, 2);
     });
   };
 
@@ -155,7 +161,7 @@ function SystemSettings({ config, updateConfig, saveConfig }) {
       },
       mdns: value,
     };
-    setJsonConfig(JSON.stringify(newConfig, null, 2));
+    setJsonConfig(JSON.stringify(omitConfigValues(newConfig), null, 2));
   };
 
   const handleSaveNetwork = () => {
@@ -169,8 +175,9 @@ function SystemSettings({ config, updateConfig, saveConfig }) {
       },
       mdns,
     };
-    updateConfig(newConfig);
-    saveConfig(newConfig);
+    const configToSave = omitConfigValues(newConfig);
+    updateConfig(configToSave);
+    saveConfig(configToSave);
   };
 
   const handleRestart = () => {
@@ -200,8 +207,9 @@ function SystemSettings({ config, updateConfig, saveConfig }) {
         setJsonError("Configuration must include 'mdns' field");
         return;
       }
-      updateConfig(parsed);
-      saveConfig(parsed);
+      const configToSave = omitConfigValues(parsed);
+      updateConfig(configToSave);
+      saveConfig(configToSave);
       setIsEditable(false);
       setJsonError("");
       setOpen(false);
