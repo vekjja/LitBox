@@ -61,18 +61,76 @@ function SystemSettings({ config, updateConfig, saveConfig }) {
   const handleModeChange = (_, checked) => {
     const newMode = checked ? "client" : "ap";
     setMode(newMode);
+    // Get new ssid and password from config for the selected mode
+    const newSsid = config[newMode]?.ssid || "";
+    const newPassword = config[newMode]?.password || "";
+    setSSID(newSsid);
+    setPassword(newPassword);
     // Update the local JSON config preview as well
-    const newConfig = {
-      ...config,
-      client: {
-        ...config.client,
-        ssid,
-        password,
+    setJsonConfig((prev) => {
+      const newConfig = {
+        ...config,
+        client: {
+          ...config.client,
+          ...(newMode === "client"
+            ? { ssid: newSsid, password: newPassword }
+            : {}),
+          mode: newMode,
+        },
+        ap: {
+          ...config.ap,
+          ...(newMode === "ap" ? { ssid: newSsid, password: newPassword } : {}),
+        },
         mode: newMode,
-      },
-      mdns,
-    };
-    setJsonConfig(JSON.stringify(newConfig, null, 2));
+        mdns,
+      };
+      return JSON.stringify(newConfig, null, 2);
+    });
+  };
+
+  // When editing SSID or password, update the correct section in the JSON preview
+  const handleSsidChange = (e) => {
+    const value = e.target.value;
+    setSSID(value);
+    setJsonConfig((prev) => {
+      const newConfig = {
+        ...config,
+        client: {
+          ...config.client,
+          ...(mode === "client" ? { ssid: value } : {}),
+          mode,
+        },
+        ap: {
+          ...config.ap,
+          ...(mode === "ap" ? { ssid: value } : {}),
+        },
+        mode,
+        mdns,
+      };
+      return JSON.stringify(newConfig, null, 2);
+    });
+  };
+
+  const handlePasswordChange = (e) => {
+    const value = e.target.value;
+    setPassword(value);
+    setJsonConfig((prev) => {
+      const newConfig = {
+        ...config,
+        client: {
+          ...config.client,
+          ...(mode === "client" ? { password: value } : {}),
+          mode,
+        },
+        ap: {
+          ...config.ap,
+          ...(mode === "ap" ? { password: value } : {}),
+        },
+        mode,
+        mdns,
+      };
+      return JSON.stringify(newConfig, null, 2);
+    });
   };
 
   // Validate mDNS on change
@@ -176,30 +234,13 @@ function SystemSettings({ config, updateConfig, saveConfig }) {
           {tab === 0 && (
             <>
               <TextField
-                label="mDNS/Device Name"
+                label="Device Name/mDNS"
                 value={mdns}
                 onChange={handleMdnsChange}
                 error={!!mdnsError}
                 helperText={mdnsError}
                 fullWidth
                 margin="normal"
-                sx={{ mb: 2 }}
-              />
-              <TextField
-                label="SSID"
-                value={ssid}
-                onChange={(e) => setSSID(e.target.value)}
-                fullWidth
-                margin="normal"
-                sx={{ mb: 2 }}
-              />
-              <TextField
-                label="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                fullWidth
-                margin="normal"
-                type="password"
                 sx={{ mb: 2 }}
               />
               <FormControlLabel
@@ -212,6 +253,23 @@ function SystemSettings({ config, updateConfig, saveConfig }) {
                 }
                 label={`${mode === "client" ? "Client" : "AP"}`}
                 sx={{ mt: 1, mb: 2 }}
+              />
+              <TextField
+                label="SSID"
+                value={ssid}
+                onChange={handleSsidChange}
+                fullWidth
+                margin="normal"
+                sx={{ mb: 2 }}
+              />
+              <TextField
+                label="Password"
+                value={password}
+                onChange={handlePasswordChange}
+                fullWidth
+                margin="normal"
+                type="password"
+                sx={{ mb: 2 }}
               />
             </>
           )}
