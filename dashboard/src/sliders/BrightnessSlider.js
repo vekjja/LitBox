@@ -16,7 +16,7 @@ function BrightnessSlider({ config, updateConfig }) {
       <LBSettingItem label="Brightness">
         <Slider
           id="brightnessValue"
-          min={1}
+          min={3}
           max={255}
           value={Number(brightness)}
           onChange={(e, value) => setBrightness(value)}
