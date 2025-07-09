@@ -1,5 +1,4 @@
 {
-    "version": "v0.0.0",
     "mode": "client",
     "mdns": "LitBox",
     "client": {
@@ -22,7 +21,7 @@
     "pixelBgColor": "#000000",
     "sensitivity": 25,
     "brightness": 3,
-    "frameRate": 60,
+    "frameRate": 18,
     "text": {
         "content": "*.*. Lit Box .*.*",
         "animation": "scroll",
