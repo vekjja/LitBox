@@ -16,6 +16,7 @@ import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import LBDropdown from "./selectors/LBDropdown";
+import AppBar from "@mui/material/AppBar";
 
 // Define the theme
 const theme = createTheme({
@@ -263,11 +264,18 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <Container maxWidth="sm" sx={{ mt: 6, mb: 6, p: 3, borderRadius: 2 }}>
-        <Typography variant="h4" align="center" gutterBottom sx={{ mb: 3 }}>
-          Lit Box
-        </Typography>
-        <Box sx={{ mb: 3 }}>{renderSetting()}</Box>
+      <Container maxWidth="sm" sx={{}}>
+        <AppBar position="fixed">
+          <Typography
+            variant="h4"
+            align="center"
+            gutterBottom
+            sx={{ mt: 3, mb: 3 }}
+          >
+            Lit Box
+          </Typography>
+        </AppBar>
+        <Box sx={{ mt: 15 }}>{renderSetting()}</Box>
       </Container>
     </ThemeProvider>
   );
