@@ -3,7 +3,7 @@ import BrightnessSlider from "../sliders/BrightnessSlider";
 import ColorPalletSelector from "../selectors/ColorPalletSelector";
 import { LBSettings } from "./LBSettings";
 
-function MotionSettings({ config, updateConfig }) {
+function MotionSettings({ config, updateConfig, visualizationDropdown }) {
   return (
     <LBSettings
       label="Motion Settings"
@@ -11,6 +11,7 @@ function MotionSettings({ config, updateConfig }) {
       updateConfig={updateConfig}
       visualization="motion"
     >
+      {visualizationDropdown}
       <BrightnessSlider config={config} updateConfig={updateConfig} />
       <ColorPalletSelector config={config} updateConfig={updateConfig} />
     </LBSettings>

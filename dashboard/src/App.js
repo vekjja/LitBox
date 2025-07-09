@@ -16,23 +16,40 @@ import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import LBDropdown from "./selectors/LBDropdown";
-// Create a custom MUI theme
+
+// Define the theme
 const theme = createTheme({
+  typography: {
+    fontFamily: [
+      "-apple-system",
+      "BlinkMacSystemFont",
+      '"Segoe UI"',
+      "Roboto Slab",
+      '"Helvetica Neue"',
+      "Arial",
+      "sans-serif",
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"',
+    ].join(","),
+  },
   palette: {
-    mode: "light",
+    mode: "dark",
     primary: {
-      main: "#19D2B3",
+      main: "#47FFF0",
+      alt: "#FF4186",
     },
     secondary: {
-      main: "#3D3D3D",
+      main: "#333",
+    },
+    error: {
+      main: "#FF5656",
+    },
+    success: {
+      main: "#17EB9D",
     },
   },
-  typography: {
-    fontFamily: "Roboto, Arial",
-    h4: {
-      fontWeight: 700,
-    },
-  },
+  components: {},
 });
 
 function App() {
@@ -42,7 +59,7 @@ function App() {
     process.env.NODE_ENV === "production" ? "" : `http://${hostname}:${port}`;
 
   var [config, setConfig] = useState(null);
-  const [selectedSetting, setSelectedSetting] = useState("bars"); // Default to 'about'
+  const [selectedSetting, setSelectedSetting] = useState("bars");
 
   useEffect(() => {
     fetch(apiURL + "/config")
@@ -105,47 +122,126 @@ function App() {
   }
 
   const renderSetting = () => {
+    const visualizationDropdown = (
+      <LBDropdown
+        label="Visualization"
+        value={selectedSetting}
+        onChange={(e) => setSelectedSetting(e.target.value)}
+        options={[
+          { value: "bars", label: "Bars" },
+          { value: "birds", label: "Birds" },
+          { value: "circles", label: "Circles" },
+          { value: "gameOfLife", label: "Game of Life" },
+          { value: "matrix", label: "Matrix" },
+          { value: "motion", label: "Motion" },
+          { value: "starPulse", label: "Star Pulse" },
+          { value: "text", label: "Text" },
+          { value: "temperature", label: "Temperature" },
+          { value: "waveform", label: "Waveform" },
+          { value: "wifi", label: "System" },
+          { value: "about", label: "About" },
+        ]}
+        // sx={{ backgroundColor: "background.paper", mb: 2 }}
+      />
+    );
     switch (selectedSetting) {
       case "bars":
-        return <BarsSettings config={config} updateConfig={updateConfig} />;
+        return (
+          <BarsSettings
+            config={config}
+            updateConfig={updateConfig}
+            visualizationDropdown={visualizationDropdown}
+          />
+        );
       case "birds":
-        return <BirdsSetting config={config} updateConfig={updateConfig} />;
+        return (
+          <BirdsSetting
+            config={config}
+            updateConfig={updateConfig}
+            visualizationDropdown={visualizationDropdown}
+          />
+        );
       case "circles":
-        return <CirclesSetting config={config} updateConfig={updateConfig} />;
+        return (
+          <CirclesSetting
+            config={config}
+            updateConfig={updateConfig}
+            visualizationDropdown={visualizationDropdown}
+          />
+        );
       case "gameOfLife":
         return (
-          <GameOfLifeSettings config={config} updateConfig={updateConfig} />
+          <GameOfLifeSettings
+            config={config}
+            updateConfig={updateConfig}
+            visualizationDropdown={visualizationDropdown}
+          />
         );
       case "matrix":
-        return <MatrixSettings config={config} updateConfig={updateConfig} />;
+        return (
+          <MatrixSettings
+            config={config}
+            updateConfig={updateConfig}
+            visualizationDropdown={visualizationDropdown}
+          />
+        );
       case "motion":
-        return <MotionSettings config={config} updateConfig={updateConfig} />;
+        return (
+          <MotionSettings
+            config={config}
+            updateConfig={updateConfig}
+            visualizationDropdown={visualizationDropdown}
+          />
+        );
       case "starPulse":
-        return <StarPulseSetting config={config} updateConfig={updateConfig} />;
+        return (
+          <StarPulseSetting
+            config={config}
+            updateConfig={updateConfig}
+            visualizationDropdown={visualizationDropdown}
+          />
+        );
       case "text":
-        return <TextSettings config={config} updateConfig={updateConfig} />;
+        return (
+          <TextSettings
+            config={config}
+            updateConfig={updateConfig}
+            visualizationDropdown={visualizationDropdown}
+          />
+        );
       case "temperature":
         return (
-          <TemperatureSetting config={config} updateConfig={updateConfig} />
+          <TemperatureSetting
+            config={config}
+            updateConfig={updateConfig}
+            visualizationDropdown={visualizationDropdown}
+          />
         );
       case "waveform":
-        return <WaveformSetting config={config} updateConfig={updateConfig} />;
+        return (
+          <WaveformSetting
+            config={config}
+            updateConfig={updateConfig}
+            visualizationDropdown={visualizationDropdown}
+          />
+        );
       case "wifi":
         return (
           <SystemSettings
             config={config}
             updateConfig={updateConfig}
             saveConfig={saveConfig}
+            visualizationDropdown={visualizationDropdown}
           />
         );
       case "about":
         return (
           <div className="setting" id="about-settings">
+            {visualizationDropdown}
             <div className="setting">
               <label htmlFor="version">Version</label>
               <label id="version">{config.version}</label>
             </div>
-
             <div className="setting">
               <label>Designed and Developed by:</label>
               <a
@@ -160,42 +256,17 @@ function App() {
           </div>
         );
       default:
-        return <div>Ho'd Yo Get Here? 🫠</div>;
+        return <div>Ho'd Yo Get Here? ��</div>;
     }
   };
 
   return (
     <ThemeProvider theme={theme}>
-      <Container
-        maxWidth="sm"
-        sx={{ mt: 6, mb: 6, p: 3, borderRadius: 2, boxShadow: 3 }}
-      >
+      <Container maxWidth="sm" sx={{ mt: 6, mb: 6, p: 3, borderRadius: 2 }}>
         <Typography variant="h4" align="center" gutterBottom sx={{ mb: 3 }}>
           Lit Box
         </Typography>
-        <Box sx={{ mb: 3 }}>
-          <LBDropdown
-            label="Select Setting"
-            value={selectedSetting}
-            onChange={(e) => setSelectedSetting(e.target.value)}
-            options={[
-              { value: "bars", label: "Bars" },
-              { value: "birds", label: "Birds" },
-              { value: "circles", label: "Circles" },
-              { value: "gameOfLife", label: "Game of Life" },
-              { value: "matrix", label: "Matrix" },
-              { value: "motion", label: "Motion" },
-              { value: "starPulse", label: "Star Pulse" },
-              { value: "text", label: "Text" },
-              { value: "temperature", label: "Temperature" },
-              { value: "waveform", label: "Waveform" },
-              { value: "wifi", label: "System" },
-              { value: "about", label: "About" },
-            ]}
-            sx={{ backgroundColor: "background.paper" }}
-          />
-        </Box>
-        {renderSetting()}
+        <Box sx={{ mb: 3 }}>{renderSetting()}</Box>
       </Container>
     </ThemeProvider>
   );

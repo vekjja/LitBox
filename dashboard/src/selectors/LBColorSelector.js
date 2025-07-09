@@ -5,7 +5,6 @@ const LBColorSelector = ({ label, value, onChange, id }) => (
     type="color"
     id={id}
     title={label}
-    className="color-picker"
     value={value}
     onChange={onChange}
     style={{

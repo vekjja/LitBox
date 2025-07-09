@@ -3,14 +3,10 @@ import BrightnessSlider from "../sliders/BrightnessSlider";
 import FramerateSlider from "../sliders/FramerateSlider";
 import ColorSelector from "../selectors/ColorSelector";
 import { LBSettings } from "./LBSettings";
+import LBDropdown from "../selectors/LBDropdown";
 
-function TemperatureSettings({ config, updateConfig }) {
+function TemperatureSettings({ config, updateConfig, visualizationDropdown }) {
   var [temperatureUnit, setTemperatureUnit] = useState(config.temperatureUnit);
-
-  const handleChange = (e) => {
-    setTemperatureUnit(e.target.value);
-    updateConfig({ ...config, temperatureUnit: e.target.value });
-  };
 
   return (
     <LBSettings
@@ -19,20 +15,22 @@ function TemperatureSettings({ config, updateConfig }) {
       updateConfig={updateConfig}
       visualization="temperature"
     >
+      {visualizationDropdown}
       <BrightnessSlider config={config} updateConfig={updateConfig} />
       <FramerateSlider config={config} updateConfig={updateConfig} />
       <ColorSelector config={config} updateConfig={updateConfig} />
-      <div className="setting">
-        <select
-          id="settingSelect"
-          className="clickable"
-          value={temperatureUnit}
-          onChange={handleChange}
-        >
-          <option value="C">Celsius</option>
-          <option value="F">Fahrenheit</option>
-        </select>
-      </div>
+      <LBDropdown
+        label="Temperature Unit"
+        value={temperatureUnit}
+        onChange={(e) => {
+          setTemperatureUnit(e.target.value);
+          updateConfig({ ...config, temperatureUnit: e.target.value });
+        }}
+        options={[
+          { value: "C", label: "Celsius" },
+          { value: "F", label: "Fahrenheit" },
+        ]}
+      />
     </LBSettings>
   );
 }

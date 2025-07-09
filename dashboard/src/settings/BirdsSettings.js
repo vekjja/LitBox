@@ -4,7 +4,7 @@ import FramerateSlider from "../sliders/FramerateSlider";
 import ColorPalletSelector from "../selectors/ColorPalletSelector";
 import { LBSettings } from "./LBSettings";
 
-function BirdsSettings({ config, updateConfig }) {
+function BirdsSettings({ config, updateConfig, visualizationDropdown }) {
   return (
     <LBSettings
       label="Birds Settings"
@@ -12,6 +12,7 @@ function BirdsSettings({ config, updateConfig }) {
       updateConfig={updateConfig}
       visualization="birds"
     >
+      {visualizationDropdown}
       <BrightnessSlider config={config} updateConfig={updateConfig} />
       <FramerateSlider config={config} updateConfig={updateConfig} />
       <ColorPalletSelector config={config} updateConfig={updateConfig} />

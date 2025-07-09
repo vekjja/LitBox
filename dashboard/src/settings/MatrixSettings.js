@@ -3,7 +3,7 @@ import BrightnessSlider from "../sliders/BrightnessSlider";
 import FramerateSlider from "../sliders/FramerateSlider";
 import { LBSettings } from "./LBSettings";
 
-function MatrixSettings({ config, updateConfig }) {
+function MatrixSettings({ config, updateConfig, visualizationDropdown }) {
   return (
     <LBSettings
       label="Matrix Settings"
@@ -11,6 +11,7 @@ function MatrixSettings({ config, updateConfig }) {
       updateConfig={updateConfig}
       visualization="matrix"
     >
+      {visualizationDropdown}
       <BrightnessSlider config={config} updateConfig={updateConfig} />
       <FramerateSlider config={config} updateConfig={updateConfig} />
     </LBSettings>

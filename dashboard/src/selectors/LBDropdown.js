@@ -1,22 +1,22 @@
 import React from "react";
-// import LBSettingItem from "../settings/LBSettingItem";
+import LBSettingItem from "../settings/LBSettingItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 
 const LBDropdown = ({ label, value, onChange, options, ...props }) => {
   return (
-    // <LBSettingItem label={label}>
-    <FormControl fullWidth variant="outlined" size="small">
-      <Select value={value} onChange={onChange} displayEmpty {...props}>
-        {options.map((opt) => (
-          <MenuItem key={opt.value} value={opt.value}>
-            {opt.label}
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
-    // </LBSettingItem>
+    <LBSettingItem label={label} defaultOpen={true}>
+      <FormControl fullWidth variant="outlined" size="small">
+        <Select value={value} onChange={onChange} displayEmpty {...props}>
+          {options.map((opt) => (
+            <MenuItem key={opt.value} value={opt.value}>
+              {opt.label}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+    </LBSettingItem>
   );
 };
 

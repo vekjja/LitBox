@@ -6,7 +6,7 @@ import LBDropdown from "../selectors/LBDropdown";
 import LBInput from "../input/LBInput";
 import { LBSettings } from "./LBSettings";
 
-function TextSettings({ config, updateConfig }) {
+function TextSettings({ config, updateConfig, visualizationDropdown }) {
   // Initialize local state for the text settings
   const [localText, setLocalText] = useState(config.text);
 
@@ -51,6 +51,7 @@ function TextSettings({ config, updateConfig }) {
       updateConfig={updateConfig}
       // Do NOT pass visualization prop here
     >
+      {visualizationDropdown}
       <BrightnessSlider config={config} updateConfig={updateConfig} />
       <ColorSelector config={config} updateConfig={updateConfig} />
       {/* <TextSpeedSlider config={config} updateConfig={updateConfig} /> */}
