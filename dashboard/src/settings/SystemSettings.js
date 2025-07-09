@@ -7,7 +7,6 @@ import Fab from "@mui/material/Fab";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import Alert from "@mui/material/Alert";
 import NetworkCheckIcon from "@mui/icons-material/NetworkCheck";
@@ -15,6 +14,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import IconButton from "@mui/material/IconButton";
+import Switch from "@mui/material/Switch";
+import FormControlLabel from "@mui/material/FormControlLabel";
 
 function SystemSettings({ config, updateConfig, saveConfig }) {
   const [open, setOpen] = useState(false);
@@ -24,10 +25,29 @@ function SystemSettings({ config, updateConfig, saveConfig }) {
   const [jsonConfig, setJsonConfig] = useState(JSON.stringify(config, null, 2));
   const [jsonError, setJsonError] = useState("");
   const [isEditable, setIsEditable] = useState(false);
+  const [mode, setMode] = useState(config.client.mode || "client");
+  const [mdns, setMdns] = useState(config.mdns || "");
+  const [mdnsError, setMdnsError] = useState("");
+
+  // RFC 1123 hostname validation
+  function isValidHostname(name) {
+    if (!name) return false;
+    if (name.length > 253) return false;
+    const labels = name.split(".");
+    return labels.every(
+      (label) =>
+        label.length >= 1 &&
+        label.length <= 63 &&
+        /^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?$/.test(label)
+    );
+  }
 
   const handleOpen = () => {
     setSSID(config.client.ssid);
     setPassword(config.client.password);
+    setMode(config.client.mode || "client");
+    setMdns(config.mdns || "");
+    setMdnsError("");
     setJsonConfig(JSON.stringify(config, null, 2));
     setJsonError("");
     setIsEditable(false);
@@ -37,6 +57,49 @@ function SystemSettings({ config, updateConfig, saveConfig }) {
 
   const handleTabChange = (e, newValue) => setTab(newValue);
 
+  // Only update local state and jsonConfig when mode changes
+  const handleModeChange = (_, checked) => {
+    const newMode = checked ? "client" : "ap";
+    setMode(newMode);
+    // Update the local JSON config preview as well
+    const newConfig = {
+      ...config,
+      client: {
+        ...config.client,
+        ssid,
+        password,
+        mode: newMode,
+      },
+      mdns,
+    };
+    setJsonConfig(JSON.stringify(newConfig, null, 2));
+  };
+
+  // Validate mDNS on change
+  const handleMdnsChange = (e) => {
+    const value = e.target.value;
+    setMdns(value);
+    if (!isValidHostname(value)) {
+      setMdnsError(
+        "Invalid hostname. Use 1-63 characters, no spaces, letters, digits, hyphens, can not start/end with hyphen."
+      );
+    } else {
+      setMdnsError("");
+    }
+    // Update the local JSON config preview as well
+    const newConfig = {
+      ...config,
+      client: {
+        ...config.client,
+        ssid,
+        password,
+        mode,
+      },
+      mdns: value,
+    };
+    setJsonConfig(JSON.stringify(newConfig, null, 2));
+  };
+
   const handleSaveNetwork = () => {
     const newConfig = {
       ...config,
@@ -44,7 +107,9 @@ function SystemSettings({ config, updateConfig, saveConfig }) {
         ...config.client,
         ssid,
         password,
+        mode,
       },
+      mdns,
     };
     updateConfig(newConfig);
     saveConfig(newConfig);
@@ -111,6 +176,16 @@ function SystemSettings({ config, updateConfig, saveConfig }) {
           {tab === 0 && (
             <>
               <TextField
+                label="mDNS/Device Name"
+                value={mdns}
+                onChange={handleMdnsChange}
+                error={!!mdnsError}
+                helperText={mdnsError}
+                fullWidth
+                margin="normal"
+                sx={{ mb: 2 }}
+              />
+              <TextField
                 label="SSID"
                 value={ssid}
                 onChange={(e) => setSSID(e.target.value)}
@@ -126,6 +201,17 @@ function SystemSettings({ config, updateConfig, saveConfig }) {
                 margin="normal"
                 type="password"
                 sx={{ mb: 2 }}
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={mode === "client"}
+                    onChange={handleModeChange}
+                    color="primary"
+                  />
+                }
+                label={`${mode === "client" ? "Client" : "AP"}`}
+                sx={{ mt: 1, mb: 2 }}
               />
             </>
           )}
@@ -168,6 +254,7 @@ function SystemSettings({ config, updateConfig, saveConfig }) {
                 aria-label="save network settings"
                 onClick={handleSaveNetwork}
                 sx={{ mr: 1 }}
+                disabled={!!mdnsError}
               >
                 <SaveIcon />
               </IconButton>
@@ -197,7 +284,7 @@ function SystemSettings({ config, updateConfig, saveConfig }) {
                   color="primary"
                   aria-label="save to device"
                   onClick={handleSaveJson}
-                  disabled={!isEditable}
+                  disabled={!isEditable || !!mdnsError}
                   sx={{ mr: 1 }}
                 >
                   <SaveIcon />
