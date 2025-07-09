@@ -1,6 +1,7 @@
-import React, { useState } from "react";
 import Box from "@mui/material/Box";
+import React, { useState } from "react";
 import LBColorSelector from "./LBColorSelector";
+import LBSettingItem from "../settings/LBSettingItem";
 
 // Utility: Convert a number to a hex color string (e.g., 16711680 -> "#ff0000")
 function toHexColor(val) {
@@ -14,9 +15,7 @@ function toHexColor(val) {
 
 function ColorSelector({ config, updateConfig }) {
   const [pixelColor, setPixelColor] = useState(toHexColor(config.pixelColor));
-  const [pixelBgColor, setPixelBgColor] = useState(
-    toHexColor(config.pixelBgColor)
-  );
+  const [pixelBgColor, setPixelBgColor] = useState(config.pixelBgColor);
 
   const handlePixelColorChange = (event) => {
     const newPixelColor = toHexColor(event.target.value);
@@ -38,18 +37,20 @@ function ColorSelector({ config, updateConfig }) {
 
   return (
     <Box>
-      <LBColorSelector
-        label="Pixel Color"
-        value={pixelColor}
-        onChange={handlePixelColorChange}
-        id="pixelColor"
-      />
-      <LBColorSelector
-        label="Background Color"
-        value={pixelBgColor}
-        onChange={handleBgColorChange}
-        id="pixelBgColor"
-      />
+      <LBSettingItem label="Colors">
+        <LBColorSelector
+          label="Pixel Color"
+          value={pixelColor}
+          onChange={handlePixelColorChange}
+          id="pixelColor"
+        />
+        <LBColorSelector
+          label="Background Color"
+          value={pixelBgColor}
+          onChange={handleBgColorChange}
+          id="pixelBgColor"
+        />
+      </LBSettingItem>
     </Box>
   );
 }

@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import BrightnessSlider from "../sliders/BrightnessSlider";
 import SensitivitySlider from "../sliders/SensitivitySlider";
 import ColorPalletSelector from "../selectors/ColorPalletSelector";
+import Box from "@mui/material/Box";
 
 function CirclesSetting({ config, updateConfig }) {
   useEffect(() => {
@@ -13,12 +14,11 @@ function CirclesSetting({ config, updateConfig }) {
   }, []);
 
   return (
-    <div className="setting">
+    <Box sx={{ width: "100%", maxWidth: 400, mx: "auto" }}>
       <BrightnessSlider config={config} updateConfig={updateConfig} />
       <SensitivitySlider config={config} updateConfig={updateConfig} />
       <ColorPalletSelector config={config} updateConfig={updateConfig} />
-      {/* Add other components or controls */}
-    </div>
+    </Box>
   );
 }
 export default CirclesSetting;

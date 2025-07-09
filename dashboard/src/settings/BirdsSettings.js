@@ -14,7 +14,7 @@ function BirdsSetting({ config, updateConfig }) {
   }, []);
 
   return (
-    <Box sx={{ width: "100%", maxWidth: 400, mx: "auto", mt: 4 }}>
+    <Box sx={{ width: "100%", maxWidth: 400, mx: "auto" }}>
       <BrightnessSlider config={config} updateConfig={updateConfig} />
       <FramerateSlider config={config} updateConfig={updateConfig} />
       <ColorPalletSelector config={config} updateConfig={updateConfig} />
