@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import Slider from "@mui/material/Slider";
-import Box from "@mui/material/Box";
-import LBSettingItem from "../settings/LBSettingItem";
+import LBSlider from "./LBSlider";
 
 function SensitivitySlider({ config, updateConfig }) {
   const [sensitivity, setSensitivity] = useState(config.sensitivity);
@@ -12,19 +10,14 @@ function SensitivitySlider({ config, updateConfig }) {
   };
 
   return (
-    <Box>
-      <LBSettingItem label="Sensitivity">
-        <Slider
-          id="sensitivityValue"
-          min={1}
-          max={100}
-          value={Number(sensitivity)}
-          onChange={(e, value) => setSensitivity(value)}
-          onChangeCommitted={() => handleSliderRelease()}
-          sx={{ width: "100%", color: "#38ffb9" }}
-        />
-      </LBSettingItem>
-    </Box>
+    <LBSlider
+      label="Sensitivity"
+      min={1}
+      max={100}
+      value={Number(sensitivity)}
+      onChange={(e, value) => setSensitivity(value)}
+      onChangeCommitted={handleSliderRelease}
+    />
   );
 }
 

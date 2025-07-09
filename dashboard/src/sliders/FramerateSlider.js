@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import Slider from "@mui/material/Slider";
-import Box from "@mui/material/Box";
-import LBSettingItem from "../settings/LBSettingItem";
+import LBSlider from "./LBSlider";
 
 function FramerateSlider({ config, updateConfig }) {
   const [frameRate, setFrameRate] = useState(config.frameRate);
@@ -12,19 +10,14 @@ function FramerateSlider({ config, updateConfig }) {
   };
 
   return (
-    <Box>
-      <LBSettingItem label="Frame Rate">
-        <Slider
-          id="framerateValue"
-          min={1}
-          max={255}
-          value={Number(frameRate)}
-          onChange={(e, value) => setFrameRate(value)}
-          onChangeCommitted={() => handleSliderRelease()}
-          sx={{ width: "100%", color: "#38ffb9" }}
-        />
-      </LBSettingItem>
-    </Box>
+    <LBSlider
+      label="Frame Rate"
+      min={1}
+      max={255}
+      value={Number(frameRate)}
+      onChange={(e, value) => setFrameRate(value)}
+      onChangeCommitted={handleSliderRelease}
+    />
   );
 }
 

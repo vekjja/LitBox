@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import ColorSelector from "../selectors/ColorSelector";
 import BrightnessSlider from "../sliders/BrightnessSlider";
 // import TextSpeedSlider from "../sliders/TextSpeedSlider";
-import Box from "@mui/material/Box";
 import LBDropdown from "../selectors/LBDropdown";
-import LBInput from "./LBInput";
+import LBInput from "../input/LBInput";
+import { LBSettings } from "./LBSettings";
 
 function TextSettings({ config, updateConfig }) {
   // Initialize local state for the text settings
@@ -17,19 +17,16 @@ function TextSettings({ config, updateConfig }) {
   const handleAnimationChange = (animation) => {
     var updatedText = { ...localText, animation };
     setLocalText(updatedText);
-
-    if (animation === "display") {
-      const updatedConfig = {
-        ...config,
-        text: localText,
-        visualization: "text",
-      };
-      updateConfig(updatedConfig);
-    }
+    // Do NOT update visualization here, just update text state
   };
 
   const handleSendText = () => {
-    const updatedConfig = { ...config, text: localText };
+    // When sending text, update config and visualization if needed
+    const updatedConfig = {
+      ...config,
+      text: localText,
+      visualization: "text", // Only set visualization here
+    };
     updateConfig(updatedConfig);
 
     fetch(`${config.apiURL}/text`, {
@@ -48,7 +45,12 @@ function TextSettings({ config, updateConfig }) {
   };
 
   return (
-    <Box>
+    <LBSettings
+      label="Text Settings"
+      config={config}
+      updateConfig={updateConfig}
+      // Do NOT pass visualization prop here
+    >
       <BrightnessSlider config={config} updateConfig={updateConfig} />
       <ColorSelector config={config} updateConfig={updateConfig} />
       {/* <TextSpeedSlider config={config} updateConfig={updateConfig} /> */}
@@ -72,7 +74,7 @@ function TextSettings({ config, updateConfig }) {
       <button id="greenButton" onClick={handleSendText}>
         Send Text
       </button>
-    </Box>
+    </LBSettings>
   );
 }
 

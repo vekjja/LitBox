@@ -1,5 +1,5 @@
 import React from "react";
-import LBSettingItem from "./LBSettingItem";
+import LBSettingItem from "../settings/LBSettingItem";
 
 const LBInput = ({ label, value, onChange, placeholder, ...props }) => {
   return (

@@ -1,22 +1,19 @@
-import React, { useEffect } from "react";
+import React from "react";
 import BrightnessSlider from "../sliders/BrightnessSlider";
 import FramerateSlider from "../sliders/FramerateSlider";
+import { LBSettings } from "./LBSettings";
 
 function MatrixSettings({ config, updateConfig }) {
-  useEffect(() => {
-    const newConfig = { ...config, visualization: "matrix" };
-    updateConfig(newConfig);
-    return () => {
-      // perform clean-up tasks here if needed
-    };
-  }, []);
-
   return (
-    <div className="setting">
+    <LBSettings
+      label="Matrix Settings"
+      config={config}
+      updateConfig={updateConfig}
+      visualization="matrix"
+    >
       <BrightnessSlider config={config} updateConfig={updateConfig} />
       <FramerateSlider config={config} updateConfig={updateConfig} />
-      {/* Add other components or controls */}
-    </div>
+    </LBSettings>
   );
 }
 

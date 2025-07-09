@@ -10,6 +10,30 @@ import StarPulseSetting from "./settings/StarPulseSettings";
 import TemperatureSetting from "./settings/TemperatureSettings";
 import MotionSettings from "./settings/MotionSettings";
 import TextSettings from "./settings/TextSettings";
+// Material UI imports
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import Container from "@mui/material/Container";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import LBDropdown from "./selectors/LBDropdown";
+// Create a custom MUI theme
+const theme = createTheme({
+  palette: {
+    mode: "light",
+    primary: {
+      main: "#19D2B3",
+    },
+    secondary: {
+      main: "#3D3D3D",
+    },
+  },
+  typography: {
+    fontFamily: "Roboto, Arial",
+    h4: {
+      fontWeight: 700,
+    },
+  },
+});
 
 function App() {
   const hostname = process.env.REACT_APP_API_HOST || "localhost";
@@ -69,10 +93,14 @@ function App() {
 
   if (!config) {
     return (
-      <div className="container">
-        <label className="header">Lit Box</label>
-        <div>Loading configuration... ⚙️</div>
-      </div>
+      <ThemeProvider theme={theme}>
+        <Container maxWidth="sm" sx={{ mt: 6 }}>
+          <Typography variant="h4" align="center" gutterBottom>
+            Lit Box
+          </Typography>
+          <Typography align="center">Loading configuration... ⚙️</Typography>
+        </Container>
+      </ThemeProvider>
     );
   }
 
@@ -132,36 +160,44 @@ function App() {
           </div>
         );
       default:
-        return <div>🛠️ Under Construction 🛠️</div>;
+        return <div>Ho'd Yo Get Here? 🫠</div>;
     }
   };
 
   return (
-    <div className="container">
-      <label className="header">Lit Box</label>
-      <div className="setting">
-        <select
-          id="settingSelect"
-          className="clickable"
-          value={selectedSetting}
-          onChange={(e) => setSelectedSetting(e.target.value)}
-        >
-          <option value="bars">Bars</option>
-          <option value="birds">Birds</option>
-          <option value="circles">Circles</option>
-          <option value="gameOfLife">Game of Life</option>
-          <option value="matrix">Matrix</option>
-          <option value="motion">Motion</option>
-          <option value="starPulse">Star Pulse</option>
-          <option value="text">Text</option>
-          <option value="temperature">Temperature</option>
-          <option value="waveform">Waveform</option>
-          <option value="wifi">System</option>
-          <option value="about">About</option>
-        </select>
-      </div>
-      {renderSetting()}
-    </div>
+    <ThemeProvider theme={theme}>
+      <Container
+        maxWidth="sm"
+        sx={{ mt: 6, mb: 6, p: 3, borderRadius: 2, boxShadow: 3 }}
+      >
+        <Typography variant="h4" align="center" gutterBottom sx={{ mb: 3 }}>
+          Lit Box
+        </Typography>
+        <Box sx={{ mb: 3 }}>
+          <LBDropdown
+            label="Select Setting"
+            value={selectedSetting}
+            onChange={(e) => setSelectedSetting(e.target.value)}
+            options={[
+              { value: "bars", label: "Bars" },
+              { value: "birds", label: "Birds" },
+              { value: "circles", label: "Circles" },
+              { value: "gameOfLife", label: "Game of Life" },
+              { value: "matrix", label: "Matrix" },
+              { value: "motion", label: "Motion" },
+              { value: "starPulse", label: "Star Pulse" },
+              { value: "text", label: "Text" },
+              { value: "temperature", label: "Temperature" },
+              { value: "waveform", label: "Waveform" },
+              { value: "wifi", label: "System" },
+              { value: "about", label: "About" },
+            ]}
+            sx={{ backgroundColor: "background.paper" }}
+          />
+        </Box>
+        {renderSetting()}
+      </Container>
+    </ThemeProvider>
   );
 }
 

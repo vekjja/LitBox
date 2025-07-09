@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import LBSettingItem from "../settings/LBSettingItem";
-import Box from "@mui/material/Box";
-import Slider from "@mui/material/Slider";
+import LBSlider from "./LBSlider";
 
 function BrightnessSlider({ config, updateConfig }) {
   const [brightness, setBrightness] = useState(config.brightness);
@@ -12,19 +10,14 @@ function BrightnessSlider({ config, updateConfig }) {
   };
 
   return (
-    <Box>
-      <LBSettingItem label="Brightness">
-        <Slider
-          id="brightnessValue"
-          min={3}
-          max={255}
-          value={Number(brightness)}
-          onChange={(e, value) => setBrightness(value)}
-          onChangeCommitted={() => handleSliderRelease()}
-          sx={{ width: "100%", color: "#38ffb9" }}
-        />
-      </LBSettingItem>
-    </Box>
+    <LBSlider
+      label="Brightness"
+      min={3}
+      max={255}
+      value={Number(brightness)}
+      onChange={(e, value) => setBrightness(value)}
+      onChangeCommitted={handleSliderRelease}
+    />
   );
 }
 

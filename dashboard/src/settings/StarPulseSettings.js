@@ -1,23 +1,21 @@
-import React, { useEffect } from "react";
+import React from "react";
 import BrightnessSlider from "../sliders/BrightnessSlider";
 import SensitivitySlider from "../sliders/SensitivitySlider";
 import ColorPalletSelector from "../selectors/ColorPalletSelector";
+import { LBSettings } from "./LBSettings";
 
-function StarPulseSetting({ config, updateConfig }) {
-  useEffect(() => {
-    const newConfig = { ...config, visualization: "starPulse" };
-    updateConfig(newConfig);
-    return () => {
-      // perform clean-up tasks here if needed
-    };
-  }, []);
-
+function StarPulseSettings({ config, updateConfig }) {
   return (
-    <div className="setting">
+    <LBSettings
+      label="Star Pulse Settings"
+      config={config}
+      updateConfig={updateConfig}
+      visualization="starPulse"
+    >
       <BrightnessSlider config={config} updateConfig={updateConfig} />
       <SensitivitySlider config={config} updateConfig={updateConfig} />
       <ColorPalletSelector config={config} updateConfig={updateConfig} />
-    </div>
+    </LBSettings>
   );
 }
-export default StarPulseSetting;
+export default StarPulseSettings;

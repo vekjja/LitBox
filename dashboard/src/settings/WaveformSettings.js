@@ -1,24 +1,21 @@
-import React, { useEffect } from "react";
+import React from "react";
 import BrightnessSlider from "../sliders/BrightnessSlider";
 import SensitivitySlider from "../sliders/SensitivitySlider";
 import ColorPalletSelector from "../selectors/ColorPalletSelector";
+import { LBSettings } from "./LBSettings";
 
-function WaveformSetting({ config, updateConfig }) {
-  useEffect(() => {
-    const newConfig = { ...config, visualization: "waveform" };
-    updateConfig(newConfig);
-    return () => {
-      // perform clean-up tasks here if needed
-    };
-  }, []);
-
+function WaveformSettings({ config, updateConfig }) {
   return (
-    <div className="setting">
+    <LBSettings
+      label="Waveform Settings"
+      config={config}
+      updateConfig={updateConfig}
+      visualization="waveform"
+    >
       <BrightnessSlider config={config} updateConfig={updateConfig} />
       <SensitivitySlider config={config} updateConfig={updateConfig} />
       <ColorPalletSelector config={config} updateConfig={updateConfig} />
-      {/* Add other components or controls */}
-    </div>
+    </LBSettings>
   );
 }
-export default WaveformSetting;
+export default WaveformSettings;

@@ -1,22 +1,19 @@
-import React, { useEffect } from "react";
+import React from "react";
 import BrightnessSlider from "../sliders/BrightnessSlider";
 import ColorPalletSelector from "../selectors/ColorPalletSelector";
+import { LBSettings } from "./LBSettings";
 
 function MotionSettings({ config, updateConfig }) {
-  useEffect(() => {
-    const newConfig = { ...config, visualization: "motion" };
-    updateConfig(newConfig);
-    return () => {
-      // perform clean-up tasks here if needed
-    };
-  }, []);
-
   return (
-    <div className="setting">
+    <LBSettings
+      label="Motion Settings"
+      config={config}
+      updateConfig={updateConfig}
+      visualization="motion"
+    >
       <BrightnessSlider config={config} updateConfig={updateConfig} />
       <ColorPalletSelector config={config} updateConfig={updateConfig} />
-      {/* Add other components or controls */}
-    </div>
+    </LBSettings>
   );
 }
 

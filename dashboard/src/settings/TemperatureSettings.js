@@ -1,18 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import BrightnessSlider from "../sliders/BrightnessSlider";
 import FramerateSlider from "../sliders/FramerateSlider";
 import ColorSelector from "../selectors/ColorSelector";
+import { LBSettings } from "./LBSettings";
 
 function TemperatureSettings({ config, updateConfig }) {
   var [temperatureUnit, setTemperatureUnit] = useState(config.temperatureUnit);
-
-  useEffect(() => {
-    const newConfig = { ...config, visualization: "temperature" };
-    updateConfig(newConfig);
-    return () => {
-      // perform clean-up tasks here if needed
-    };
-  }, []);
 
   const handleChange = (e) => {
     setTemperatureUnit(e.target.value);
@@ -20,7 +13,12 @@ function TemperatureSettings({ config, updateConfig }) {
   };
 
   return (
-    <div className="setting">
+    <LBSettings
+      label="Temperature Settings"
+      config={config}
+      updateConfig={updateConfig}
+      visualization="temperature"
+    >
       <BrightnessSlider config={config} updateConfig={updateConfig} />
       <FramerateSlider config={config} updateConfig={updateConfig} />
       <ColorSelector config={config} updateConfig={updateConfig} />
@@ -35,7 +33,7 @@ function TemperatureSettings({ config, updateConfig }) {
           <option value="F">Fahrenheit</option>
         </select>
       </div>
-    </div>
+    </LBSettings>
   );
 }
 
