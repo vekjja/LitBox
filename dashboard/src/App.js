@@ -10,6 +10,7 @@ import StarPulseSetting from "./settings/StarPulseSettings";
 import TemperatureSetting from "./settings/TemperatureSettings";
 import MotionSettings from "./settings/MotionSettings";
 import TextSettings from "./settings/TextSettings";
+
 // Material UI imports
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import Container from "@mui/material/Container";
@@ -227,15 +228,6 @@ function App() {
             visualizationDropdown={visualizationDropdown}
           />
         );
-      case "wifi":
-        return (
-          <SystemSettings
-            config={config}
-            updateConfig={updateConfig}
-            saveConfig={saveConfig}
-            visualizationDropdown={visualizationDropdown}
-          />
-        );
       case "about":
         return (
           <div className="setting" id="about-settings">
@@ -266,10 +258,16 @@ function App() {
     <ThemeProvider theme={theme}>
       <Container maxWidth="sm" sx={{}}>
         <AppBar position="fixed">
+          <SystemSettings
+            config={config}
+            updateConfig={updateConfig}
+            saveConfig={saveConfig}
+          />
           <Typography
             variant="h4"
             align="center"
             gutterBottom
+            color="primary"
             sx={{ mt: 3, mb: 3 }}
           >
             Lit Box
