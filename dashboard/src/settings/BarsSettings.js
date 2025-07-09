@@ -1,25 +1,25 @@
-import React, { useEffect } from 'react';
-import BrightnessSlider from '../sliders/BrightnessSlider';
-import SensitivitySlider from '../sliders/SensitivitySlider';
-import ColorPalletSelector from '../selectors/ColorPalletSelector';
+import React, { useEffect } from "react";
+import BrightnessSlider from "../sliders/BrightnessSlider";
+import SensitivitySlider from "../sliders/SensitivitySlider";
+import ColorPalletSelector from "../selectors/ColorPalletSelector";
+import Box from "@mui/material/Box";
 
 function BarsSettings({ config, updateConfig }) {
+  useEffect(() => {
+    const newConfig = { ...config, visualization: "bars" };
+    updateConfig(newConfig);
+    return () => {
+      // perform clean-up tasks here if needed
+    };
+  }, []);
 
-    useEffect(() => {
-        const newConfig = { ...config, visualization: 'bars' };
-        updateConfig(newConfig);
-        return () => {
-            // perform clean-up tasks here if needed
-        };
-    }, []);
-
-    return (
-        <div className="setting">
-            <BrightnessSlider config={config} updateConfig={updateConfig} />
-            <SensitivitySlider config={config} updateConfig={updateConfig} />
-            <ColorPalletSelector config={config} updateConfig={updateConfig} />
-        </div>
-    );
+  return (
+    <Box sx={{ width: "100%", maxWidth: 400, mx: "auto" }}>
+      <BrightnessSlider config={config} updateConfig={updateConfig} />
+      <SensitivitySlider config={config} updateConfig={updateConfig} />
+      <ColorPalletSelector config={config} updateConfig={updateConfig} />
+    </Box>
+  );
 }
 
 export default BarsSettings;

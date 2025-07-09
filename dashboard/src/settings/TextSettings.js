@@ -1,6 +1,10 @@
 import React, { useState } from "react";
-import BrightnessSlider from "../sliders/BrightnessSlider";
 import ColorSelector from "../selectors/ColorSelector";
+import BrightnessSlider from "../sliders/BrightnessSlider";
+// import TextSpeedSlider from "../sliders/TextSpeedSlider";
+import Box from "@mui/material/Box";
+import LBDropdown from "../selectors/LBDropdown";
+import LBInput from "./LBInput";
 
 function TextSettings({ config, updateConfig }) {
   // Initialize local state for the text settings
@@ -24,10 +28,6 @@ function TextSettings({ config, updateConfig }) {
     }
   };
 
-  const handleSliderChange = (event) => {
-    setLocalText({ ...localText, speed: event.target.value });
-  };
-
   const handleSendText = () => {
     const updatedConfig = { ...config, text: localText };
     updateConfig(updatedConfig);
@@ -48,44 +48,23 @@ function TextSettings({ config, updateConfig }) {
   };
 
   return (
-    <div className="setting">
+    <Box>
       <BrightnessSlider config={config} updateConfig={updateConfig} />
       <ColorSelector config={config} updateConfig={updateConfig} />
-      <div className="setting" id="text-speed-settings">
-        <input
-          id="toggleTextSpeed"
-          type="checkbox"
-          className="toggle-button"
-        ></input>
-        <label htmlFor="toggleTextSpeed" className="clickable">
-          Text Speed
-        </label>
-        <div className="toggle-content">
-          <div className="setting">
-            <input
-              id="TextSpeedValue"
-              type="range"
-              min="1"
-              max="100"
-              value={localText.speed}
-              onChange={handleSliderChange}
-            />
-          </div>
-        </div>
-      </div>
-      <div className="setting">
-        <select
-          id="textAnimationSelect"
-          className="clickable"
-          value={localText.animation}
-          onChange={(e) => handleAnimationChange(e.target.value)}
-        >
-          <option value="scroll">Scroll</option>
-          <option value="wave">Wave</option>
-          <option value="display">Display</option>
-        </select>
-      </div>
-      <input
+      {/* <TextSpeedSlider config={config} updateConfig={updateConfig} /> */}
+
+      <LBDropdown
+        label="Text Animation"
+        value={localText.animation}
+        onChange={(e) => handleAnimationChange(e.target.value)}
+        options={[
+          { value: "scroll", label: "Scroll" },
+          { value: "wave", label: "Wave" },
+          { value: "display", label: "Display" },
+        ]}
+      />
+      <LBInput
+        label="Text Content"
         value={localText.content}
         onChange={handleTextChange}
         placeholder="Enter text"
@@ -93,7 +72,7 @@ function TextSettings({ config, updateConfig }) {
       <button id="greenButton" onClick={handleSendText}>
         Send Text
       </button>
-    </div>
+    </Box>
   );
 }
 
