@@ -127,6 +127,7 @@ function App() {
         label="Visualization"
         value={selectedSetting}
         onChange={(e) => setSelectedSetting(e.target.value)}
+        defaultOpen={true}
         options={[
           { value: "bars", label: "Bars" },
           { value: "birds", label: "Birds" },

@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import ColorSelector from "../selectors/ColorSelector";
 import BrightnessSlider from "../sliders/BrightnessSlider";
-// import TextSpeedSlider from "../sliders/TextSpeedSlider";
-import LBDropdown from "../selectors/LBDropdown";
+import TextSpeedSlider from "../sliders/TextSpeedSlider";
+// import LBDropdown from "../selectors/LBDropdown";
 import LBInput from "../input/LBInput";
+import LBButton from "../buttons/LBButton";
 import { LBSettings } from "./LBSettings";
 
 function TextSettings({ config, updateConfig, visualizationDropdown }) {
@@ -14,18 +15,17 @@ function TextSettings({ config, updateConfig, visualizationDropdown }) {
     setLocalText({ ...localText, content: e.target.value });
   };
 
-  const handleAnimationChange = (animation) => {
-    var updatedText = { ...localText, animation };
-    setLocalText(updatedText);
-    // Do NOT update visualization here, just update text state
-  };
+  // const handleAnimationChange = (animation) => {
+  //   var updatedText = { ...localText, animation };
+  //   setLocalText(updatedText);
+  //   // Do NOT update visualization here, just update text state
+  // };
 
   const handleSendText = () => {
     // When sending text, update config and visualization if needed
     const updatedConfig = {
       ...config,
       text: localText,
-      visualization: "text", // Only set visualization here
     };
     updateConfig(updatedConfig);
 
@@ -54,9 +54,9 @@ function TextSettings({ config, updateConfig, visualizationDropdown }) {
       {visualizationDropdown}
       <BrightnessSlider config={config} updateConfig={updateConfig} />
       <ColorSelector config={config} updateConfig={updateConfig} />
-      {/* <TextSpeedSlider config={config} updateConfig={updateConfig} /> */}
+      <TextSpeedSlider config={config} updateConfig={updateConfig} />
 
-      <LBDropdown
+      {/* <LBDropdown
         label="Text Animation"
         value={localText.animation}
         onChange={(e) => handleAnimationChange(e.target.value)}
@@ -65,16 +65,14 @@ function TextSettings({ config, updateConfig, visualizationDropdown }) {
           { value: "wave", label: "Wave" },
           { value: "display", label: "Display" },
         ]}
-      />
+      /> */}
       <LBInput
         label="Text Content"
         value={localText.content}
         onChange={handleTextChange}
         placeholder="Enter text"
       />
-      <button id="greenButton" onClick={handleSendText}>
-        Send Text
-      </button>
+      <LBButton label="Send Text" onClick={handleSendText} />
     </LBSettings>
   );
 }

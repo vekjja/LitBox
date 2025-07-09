@@ -28,7 +28,7 @@ function ColorSelector({ config, updateConfig }) {
 
   return (
     <Box>
-      <LBSettingItem label="Colors">
+      <LBSettingItem label="Colors" defaultOpen={true}>
         <LBColorSelector
           label="Pixel Color"
           value={pixelColor}

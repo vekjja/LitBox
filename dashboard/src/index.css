@@ -6,13 +6,9 @@ body {
   color: #fff;
 }
 
-
 input[type=color],
 input[type=color]::-webkit-color-swatch,
 input[type=color]::-webkit-color-swatch-wrapper {
   border: 9px;
   padding: 0;
-  -webkit-appearance: none;
-  appearance: none;
-  cursor: pointer;
 }

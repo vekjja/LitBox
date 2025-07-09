@@ -22,10 +22,9 @@ function ColorPalletSelector({ config, updateConfig }) {
 
   return (
     <Box>
-      <LBSettingItem label="Color Pallet">
+      <LBSettingItem label="Color Pallet" defaultOpen={true}>
         <Box sx={{ flexDirection: "column", gap: 2 }}>
           {[...colors].reverse().map((color, index) => (
-            // <Box key={index} sx={{ mb: 1 }}>
             <LBColorSelector
               key={index}
               label={`Color ${colors.length - index}`}
@@ -33,7 +32,6 @@ function ColorPalletSelector({ config, updateConfig }) {
               onChange={handleColorChange(colors.length - index - 1)}
               id={`color${colors.length - index}`}
             />
-            // </Box>
           ))}
         </Box>
       </LBSettingItem>

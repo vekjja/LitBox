@@ -22,6 +22,7 @@ function TemperatureSettings({ config, updateConfig, visualizationDropdown }) {
       <LBDropdown
         label="Temperature Unit"
         value={temperatureUnit}
+        defaultOpen="true"
         onChange={(e) => {
           setTemperatureUnit(e.target.value);
           updateConfig({ ...config, temperatureUnit: e.target.value });
