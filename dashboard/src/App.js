@@ -39,7 +39,7 @@ const theme = createTheme({
     mode: "dark",
     primary: {
       main: "#47FFF0",
-      alt: "#FF4186",
+      alt: "#0FAB9E",
     },
     secondary: {
       main: "#333",
@@ -141,7 +141,6 @@ function App() {
           { value: "text", label: "Text" },
           { value: "temperature", label: "Temperature" },
           { value: "waveform", label: "Waveform" },
-          { value: "wifi", label: "System" },
           { value: "about", label: "About" },
         ]}
         // sx={{ backgroundColor: "background.paper", mb: 2 }}
@@ -234,7 +233,6 @@ function App() {
             {visualizationDropdown}
             <div className="setting">
               <label htmlFor="version">Version</label>
-              <label id="version">{config.version}</label>
             </div>
             <div className="setting">
               <label>Designed and Developed by:</label>
@@ -250,7 +248,7 @@ function App() {
           </div>
         );
       default:
-        return <div>Ho'd Yo Get Here? ��</div>;
+        return <div>How'd Yo Get Here?🫠</div>;
     }
   };
 
@@ -270,7 +268,7 @@ function App() {
             color="primary"
             sx={{ mt: 3, mb: 3 }}
           >
-            Lit Box
+            {config.mdns}
           </Typography>
         </AppBar>
         <Box sx={{ mt: 15 }}>{renderSetting()}</Box>

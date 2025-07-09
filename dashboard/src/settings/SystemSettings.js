@@ -222,16 +222,18 @@ function SystemSettings({ config, updateConfig, saveConfig }) {
 
   return (
     <>
-      <Tooltip title="System Settings">
-        <Fab
-          size="small"
-          color="primary"
-          onClick={handleOpen}
-          sx={{ position: "fixed", top: 20, left: 20, zIndex: 1301 }}
-        >
-          <NetworkCheckIcon />
-        </Fab>
-      </Tooltip>
+      {!open && (
+        <Tooltip title="System Settings">
+          <Fab
+            size="small"
+            color="primary"
+            onClick={handleOpen}
+            sx={{ position: "fixed", top: 20, left: 20, zIndex: 1301 }}
+          >
+            <NetworkCheckIcon />
+          </Fab>
+        </Tooltip>
+      )}
       <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
         <DialogTitle>System Settings</DialogTitle>
         <Tabs value={tab} onChange={handleTabChange} sx={{ px: 2 }}>
@@ -350,7 +352,7 @@ function SystemSettings({ config, updateConfig, saveConfig }) {
                   color="primary"
                   aria-label="save to device"
                   onClick={handleSaveJson}
-                  disabled={!isEditable || !!mdnsError}
+                  // disabled={!isEditable || !!mdnsError}
                   sx={{ mr: 1 }}
                 >
                   <SaveIcon />
