@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import LBSlider from "./LBSlider";
 
-function SensitivitySlider({ config, updateConfig }) {
+function TextSpeedSlider({ config, updateConfig }) {
   const [sensitivity, setSensitivity] = useState(config.sensitivity);
 
   const handleSliderRelease = () => {
@@ -11,7 +11,7 @@ function SensitivitySlider({ config, updateConfig }) {
 
   return (
     <LBSlider
-      label="Sensitivity"
+      label="Text Speed"
       min={1}
       max={100}
       value={Number(sensitivity)}
@@ -21,4 +21,4 @@ function SensitivitySlider({ config, updateConfig }) {
   );
 }
 
-export default SensitivitySlider;
+export default TextSpeedSlider;

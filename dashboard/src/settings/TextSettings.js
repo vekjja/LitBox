@@ -1,93 +1,80 @@
-import React, { useState } from 'react';
-import BrightnessSlider from '../sliders/BrightnessSlider';
-import ColorSelector from '../selectors/ColorSelector';
+import React, { useState } from "react";
+import ColorSelector from "../selectors/ColorSelector";
+import BrightnessSlider from "../sliders/BrightnessSlider";
+import TextSpeedSlider from "../sliders/TextSpeedSlider";
+// import LBDropdown from "../selectors/LBDropdown";
+import LBInput from "../input/LBInput";
+import LBButton from "../buttons/LBButton";
+import { LBSettings } from "./LBSettings";
 
-function TextSettings({ config, updateConfig }) {
-    // Initialize local state for the text settings
-    const [localText, setLocalText] = useState(config.text);
+function TextSettings({ config, updateConfig, visualizationDropdown }) {
+  // Initialize local state for the text settings
+  const [localText, setLocalText] = useState(config.text);
 
-    const handleTextChange = (e) => {
-        setLocalText({ ...localText, content: e.target.value });
+  const handleTextChange = (e) => {
+    setLocalText({ ...localText, content: e.target.value });
+  };
+
+  // const handleAnimationChange = (animation) => {
+  //   var updatedText = { ...localText, animation };
+  //   setLocalText(updatedText);
+  //   // Do NOT update visualization here, just update text state
+  // };
+
+  const handleSendText = () => {
+    // When sending text, update config and visualization if needed
+    const updatedConfig = {
+      ...config,
+      text: localText,
     };
+    updateConfig(updatedConfig);
 
-    const handleAnimationChange = (animation) => {
-        var updatedText = { ...localText, animation };
-        setLocalText(updatedText);
+    fetch(`${config.apiURL}/text`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updatedConfig),
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error("Failed to send text");
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Text Sent:", data);
+      })
+      .catch((error) => console.error("Error sending config:", error));
+  };
 
-        if (animation === 'display') {
-            const updatedConfig = { ...config, text: localText, visualization: 'text' };
-            updateConfig(updatedConfig);
-        }
-    };
+  return (
+    <LBSettings
+      label="Text Settings"
+      config={config}
+      updateConfig={updateConfig}
+      // Do NOT pass visualization prop here
+    >
+      {visualizationDropdown}
+      <BrightnessSlider config={config} updateConfig={updateConfig} />
+      <ColorSelector config={config} updateConfig={updateConfig} />
+      <TextSpeedSlider config={config} updateConfig={updateConfig} />
 
-    const handleSliderChange = (event) => {
-        setLocalText({ ...localText, speed: event.target.value });
-    };
-
-    const handleSendText = () => {
-        const updatedConfig = { ...config, text: localText };
-        updateConfig(updatedConfig);
-
-        fetch('/text', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(updatedConfig),
-        })
-            .then((response) => {
-                if (!response.ok) throw new Error('Failed to send text');
-                return response.json();
-            })
-            .then((data) => {
-                console.log('Config updated:', data);
-            })
-            .catch((error) => console.error('Error sending config:', error));
-    };
-
-    return (
-        <div className="setting">
-            <BrightnessSlider config={config} updateConfig={updateConfig} />
-            <ColorSelector config={config} updateConfig={updateConfig} />
-            <div className="setting" id="text-speed-settings">
-                <input id="toggleTextSpeed" type="checkbox" class="toggle-button"></input>
-                <label for="toggleTextSpeed" class="clickable">Text Speed</label>
-                <div class="toggle-content">
-                    <div class="setting">
-                        <input
-                            id="TextSpeedValue"
-                            type="range"
-                            min="1"
-                            max="100"
-                            value={localText.speed}
-                            onChange={handleSliderChange}
-                        />
-                    </div>
-                </div>
-            </div>
-            <div className="setting">
-                <select
-                    id="textAnimationSelect"
-                    className="clickable"
-                    value={localText.animation}
-                    onChange={(e) => handleAnimationChange(e.target.value)}
-                >
-                    <option value="scroll">Scroll</option>
-                    <option value="wave">Wave</option>
-                    <option value="display">Display</option>
-                </select>
-            </div>
-            <input
-                value={localText.content}
-                onChange={handleTextChange}
-                placeholder="Enter text"
-            />
-            <button
-                onClick={handleSendText}
-                style={{ color: 'black', backgroundColor: '#38ffb9' }}
-            >
-                Send Text
-            </button>
-        </div>
-    );
+      {/* <LBDropdown
+        label="Text Animation"
+        value={localText.animation}
+        onChange={(e) => handleAnimationChange(e.target.value)}
+        options={[
+          { value: "scroll", label: "Scroll" },
+          { value: "wave", label: "Wave" },
+          { value: "display", label: "Display" },
+        ]}
+      /> */}
+      <LBInput
+        label="Text Content"
+        value={localText.content}
+        onChange={handleTextChange}
+        placeholder="Enter text"
+      />
+      <LBButton label="Send Text" onClick={handleSendText} />
+    </LBSettings>
+  );
 }
 
 export default TextSettings;

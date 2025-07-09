@@ -1,49 +1,49 @@
-import React, { useState } from 'react';
+import Box from "@mui/material/Box";
+import React, { useState } from "react";
+import LBColorSelector from "./LBColorSelector";
+import LBSettingItem from "../settings/LBSettingItem";
+import { toHexColor } from "../utils/colorUtils";
 
 function ColorSelector({ config, updateConfig }) {
-    const [pixelColor, setPixelColor] = useState(config.pixelColor);
-    const [pixelBgColor, setPixelBgColor] = useState(config.pixelBgColor);
+  const [pixelColor, setPixelColor] = useState(toHexColor(config.pixelColor));
+  const [pixelBgColor, setPixelBgColor] = useState(config.pixelBgColor);
 
-    const handlePixelColorChange = (event) => {
-        const newPixelColor = event.target.value;
-        setPixelColor(newPixelColor);
-        updateConfig({
-            ...config,
-            pixelColor: newPixelColor,
-        });
-    };
+  const handlePixelColorChange = (event) => {
+    const newPixelColor = toHexColor(event.target.value);
+    setPixelColor(newPixelColor);
+    updateConfig({
+      ...config,
+      pixelColor: newPixelColor,
+    });
+  };
 
-    const handleBgColorChange = (event) => {
-        const newBgColor = event.target.value;
-        setPixelBgColor(newBgColor);
-        updateConfig({
-            ...config,
-            pixelBgColor: newBgColor
-        });
-    };
+  const handleBgColorChange = (event) => {
+    const newBgColor = toHexColor(event.target.value);
+    setPixelBgColor(newBgColor);
+    updateConfig({
+      ...config,
+      pixelBgColor: newBgColor,
+    });
+  };
 
-    return (
-        <div className="setting" id="color-settings">
-            <input id="toggleColor" type="checkbox" className="toggle-button"></input>
-            <label htmlFor="toggleColor" className="clickable">Color</label>
-            <div className="toggle-content">
-                <div className="setting">
-                    <input type="color" id="pixelColor"
-                        title="Choose A Color" className="color-picker"
-                        value={pixelColor}
-                        onChange={handlePixelColorChange}
-                    ></input>
-                </div>
-                <div className="setting">
-                    <input type="color" id="pixelBgColor"
-                        title="Choose A Background Color" className="color-picker"
-                        value={pixelBgColor}
-                        onChange={handleBgColorChange}
-                    ></input>
-                </div>
-            </div>
-        </div>
-    );
+  return (
+    <Box>
+      <LBSettingItem label="Colors" defaultOpen={true}>
+        <LBColorSelector
+          label="Pixel Color"
+          value={pixelColor}
+          onChange={handlePixelColorChange}
+          id="pixelColor"
+        />
+        <LBColorSelector
+          label="Background Color"
+          value={pixelBgColor}
+          onChange={handleBgColorChange}
+          id="pixelBgColor"
+        />
+      </LBSettingItem>
+    </Box>
+  );
 }
 
 export default ColorSelector;

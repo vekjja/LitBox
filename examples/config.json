@@ -1,0 +1,32 @@
+{
+    "version": "v0.0.0",
+    "mode": "client",
+    "mdns": "LitBox",
+    "client": {
+        "ssid": "YOUR_SSID",
+        "password": "YOUR_PASSWORD"
+    },
+    "ap": {
+        "ssid": "LitBox",
+        "password": "abcd1234"
+    },
+    "colorPallet": [
+        "#1d54ff",
+        "#532bff",
+        "#fb62ff",
+        "#ff3691"
+    ],
+    "visualization": "bars",
+    "temperatureUnit": "C",
+    "pixelColor": "#ff3691",
+    "pixelBgColor": "#000000",
+    "sensitivity": 25,
+    "brightness": 3,
+    "frameRate": 60,
+    "text": {
+        "content": "*.*. Lit Box .*.*",
+        "animation": "scroll",
+        "speed": "75",
+        "size": "1"
+    }
+}

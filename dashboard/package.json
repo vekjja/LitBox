@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@mui/material": "^7.2.0",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -12,11 +13,21 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "BUILD_PATH='../data' react-scripts build",
-    "build-upload": "npm run build && . ~/.zshrc && esp-fs-upload -d ../data/",
+    "start": "BROWSER=none react-scripts start",
+    "build": "GENERATE_SOURCEMAP=false BUILD_PATH='../data' react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "pio:clean": "cd .. && pio run --target clean",
+    "pio:build": "cd .. && pio run --environment ${PIO_ENV:-esp32-c3}",
+    "pio:upload": "cd .. && pio run --target upload --environment ${PIO_ENV:-esp32-c3}",
+    "pio:monitor": "cd .. && pio device monitor",
+    "pio:uploadfs": "cd .. && pio run --target uploadfs --environment ${PIO_ENV:-esp32-c3}",
+    "pio:build:upload": "npm run pio:build && npm run pio:upload",
+    "pio:build:monitor": "npm run pio:build && npm run pio:monitor",
+    "pio:build:upload:monitor": "npm run pio:build && npm run pio:upload && npm run pio:monitor",
+    "build:uploadfs": "npm run build && npm run pio:uploadfs",
+    "build:uploadfs:monitor": "npm run build && npm run pio:uploadfs && npm run pio:monitor",
+    "build:uploadfs:pio:build:upload:monitor": "npm run build && npm run pio:uploadfs && npm run pio:build && npm run pio:upload && npm run pio:monitor"
   },
   "eslintConfig": {
     "rules": {
@@ -38,5 +49,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.0"
   }
 }

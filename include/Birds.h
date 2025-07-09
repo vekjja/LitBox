@@ -2,11 +2,10 @@
 #define BIRDS_H
 
 #include "Colors.h"
-#include "Utils.h"
 
 // Birds Config
 int birdCount = 18;
-Pixel* birds = nullptr;
+Pixel *birds = nullptr;
 float birdAlignment = 9;
 float birdSeparation = 1;
 float birdCohesion = 999;
@@ -19,15 +18,15 @@ float birdRandomVelocityChangeFactor = 3;  // Max random change in velocity
 int birdRandomChangeChance = 3;  // Chance of random change (in percentage)
 
 void generateBirds(int maxX, int maxY) {
+  randomSeed(analogRead(A0));
   birds = new Pixel[birdCount];
   for (int i = 0; i < birdCount; i++) {
-    uint32_t birdColor = colorPallet[random(0, palletSize - 1)];
+    int colorIndex = random(0, palletSize);
     birds[i].x = random(0, maxX);
     birds[i].y = random(0, maxY);
-    birds[i].intensity = random(100, 255);  // Random intensity
-    birds[i].vx = random(0, 3);             // Random velocity X
-    birds[i].vy = random(0, 3);             // Random velocity Y
-    birds[i].color = birdColor;  // Function to generate a random color
+    birds[i].vx = random(0, 3);  // Random velocity X
+    birds[i].vy = random(0, 3);  // Random velocity Y
+    birds[i].colorPaletteIndex = colorIndex;
   }
 }
 
@@ -78,8 +77,7 @@ void updateFlock(int maxX, int maxY) {
       if (birds[i].y <= birdEdgeBuffer) {
         birds[i].vy += 1;  // Steer down
       } else if (birds[i].y >= maxY - birdEdgeBuffer) {
-        // birds[i].vy -= 1;  // Steer up
-        birds[i].vy = 0;  // land on the ground
+        birds[i].vy -= 1;  // Steer up
       }
     }
 

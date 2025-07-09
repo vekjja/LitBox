@@ -1,35 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import Box from "@mui/material/Box";
+import LBSettingItem from "../settings/LBSettingItem";
+import LBColorSelector from "./LBColorSelector";
+import { toHexColor } from "../utils/colorUtils";
 
 function ColorPalletSelector({ config, updateConfig }) {
-    const [colors, setColors] = useState(config.colorPallet);
+  // Ensure all initial colors are hex strings
+  const [colors, setColors] = useState(
+    (config.colorPallet || []).map(toHexColor)
+  );
 
-    const handleColorChange = (index) => (event) => {
-        const newColors = [...colors];
-        newColors[index] = event.target.value;
-        setColors(newColors);
-        updateConfig({
-            ...config,
-            colorPallet: newColors
-        });
-    };
+  const handleColorChange = (index) => (event) => {
+    const newColors = [...colors];
+    newColors[index] = toHexColor(event.target.value);
+    setColors(newColors);
+    updateConfig({
+      ...config,
+      colorPallet: newColors,
+    });
+  };
 
-    return (
-        <div className="setting" id="color-pallet-settings">
-            <input id="toggleColorPallet" type="checkbox" className="toggle-button"></input>
-            <label htmlFor="toggleColorPallet" className="clickable">Color Pallet</label>
-            <div className="toggle-content">
-                {[...colors].reverse().map((color, index) => (
-                    <div className="setting" key={index}>
-                        <input type="color" id={`color${colors.length - index}`}
-                            title={`Choose Color ${colors.length - index}`} className="color-picker"
-                            value={color}
-                            onChange={handleColorChange(colors.length - index - 1)}
-                        ></input>
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
+  return (
+    <Box>
+      <LBSettingItem label="Color Pallet" defaultOpen={true}>
+        <Box sx={{ flexDirection: "column", gap: 2 }}>
+          {[...colors].reverse().map((color, index) => (
+            <LBColorSelector
+              key={index}
+              label={`Color ${colors.length - index}`}
+              value={color}
+              onChange={handleColorChange(colors.length - index - 1)}
+              id={`color${colors.length - index}`}
+            />
+          ))}
+        </Box>
+      </LBSettingItem>
+    </Box>
+  );
 }
 
 export default ColorPalletSelector;

@@ -1,169 +1,279 @@
-import React, { useState, useEffect } from 'react';
-import SystemSettings from './settings/SystemSettings';
-import BarsSettings from './settings/BarsSettings';
-import GameOfLifeSettings from './settings/GameOfLifeSettings';
-import MatrixSettings from './settings/MatrixSettings';
-import WaveformSetting from './settings/WaveformSettings';
-import BirdsSetting from './settings/BirdsSettings';
-import CirclesSetting from './settings/CirclesSetting';
-import StarPulseSetting from './settings/StarPulseSettings';
-import TemperatureSetting from './settings/TemperatureSettings';
-import MotionSettings from './settings/MotionSettings';
-import TextSettings from './settings/TextSettings';
+import React, { useState, useEffect } from "react";
+import SystemSettings from "./settings/SystemSettings";
+import BarsSettings from "./settings/BarsSettings";
+import GameOfLifeSettings from "./settings/GameOfLifeSettings";
+import MatrixSettings from "./settings/MatrixSettings";
+import WaveformSetting from "./settings/WaveformSettings";
+import BirdsSetting from "./settings/BirdsSettings";
+import CirclesSetting from "./settings/CirclesSetting";
+import StarPulseSetting from "./settings/StarPulseSettings";
+import TemperatureSetting from "./settings/TemperatureSettings";
+import MotionSettings from "./settings/MotionSettings";
+import TextSettings from "./settings/TextSettings";
 
-var defaultConfig = {
-  "version": "1.0.0",
-  "mode": "client",
-  "mdns": "litbox",
-  "client": {
-    "ssid": "connectedness",
-    "password": "ReallyLongPassword123!@#"
+// Material UI imports
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import Container from "@mui/material/Container";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import LBDropdown from "./selectors/LBDropdown";
+import AppBar from "@mui/material/AppBar";
+
+// Define the theme
+const theme = createTheme({
+  typography: {
+    fontFamily: [
+      "-apple-system",
+      "BlinkMacSystemFont",
+      '"Segoe UI"',
+      "Roboto Slab",
+      '"Helvetica Neue"',
+      "Arial",
+      "sans-serif",
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"',
+    ].join(","),
   },
-  "ap": {
-    "ssid": "LitBox",
-    "password": "abcd1234"
+  palette: {
+    mode: "dark",
+    primary: {
+      main: "#47FFF0",
+      alt: "#0FAB9E",
+    },
+    secondary: {
+      main: "#333",
+    },
+    error: {
+      main: "#FF5656",
+    },
+    success: {
+      main: "#17EB9D",
+    },
   },
-  "brightness": 9,
-  "sensitivity": 9,
-  "visualization": "bars",
-  "frameRate": 30,
-  "temperatureUnit": "C",
-  "colorPallet": [31, 2047, 63514, 65535],
-  "pixelColor": 65535,
-  "pixelBgColor": 0,
-  "text": {
-    "content": "*.*. Lit Box .*.*",
-    "animation": "scroll",
-    "speed": "75",
-    "size": "1"
-  }
-};
+  components: {},
+});
 
 function App() {
+  const hostname = process.env.REACT_APP_API_HOST || "localhost";
+  const port = process.env.REACT_APP_API_PORT || 80;
+  const apiURL =
+    process.env.NODE_ENV === "production" ? "" : `http://${hostname}:${port}`;
+
   var [config, setConfig] = useState(null);
-  const [selectedSetting, setSelectedSetting] = useState('bars');  // Default to 'about'
+  const [selectedSetting, setSelectedSetting] = useState("bars");
 
   useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      setConfig(defaultConfig);
-      setSelectedSetting(defaultConfig.visualization);
-    } else {
-      fetch('/config')
-        .then((response) => response.json())
-        .then((data) => {
-          setConfig(data);
-          setSelectedSetting(data.visualization);
-        })
-        .catch((error) => console.error('Error loading configuration:', error));
-    }
+    fetch(apiURL + "/config")
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Configuration loaded:", data);
+        const configWithAPI = { ...data, apiURL };
+        setConfig(configWithAPI);
+        setSelectedSetting(data.visualization);
+      })
+      .catch((error) => console.error("Error loading configuration:", error));
   }, []);
 
   const saveConfig = (newConfig) => {
-    fetch('/saveConfig')
-      .then(response => {
-        if (!response.ok) throw new Error('Failed to save configuration');
+    fetch(apiURL + "/config", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newConfig),
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error("Failed to save configuration");
         return response.json();
-      }).then(data => {
+      })
+      .then((data) => {
         setConfig(newConfig);
-        console.log('Configuration updated:', data);
-        alert('Configuration Saved');
-      }).catch(error => console.error('Error updating configuration:', error));
+        console.log("Configuration Saved:", data);
+        alert("Configuration Saved");
+      })
+      .catch((error) => console.error("Error updating configuration:", error));
   };
 
   const updateConfig = (newConfig) => {
-    fetch('/config', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    fetch(apiURL + "/config", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(newConfig),
-    }).then(response => {
-      if (!response.ok) throw new Error('Failed to update configuration');
-      return response.json();
-    }).then(data => {
-      setConfig(newConfig);
-      console.log('Configuration Returned:', data);
-      // alert('Configuration updated');
-    }).catch(error => console.error('Error updating configuration:', error));
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error("Failed to update configuration");
+        return response.json();
+      })
+      .then((data) => {
+        setConfig(newConfig);
+        console.log("Configuration Updated:", data);
+      })
+      .catch((error) => console.error("Error updating configuration:", error));
   };
 
   if (!config) {
     return (
-      <div className="container">
-        <label className="header">Lit Box</label>
-        <div>Loading configuration... ⚙️</div>
-      </div>
+      <ThemeProvider theme={theme}>
+        <Container maxWidth="sm" sx={{ mt: 6 }}>
+          <Typography variant="h4" align="center" gutterBottom>
+            Lit Box
+          </Typography>
+          <Typography align="center">Loading configuration... ⚙️</Typography>
+        </Container>
+      </ThemeProvider>
     );
   }
 
   const renderSetting = () => {
+    const visualizationDropdown = (
+      <LBDropdown
+        label="Visualization"
+        value={selectedSetting}
+        onChange={(e) => setSelectedSetting(e.target.value)}
+        defaultOpen={true}
+        options={[
+          { value: "bars", label: "Bars" },
+          { value: "birds", label: "Birds" },
+          { value: "circles", label: "Circles" },
+          { value: "gameOfLife", label: "Game of Life" },
+          { value: "matrix", label: "Matrix" },
+          { value: "motion", label: "Motion" },
+          { value: "starPulse", label: "Star Pulse" },
+          { value: "text", label: "Text" },
+          { value: "temperature", label: "Temperature" },
+          { value: "waveform", label: "Waveform" },
+          { value: "about", label: "About" },
+        ]}
+        // sx={{ backgroundColor: "background.paper", mb: 2 }}
+      />
+    );
     switch (selectedSetting) {
-      case 'bars':
-        return <BarsSettings config={config} updateConfig={updateConfig} />;
-      case 'birds':
-        return <BirdsSetting config={config} updateConfig={updateConfig} />;
-      case 'circles':
-        return <CirclesSetting config={config} updateConfig={updateConfig} />;
-      case 'gameOfLife':
-        return <GameOfLifeSettings config={config} updateConfig={updateConfig} />;
-      case 'matrix':
-        return <MatrixSettings config={config} updateConfig={updateConfig} />;
-      case 'motion':
-        return <MotionSettings config={config} updateConfig={updateConfig} />;
-      case 'starPulse':
-        return <StarPulseSetting config={config} updateConfig={updateConfig} />;
-      case 'text':
-        return <TextSettings config={config} updateConfig={updateConfig} />;
-      case 'temperature':
-        return <TemperatureSetting config={config} updateConfig={updateConfig} />;
-      case 'waveform':
-        return <WaveformSetting config={config} updateConfig={updateConfig} />;
-      case 'wifi':
-        return <SystemSettings config={config} updateConfig={updateConfig} saveConfig={saveConfig} />;
-      case 'about':
-        return <div class="setting" id="about-settings">
-
-          <div class="setting">
-            <label>Version</label>
-            <label id="version">{config.version}</label>
+      case "bars":
+        return (
+          <BarsSettings
+            config={config}
+            updateConfig={updateConfig}
+            visualizationDropdown={visualizationDropdown}
+          />
+        );
+      case "birds":
+        return (
+          <BirdsSetting
+            config={config}
+            updateConfig={updateConfig}
+            visualizationDropdown={visualizationDropdown}
+          />
+        );
+      case "circles":
+        return (
+          <CirclesSetting
+            config={config}
+            updateConfig={updateConfig}
+            visualizationDropdown={visualizationDropdown}
+          />
+        );
+      case "gameOfLife":
+        return (
+          <GameOfLifeSettings
+            config={config}
+            updateConfig={updateConfig}
+            visualizationDropdown={visualizationDropdown}
+          />
+        );
+      case "matrix":
+        return (
+          <MatrixSettings
+            config={config}
+            updateConfig={updateConfig}
+            visualizationDropdown={visualizationDropdown}
+          />
+        );
+      case "motion":
+        return (
+          <MotionSettings
+            config={config}
+            updateConfig={updateConfig}
+            visualizationDropdown={visualizationDropdown}
+          />
+        );
+      case "starPulse":
+        return (
+          <StarPulseSetting
+            config={config}
+            updateConfig={updateConfig}
+            visualizationDropdown={visualizationDropdown}
+          />
+        );
+      case "text":
+        return (
+          <TextSettings
+            config={config}
+            updateConfig={updateConfig}
+            visualizationDropdown={visualizationDropdown}
+          />
+        );
+      case "temperature":
+        return (
+          <TemperatureSetting
+            config={config}
+            updateConfig={updateConfig}
+            visualizationDropdown={visualizationDropdown}
+          />
+        );
+      case "waveform":
+        return (
+          <WaveformSetting
+            config={config}
+            updateConfig={updateConfig}
+            visualizationDropdown={visualizationDropdown}
+          />
+        );
+      case "about":
+        return (
+          <div className="setting" id="about-settings">
+            {visualizationDropdown}
+            <div className="setting">
+              <label htmlFor="version">Version</label>
+            </div>
+            <div className="setting">
+              <label>Designed and Developed by:</label>
+              <a
+                href="https://github.com/seemywingz/LitBox"
+                target="_blank"
+                id="SeeMyWingZ"
+                rel="noreferrer"
+              >
+                SeeMyWingZ
+              </a>
+            </div>
           </div>
-
-          <div class="setting">
-            <label>Designed and Developed by:</label>
-            <a href="https://github.com/seemywingz/LitBox"
-              target="_blank" id="SeeMyWingZ" rel="noreferrer">SeeMyWingZ</a>
-          </div>
-
-        </div>;
+        );
       default:
-        return <div>🛠️ Under Construction 🛠️</div>;
+        return <div>How'd Yo Get Here?🫠</div>;
     }
   };
 
   return (
-    <div className="container">
-      <label className="header">Lit Box</label>
-      <div className="setting">
-        <select
-          id="settingSelect"
-          className="clickable"
-          value={selectedSetting}
-          onChange={(e) => setSelectedSetting(e.target.value)}
-        >
-          <option value="bars">Bars</option>
-          <option value="birds">Birds</option>
-          <option value="circles">Circles</option>
-          <option value="gameOfLife">Game of Life</option>
-          <option value="matrix">Matrix</option>
-          <option value="motion">Motion</option>
-          <option value="starPulse">Star Pulse</option>
-          <option value="text">Text</option>
-          <option value="temperature">Temperature</option>
-          <option value="waveform">Waveform</option>
-          <option value="wifi">System</option>
-          <option value="about">About</option>
-        </select>
-      </div>
-      {renderSetting()}
-    </div>
+    <ThemeProvider theme={theme}>
+      <Container maxWidth="sm" sx={{}}>
+        <AppBar position="fixed">
+          <SystemSettings
+            config={config}
+            updateConfig={updateConfig}
+            saveConfig={saveConfig}
+          />
+          <Typography
+            variant="h4"
+            align="center"
+            gutterBottom
+            color="primary"
+            sx={{ mt: 3, mb: 3 }}
+          >
+            {config.mdns}
+          </Typography>
+        </AppBar>
+        <Box sx={{ mt: 15 }}>{renderSetting()}</Box>
+      </Container>
+    </ThemeProvider>
   );
 }
 
