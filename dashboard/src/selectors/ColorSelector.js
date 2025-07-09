@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import Box from "@mui/material/Box";
+import LBColorSelector from "./LBColorSelector";
 
 // Utility: Convert a number to a hex color string (e.g., 16711680 -> "#ff0000")
 function toHexColor(val) {
@@ -35,34 +37,20 @@ function ColorSelector({ config, updateConfig }) {
   };
 
   return (
-    <div className="setting" id="color-settings">
-      <input id="toggleColor" type="checkbox" className="toggle-button"></input>
-      <label htmlFor="toggleColor" className="clickable">
-        Color
-      </label>
-      <div className="toggle-content">
-        <div className="setting">
-          <input
-            type="color"
-            id="pixelColor"
-            title="Choose A Color"
-            className="color-picker"
-            value={pixelColor}
-            onChange={handlePixelColorChange}
-          ></input>
-        </div>
-        <div className="setting">
-          <input
-            type="color"
-            id="pixelBgColor"
-            title="Choose A Background Color"
-            className="color-picker"
-            value={pixelBgColor}
-            onChange={handleBgColorChange}
-          ></input>
-        </div>
-      </div>
-    </div>
+    <Box>
+      <LBColorSelector
+        label="Pixel Color"
+        value={pixelColor}
+        onChange={handlePixelColorChange}
+        id="pixelColor"
+      />
+      <LBColorSelector
+        label="Background Color"
+        value={pixelBgColor}
+        onChange={handleBgColorChange}
+        id="pixelBgColor"
+      />
+    </Box>
   );
 }
 

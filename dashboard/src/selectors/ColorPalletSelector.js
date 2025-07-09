@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import Box from "@mui/material/Box";
+import LBSettingItem from "../settings/LBSettingItem";
+import LBColorSelector from "./LBColorSelector";
 
 // Utility: Convert a number to a hex color string (e.g., 16711680 -> "#ff0000")
 function toHexColor(val) {
@@ -27,30 +30,22 @@ function ColorPalletSelector({ config, updateConfig }) {
   };
 
   return (
-    <div className="setting" id="color-pallet-settings">
-      <input
-        id="toggleColorPallet"
-        type="checkbox"
-        className="toggle-button"
-      ></input>
-      <label htmlFor="toggleColorPallet" className="clickable">
-        Color Pallet
-      </label>
-      <div className="toggle-content">
-        {[...colors].reverse().map((color, index) => (
-          <div className="setting" key={index}>
-            <input
-              type="color"
-              id={`color${colors.length - index}`}
-              title={`Choose Color ${colors.length - index}`}
-              className="color-picker"
-              value={color}
-              onChange={handleColorChange(colors.length - index - 1)}
-            ></input>
-          </div>
-        ))}
-      </div>
-    </div>
+    <Box>
+      <LBSettingItem label="Color Pallet" defaultOpen={true}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          {[...colors].reverse().map((color, index) => (
+            <Box key={index} sx={{ mb: 1 }}>
+              <LBColorSelector
+                label={`Color ${colors.length - index}`}
+                value={color}
+                onChange={handleColorChange(colors.length - index - 1)}
+                id={`color${colors.length - index}`}
+              />
+            </Box>
+          ))}
+        </Box>
+      </LBSettingItem>
+    </Box>
   );
 }
 

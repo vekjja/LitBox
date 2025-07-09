@@ -6,10 +6,6 @@ import Slider from "@mui/material/Slider";
 function BrightnessSlider({ config, updateConfig }) {
   const [brightness, setBrightness] = useState(config.brightness);
 
-  const handleSliderChange = (event) => {
-    setBrightness(event.target.value);
-  };
-
   const handleSliderRelease = () => {
     const newConfig = { ...config, brightness: parseInt(brightness) };
     updateConfig(newConfig);
