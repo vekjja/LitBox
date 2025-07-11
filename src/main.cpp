@@ -1,10 +1,11 @@
 #include <AsyncJson.h>
 #include <ESPWiFi.h>
-#include <LEDMatrix.h>
+#include <LED/Colors.h>
+#include <LED/Matrix.h>
+#include <LED/Text.h>
 #include <SpectralAnalyzer.h>
 
 #include "Birds.h"
-#include "Colors.h"
 #include "GameOfLife.h"
 #include "MatrixAnimation.h"
 #include "Motion.h"
@@ -130,7 +131,7 @@ void drawWaveform() {
 
   for (int x = 0; x < LED_WIDTH; x++) {
     int amplitude = spectralData[x];
-    int maxAmplitudeInput = 32; // adjust as needed for your signal
+    int maxAmplitudeInput = 32;  // adjust as needed for your signal
     int maxOffset = map(amplitude, 1, maxAmplitudeInput, 0, centerY + 1);
     maxOffset = constrain(maxOffset, 0, centerY + 1);
     if (amplitude > 0) {
@@ -146,10 +147,8 @@ void drawWaveform() {
           CRGB color = colorPallet[colorIdx];
           int upY = centerY - y;
           int downY = centerY + y;
-          if (upY >= 0)
-            drawPixel(x, upY, color);
-          if (downY < LED_HEIGHT)
-            drawPixel(x, downY, color);
+          if (upY >= 0) drawPixel(x, upY, color);
+          if (downY < LED_HEIGHT) drawPixel(x, downY, color);
         }
       }
     }
@@ -201,7 +200,8 @@ void drawMotion() {
   FastLED.clear();
   for (int i = 0; i < motionNumObjects; i++) {
     drawPixel(motionObjects[i].body->position.x,
-              motionObjects[i].body->position.y, motionObjects[i].color);
+              motionObjects[i].body->position.y,
+              colorPallet[motionObjects[i].colorPaletteIndex]);
   }
   FastLED.show();
 }

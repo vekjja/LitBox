@@ -1,7 +1,8 @@
 #ifndef STARS_H
 #define STARS_H
 
-#include "Colors.h"
+#include "LED/Colors.h"
+#include "SpectralAnalyzer.h"
 
 struct Star : public Pixel {
   int audioBand;

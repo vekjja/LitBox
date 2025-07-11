@@ -1,8 +1,8 @@
 #ifndef MATRIX_ANIMATION_H
 #define MATRIX_ANIMATION_H
 
-#include "Colors.h"
-#include "LEDMatrix.h"
+#include "LED/Colors.h"
+#include "LED/Matrix.h"
 #include <Arduino.h>
 
 // Matrix Animation Configuration

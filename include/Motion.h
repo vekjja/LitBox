@@ -4,7 +4,7 @@
 #include <2D/Body.h>
 #include <2D/World.h>
 
-#include "Colors.h"
+#include "LED/Colors.h"
 
 struct MotionObject {
   Body *body;
@@ -54,13 +54,12 @@ void generateMotionObjects(int maxX, int maxY) {
 
   motionObjects = new MotionObject[motionNumObjects];
   for (int i = 0; i < motionNumObjects; i++) {
-    motionObjects[i].color = colorPallet[random(0, palletSize)];
+    motionObjects[i].colorPaletteIndex = random(0, palletSize);
     Body *b = new Body();
-    float w = 1.0f;
-    b->Set(Vec2{w, w}, 10.0f);
+    b->Set(Vec2{1.1f, 1.0f}, 10.0f);
+    b->friction = 0.3f;
     b->position.Set(static_cast<float>(random(0, maxX)),
                     static_cast<float>(random(0, maxY)));
-    b->friction = 0.3f;
     world.Add(motionObjects[i].body = b);
   }
 }
@@ -83,7 +82,7 @@ void motionStep(int maxX, int maxY, ESPWiFi &device) {
 
   // Serial.println("g: " + String(-ay) + ", " + String(-ax));
   world.gravity.Set(-ay, -ax);
-  world.Step(0.8f);
+  world.Step(0.3f);
 
   for (int i = 0; i < motionNumObjects; i++) {
     Body *b = motionObjects[i].body;
@@ -93,4 +92,4 @@ void motionStep(int maxX, int maxY, ESPWiFi &device) {
   }
 }
 
-#endif // MOTION_H
+#endif  // MOTION_H
