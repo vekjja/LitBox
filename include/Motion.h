@@ -3,6 +3,7 @@
 
 #include <2D/Body.h>
 #include <2D/World.h>
+#include <math.h>
 
 #include "LED/Colors.h"
 
@@ -58,8 +59,41 @@ void generateMotionObjects(int maxX, int maxY) {
     Body *b = new Body();
     b->Set(Vec2{1.1f, 1.0f}, 10.0f);
     b->friction = 0.3f;
-    b->position.Set(static_cast<float>(random(0, maxX)),
-                    static_cast<float>(random(0, maxY)));
+
+    // Try to place the body with minimum separation from others
+    bool validPosition = false;
+    int attempts = 0;
+    const int maxAttempts = 50;
+    const float minSeparation = 2.0f; // Minimum distance between body centers
+
+    while (!validPosition && attempts < maxAttempts) {
+      float x = static_cast<float>(random(0, maxX));
+      float y = static_cast<float>(random(0, maxY));
+
+      validPosition = true;
+      // Check distance from existing bodies
+      for (int j = 0; j < i; j++) {
+        float dx = x - motionObjects[j].body->position.x;
+        float dy = y - motionObjects[j].body->position.y;
+        float distance = sqrt(dx * dx + dy * dy);
+        if (distance < minSeparation) {
+          validPosition = false;
+          break;
+        }
+      }
+
+      if (validPosition) {
+        b->position.Set(x, y);
+      }
+      attempts++;
+    }
+
+    // If we couldn't find a good position, just place it randomly
+    if (!validPosition) {
+      b->position.Set(static_cast<float>(random(0, maxX)),
+                      static_cast<float>(random(0, maxY)));
+    }
+
     world.Add(motionObjects[i].body = b);
   }
 }
@@ -84,6 +118,25 @@ void motionStep(int maxX, int maxY, ESPWiFi &device) {
   world.gravity.Set(-ay, -ax);
   world.Step(0.3f);
 
+  // Add repulsion between bodies that get too close
+  for (int i = 0; i < motionNumObjects; i++) {
+    Body *b1 = motionObjects[i].body;
+    for (int j = i + 1; j < motionNumObjects; j++) {
+      Body *b2 = motionObjects[j].body;
+      float dx = b2->position.x - b1->position.x;
+      float dy = b2->position.y - b1->position.y;
+      float distance = sqrt(dx * dx + dy * dy);
+
+      if (distance > 0.1f && distance < 2.0f) {
+        // Add repulsion force
+        float force = 0.5f / (distance * distance);
+        Vec2 repulsion(dx * force / distance, dy * force / distance);
+        b1->AddForce(-repulsion);
+        b2->AddForce(repulsion);
+      }
+    }
+  }
+
   for (int i = 0; i < motionNumObjects; i++) {
     Body *b = motionObjects[i].body;
     b->position.x = constrain(b->position.x, 0, maxX - 1);
@@ -92,4 +145,4 @@ void motionStep(int maxX, int maxY, ESPWiFi &device) {
   }
 }
 
-#endif  // MOTION_H
+#endif // MOTION_H
