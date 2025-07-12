@@ -13,9 +13,12 @@ import NetworkCheckIcon from "@mui/icons-material/NetworkCheck";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import IconButton from "@mui/material/IconButton";
 import Switch from "@mui/material/Switch";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import InputAdornment from "@mui/material/InputAdornment";
 
 function SystemSettings({ config, updateConfig, saveConfig }) {
   const [open, setOpen] = useState(false);
@@ -28,6 +31,7 @@ function SystemSettings({ config, updateConfig, saveConfig }) {
   const [mode, setMode] = useState(config.client.mode || "client");
   const [mdns, setMdns] = useState(config.mdns || "");
   const [mdnsError, setMdnsError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   // RFC 1123 hostname validation
   function isValidHostname(name) {
@@ -278,8 +282,25 @@ function SystemSettings({ config, updateConfig, saveConfig }) {
                 onChange={handlePasswordChange}
                 fullWidth
                 margin="normal"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 sx={{ mb: 2 }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={() => setShowPassword(!showPassword)}
+                        edge="end"
+                      >
+                        {showPassword ? (
+                          <VisibilityOffIcon />
+                        ) : (
+                          <VisibilityIcon />
+                        )}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
             </>
           )}
@@ -316,10 +337,10 @@ function SystemSettings({ config, updateConfig, saveConfig }) {
         {(() => {
           // Save button for Network tab
           const saveNetworkButton = (
-            <Tooltip title="Save Network Settings" key="save-network">
+            <Tooltip title="Save Settings" key="save-network">
               <IconButton
                 color="primary"
-                aria-label="save network settings"
+                aria-label="save settings"
                 onClick={handleSaveNetwork}
                 sx={{ mr: 1 }}
                 disabled={!!mdnsError}
@@ -346,11 +367,11 @@ function SystemSettings({ config, updateConfig, saveConfig }) {
           );
           // Save button for JSON tab
           const saveJsonButton = (
-            <Tooltip title="Save to Device" key="save-json">
+            <Tooltip title="Save Settings" key="save-json">
               <span>
                 <IconButton
                   color="primary"
-                  aria-label="save to device"
+                  aria-label="save settings"
                   onClick={handleSaveJson}
                   // disabled={!isEditable || !!mdnsError}
                   sx={{ mr: 1 }}
