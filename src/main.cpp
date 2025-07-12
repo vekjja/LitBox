@@ -16,10 +16,13 @@
 // Web Server
 ESPWiFi device;
 
+bool needsCleanUp = false;
+
 // Visualization Config
-const int maxFrameRate = 120;
 unsigned int frameRate = 18;
+const int maxFrameRate = 120;
 String visualization = "bars";
+String lastVisualization = visualization;
 
 void runAtFrameRate(void (*callback)(), unsigned int frameRate) {
   static unsigned long lastTime = 0;
@@ -44,45 +47,6 @@ void setSensitivity(int newSensitivity) {
 void setFramerate(unsigned int fps) {
   device.config["frameRate"] = constrain(fps, 1, maxFrameRate);
   frameRate = device.config["frameRate"];
-}
-
-void applyConfig() {
-  setBrightness(device.config["brightness"].as<int>());
-  setSensitivity(device.config["sensitivity"].as<int>());
-  setFramerate(device.config["frameRate"].as<unsigned int>());
-  visualization = device.config["visualization"].as<String>();
-
-  if (!device.config["pixelColor"].isNull()) {
-    CRGB newColor = hexToCRGB(device.config["pixelColor"]);
-    if (newColor != pixelColor) {
-      pixelColor = newColor;
-      device.log("👾 Pixel Color Changed:");
-      device.log("\tR=" + String(pixelColor.r) + ", G=" + String(pixelColor.g) +
-                 ", B=" + String(pixelColor.b));
-    }
-  }
-  if (!device.config["pixelBgColor"].isNull()) {
-    CRGB newColor = hexToCRGB(device.config["pixelBgColor"]);
-    if (newColor != pixelBgColor) {
-      pixelBgColor = newColor;
-      device.log("👾 Pixel Background Color Changed:");
-      device.log("\tR=" + String(pixelBgColor.r) + ", G=" +
-                 String(pixelBgColor.g) + ", B=" + String(pixelBgColor.b));
-    }
-  }
-  if (!device.config["colorPallet"].isNull()) {
-    JsonArray arr = device.config["colorPallet"].as<JsonArray>();
-    for (int i = 0; i < palletSize && i < arr.size(); i++) {
-      CRGB newColor = hexToCRGB(arr[i]);
-      if (colorPallet[i] != newColor) {
-        colorPallet[i] = newColor;
-        device.log("🎨 Color Pallet Updated:");
-        device.log("\tColor " + String(i) + ": R=" + String(colorPallet[i].r) +
-                   ", G=" + String(colorPallet[i].g) +
-                   ", B=" + String(colorPallet[i].b));
-      }
-    }
-  }
 }
 
 void drawBars() {
@@ -214,12 +178,54 @@ void drawTemperature() {
   staticText(String(temperature).c_str());
 }
 
+void applyConfig() {
+  setBrightness(device.config["brightness"].as<int>());
+  setSensitivity(device.config["sensitivity"].as<int>());
+  setFramerate(device.config["frameRate"].as<unsigned int>());
+  visualization = device.config["visualization"].as<String>();
+
+  if (visualization != lastVisualization) {
+    device.log("📱 Visualization Changed: " + lastVisualization + " -> " +
+               visualization);
+    lastVisualization = visualization;
+    needsCleanUp = true;
+  }
+
+  if (!device.config["pixelColor"].isNull()) {
+    CRGB newColor = hexToCRGB(device.config["pixelColor"]);
+    if (newColor != pixelColor) {
+      pixelColor = newColor;
+      device.log("👾 Pixel Color Changed:");
+      device.log("\tR=" + String(pixelColor.r) + ", G=" + String(pixelColor.g) +
+                 ", B=" + String(pixelColor.b));
+    }
+  }
+  if (!device.config["pixelBgColor"].isNull()) {
+    CRGB newColor = hexToCRGB(device.config["pixelBgColor"]);
+    if (newColor != pixelBgColor) {
+      pixelBgColor = newColor;
+      device.log("👾 Pixel Background Color Changed:");
+      device.log("\tR=" + String(pixelBgColor.r) + ", G=" +
+                 String(pixelBgColor.g) + ", B=" + String(pixelBgColor.b));
+    }
+  }
+  if (!device.config["colorPallet"].isNull()) {
+    JsonArray arr = device.config["colorPallet"].as<JsonArray>();
+    for (int i = 0; i < palletSize && i < arr.size(); i++) {
+      CRGB newColor = hexToCRGB(arr[i]);
+      if (colorPallet[i] != newColor) {
+        colorPallet[i] = newColor;
+        device.log("🎨 Color Pallet Updated:");
+        device.log("\tColor " + String(i) + ": R=" + String(colorPallet[i].r) +
+                   ", G=" + String(colorPallet[i].g) +
+                   ", B=" + String(colorPallet[i].b));
+      }
+    }
+  }
+}
+
 void setup() {
   device.startLog();
-  device.readConfig();
-
-  device.startLEDMatrix();
-  testMatrix();
 
   randomSeed(analogRead(A0));
   device.connectSubroutine = []() {
@@ -227,15 +233,19 @@ void setup() {
     testMatrix(color);
   };
 
+  device.configUpdateCallback = applyConfig;
+  device.readConfig();
   applyConfig();
+
+  device.startLEDMatrix();
+  testMatrix();
+
   device.srvAll();
   device.startWiFi();
   startText(&device);
   device.startMDNS();
   device.startWebServer();
-
   device.startSpectralAnalyzer();
-
   device.startBMI160();
 
   device.log("🔥 Lit Box Initialized");
@@ -243,7 +253,6 @@ void setup() {
 
 void loop() {
   yield();
-  applyConfig();
 
   handleText();
 
@@ -265,5 +274,15 @@ void loop() {
     drawMotion();
   } else {
     drawBars();
+  }
+
+  // Clean up memory when visualization changes
+  if (needsCleanUp) {
+    device.log("🧹 Cleaning up memory...");
+    motionObjects = nullptr;
+    gol_Cells = nullptr;
+    birds = nullptr;
+    stars = nullptr;
+    needsCleanUp = false;
   }
 }
