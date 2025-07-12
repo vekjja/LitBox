@@ -71,12 +71,11 @@ void motionStep(int maxX, int maxY, ESPWiFi &device) {
   device.readAccelerometer(ax, ay, az);
   // device.readGyroscope(gx, gy, gz);
 
-  for (int i = 0; i < motionNumObjects; i++) {
-    Body *b = motionObjects[i].body;
-    // Example: Add velocity based on gyroscope (shake) values
-    b->velocity.x += gy; // scale as needed
-    b->velocity.y += gx; // scale as needed
-  }
+  // for (int i = 0; i < motionNumObjects; i++) {
+  //   Body *b = motionObjects[i].body;
+  //   b->velocity.x += gy; // scale as needed
+  //   b->velocity.y += gx; // scale as needed
+  // }
 
   world.gravity.Set(-ay, -ax);
   world.Step(0.3f);
