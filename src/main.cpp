@@ -201,44 +201,11 @@ void drawMatrix() {
 void drawMotion() {
   motionStep(LED_WIDTH, LED_HEIGHT, device);
   FastLED.clear();
-
-  // Create a buffer to track which pixels have been drawn and their colors
-  CRGB pixelBuffer[LED_WIDTH][LED_HEIGHT];
-  bool pixelOccupied[LED_WIDTH][LED_HEIGHT] = {false};
-
-  // First pass: draw all bodies and track occupied pixels
   for (int i = 0; i < motionNumObjects; i++) {
-    int x = round(motionObjects[i].body->position.x);
-    int y = round(motionObjects[i].body->position.y);
-
-    // Ensure bounds
-    x = constrain(x, 0, LED_WIDTH - 1);
-    y = constrain(y, 0, LED_HEIGHT - 1);
-
-    if (!pixelOccupied[x][y]) {
-      // First body at this pixel - draw normally
-      pixelBuffer[x][y] = colorPallet[motionObjects[i].colorPaletteIndex];
-      pixelOccupied[x][y] = true;
-    } else {
-      // Multiple bodies at this pixel - blend colors
-      CRGB existingColor = pixelBuffer[x][y];
-      CRGB newColor = colorPallet[motionObjects[i].colorPaletteIndex];
-      // Simple additive blending (brighten the pixel)
-      pixelBuffer[x][y] = CRGB(min(255, existingColor.r + newColor.r / 2),
-                               min(255, existingColor.g + newColor.g / 2),
-                               min(255, existingColor.b + newColor.b / 2));
-    }
+    drawPixel(round(motionObjects[i].body->position.x),
+              round(motionObjects[i].body->position.y),
+              colorPallet[motionObjects[i].colorPaletteIndex]);
   }
-
-  // Second pass: apply the buffer to the LED matrix
-  for (int x = 0; x < LED_WIDTH; x++) {
-    for (int y = 0; y < LED_HEIGHT; y++) {
-      if (pixelOccupied[x][y]) {
-        drawPixel(x, y, pixelBuffer[x][y]);
-      }
-    }
-  }
-
   FastLED.show();
 }
 
